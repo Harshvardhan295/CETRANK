@@ -21,7 +21,7 @@ const NotFound = () => {
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           className="inline-flex mb-8"
         >
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/10 to-purple-500/10 flex items-center justify-center shadow-lg shadow-primary/5">
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-600/10 to-teal-500/10 flex items-center justify-center shadow-lg shadow-blue-600/5">
             <Compass className="w-10 h-10 text-primary" />
           </div>
         </motion.div>

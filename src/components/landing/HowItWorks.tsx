@@ -12,7 +12,7 @@ const steps = [
     title: "Enter Your Profile",
     description:
       "Provide your percentile, category, home university, and preferences. Our engine validates your eligibility criteria instantly.",
-    color: "from-violet-500 to-purple-600",
+    color: "from-blue-500 to-blue-700",
     num: "01",
   },
   {
@@ -20,7 +20,7 @@ const steps = [
     title: "AI Analyzes & Filters",
     description:
       "Our engine cross-references 4L+ cutoff records against CET Cell allocation rules, generating probability scores for each option.",
-    color: "from-blue-500 to-cyan-600",
+    color: "from-sky-500 to-cyan-600",
     num: "02",
   },
   {
@@ -28,7 +28,7 @@ const steps = [
     title: "Get Ranked Results",
     description:
       "Receive a probability-ranked college list personalized for your profile, with detailed reasoning and historical trend data.",
-    color: "from-emerald-500 to-teal-600",
+    color: "from-teal-500 to-emerald-600",
     num: "03",
   },
 ];
@@ -66,7 +66,7 @@ function StepCard({
             className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center shadow-lg relative`}
             style={{
               boxShadow: isInView
-                ? `0 8px 30px ${index === 0 ? "rgba(139,92,246,0.3)" : index === 1 ? "rgba(59,130,246,0.3)" : "rgba(16,185,129,0.3)"}`
+                ? `0 8px 30px ${index === 0 ? "rgba(37,99,235,0.3)" : index === 1 ? "rgba(14,165,233,0.3)" : "rgba(20,184,166,0.3)"}`
                 : "none",
             }}
           >

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 export function AuroraBackground() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
-      {/* primary blob */}
+      {/* primary blue blob */}
       <motion.div
         animate={{
           x: [0, 80, -40, 60, 0],
@@ -13,11 +13,11 @@ export function AuroraBackground() {
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full opacity-20"
         style={{
-          background: "radial-gradient(circle, hsl(250 89% 62% / 0.4), transparent 60%)",
+          background: "radial-gradient(circle, hsl(217 91% 53% / 0.4), transparent 60%)",
           filter: "blur(100px)",
         }}
       />
-      {/* secondary blob */}
+      {/* teal blob */}
       <motion.div
         animate={{
           x: [0, -60, 40, -30, 0],
@@ -27,11 +27,11 @@ export function AuroraBackground() {
         transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
         className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] rounded-full opacity-15"
         style={{
-          background: "radial-gradient(circle, hsl(280 80% 60% / 0.4), transparent 60%)",
+          background: "radial-gradient(circle, hsl(173 80% 40% / 0.4), transparent 60%)",
           filter: "blur(120px)",
         }}
       />
-      {/* accent blob */}
+      {/* sky-blue accent blob */}
       <motion.div
         animate={{
           x: [0, 50, -70, 20, 0],
@@ -41,7 +41,7 @@ export function AuroraBackground() {
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full opacity-10"
         style={{
-          background: "radial-gradient(circle, hsl(200 95% 55% / 0.4), transparent 60%)",
+          background: "radial-gradient(circle, hsl(199 89% 48% / 0.4), transparent 60%)",
           filter: "blur(80px)",
         }}
       />

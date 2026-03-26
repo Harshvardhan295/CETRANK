@@ -56,7 +56,7 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         >
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/10 to-purple-500/10 flex items-center justify-center mb-6 shadow-lg shadow-primary/5">
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-600/10 to-teal-500/10 flex items-center justify-center mb-6 shadow-lg shadow-blue-600/5">
             <GraduationCap className="w-10 h-10 text-primary" />
           </div>
         </motion.div>

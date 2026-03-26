@@ -12,9 +12,9 @@ const features = [
     title: "Prediction Engine",
     description:
       "AI-powered probability gauges with historical cutoff analysis across 3 years of CET data.",
-    gradient: "from-violet-500/20 to-purple-500/20",
-    iconBg: "bg-violet-500/10",
-    iconColor: "text-violet-500",
+    gradient: "from-blue-500/20 to-blue-600/20",
+    iconBg: "bg-blue-500/10",
+    iconColor: "text-blue-600",
     tag: "Core",
   },
   {
@@ -22,9 +22,9 @@ const features = [
     title: "AI Counselor",
     description:
       "RAG-powered digital counselor that reasons through admission rules step-by-step.",
-    gradient: "from-blue-500/20 to-cyan-500/20",
-    iconBg: "bg-blue-500/10",
-    iconColor: "text-blue-500",
+    gradient: "from-sky-500/20 to-cyan-500/20",
+    iconBg: "bg-sky-500/10",
+    iconColor: "text-sky-500",
     tag: "AI-Powered",
   },
   {
@@ -32,9 +32,9 @@ const features = [
     title: "Smart Filters",
     description:
       "Intelligent filtering by category, university, city, branch — recalculates 4L+ data points in real-time.",
-    gradient: "from-emerald-500/20 to-teal-500/20",
-    iconBg: "bg-emerald-500/10",
-    iconColor: "text-emerald-500",
+    gradient: "from-teal-500/20 to-emerald-500/20",
+    iconBg: "bg-teal-500/10",
+    iconColor: "text-teal-500",
     tag: "Real-time",
   },
   {

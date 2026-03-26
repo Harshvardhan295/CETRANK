@@ -51,7 +51,7 @@ export function ReportCenter({ hasResults }: { hasResults: boolean }) {
                 animate={{ y: [0, -6, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/10 to-purple-500/10 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary/5">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600/10 to-teal-500/10 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-600/5">
                   <FileText className="w-8 h-8 text-primary" />
                 </div>
               </motion.div>

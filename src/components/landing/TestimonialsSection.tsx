@@ -14,7 +14,7 @@ const testimonials = [
     text: "CETRANK predicted my exact college with 92% accuracy. The AI counselor helped me understand my options when I was confused about the counselling process.",
     rating: 5,
     avatar: "PS",
-    color: "from-violet-500 to-purple-600",
+    color: "from-blue-500 to-blue-700",
   },
   {
     name: "Arjun Patil",
@@ -23,7 +23,7 @@ const testimonials = [
     text: "The probability gauges were incredibly helpful. I could see exactly where I stood for each college and made informed decisions during each CAP round.",
     rating: 5,
     avatar: "AP",
-    color: "from-blue-500 to-cyan-600",
+    color: "from-sky-500 to-cyan-600",
   },
   {
     name: "Sneha Kulkarni",

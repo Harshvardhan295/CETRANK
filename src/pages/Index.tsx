@@ -27,7 +27,7 @@ function CTASection() {
           className="relative rounded-3xl overflow-hidden"
         >
           {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-purple-500/10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-teal-500/10" />
           <div className="absolute inset-0 glass" />
 
           <div className="relative p-12 md:p-16 text-center">
@@ -36,7 +36,7 @@ function CTASection() {
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               className="inline-flex"
             >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-purple-400 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-primary/25">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-teal-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-600/25">
                 <Zap className="w-7 h-7 text-white" />
               </div>
             </motion.div>
@@ -82,7 +82,7 @@ function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Brand */}
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-purple-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-teal-500 flex items-center justify-center">
               <Zap className="w-4 h-4 text-white" />
             </div>
             <span className="text-sm font-bold">

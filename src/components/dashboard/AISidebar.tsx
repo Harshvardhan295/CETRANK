@@ -72,8 +72,8 @@ export function AISidebar() {
         onClick={() => setOpen(!open)}
         className="fixed right-4 bottom-6 z-40 rounded-2xl p-4 transition-all group"
         style={{
-          background: "linear-gradient(135deg, hsl(250 89% 62%), hsl(280 80% 60%))",
-          boxShadow: "0 8px 30px rgba(124, 58, 237, 0.35)",
+          background: "linear-gradient(135deg, #2563eb, #14b8a6)",
+          boxShadow: "0 8px 30px rgba(37, 99, 235, 0.35)",
         }}
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
@@ -137,7 +137,7 @@ export function AISidebar() {
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center"
                     style={{
-                      background: "linear-gradient(135deg, hsl(250 89% 62% / 0.15), hsl(280 80% 60% / 0.15))",
+                      background: "linear-gradient(135deg, hsl(217 91% 53% / 0.15), hsl(173 80% 40% / 0.15))",
                     }}
                   >
                     <Bot className="w-5 h-5 text-primary" />
