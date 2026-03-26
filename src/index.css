@@ -92,6 +92,29 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'Outfit', 'Inter', system-ui, sans-serif;
   }
+
+  .snap-container {
+    scroll-snap-type: y mandatory;
+    overflow-y: auto;
+    height: 100vh;
+    scroll-behavior: smooth;
+  }
+
+  .snap-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    height: 100vh;
+    position: relative;
+  }
+}
+
+/* Effect toggle styling */
+.effect-dot {
+  @apply w-3 h-3 rounded-full transition-all duration-300;
+  background: hsl(var(--muted));
+}
+input:checked + .effect-dot {
+  @apply w-6 bg-primary glow-primary;
 }
 
 @layer utilities {

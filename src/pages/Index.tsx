@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/Navbar";
-import { HeroSection } from "@/components/landing/HeroSection";
+import { ScrollHero } from "@/components/landing/ScrollHero";
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
@@ -8,17 +8,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { FloatingParticles } from "@/components/effects/FloatingParticles";
 
 function CTASection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <motion.section
-      ref={ref}
-      className="py-28 px-4 relative overflow-hidden"
-    >
+    <motion.section ref={ref} className="py-28 px-4 relative overflow-hidden">
       <div className="max-w-3xl mx-auto relative">
         <motion.div
           initial={{ opacity: 0, y: 40, scale: 0.95 }}
@@ -26,7 +22,6 @@ function CTASection() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="relative rounded-3xl overflow-hidden"
         >
-          {/* Background gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-teal-500/10" />
           <div className="absolute inset-0 glass" />
 
@@ -46,8 +41,7 @@ function CTASection() {
               <span className="text-gradient">dream college</span>?
             </h2>
             <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">
-              Start exploring personalized recommendations powered by AI and
-              4L+ data points.
+              Start exploring personalized recommendations powered by AI and 4L+ data points.
             </p>
 
             <Link to="/dashboard">
@@ -80,7 +74,6 @@ function Footer() {
     <footer className="border-t border-border/50 py-12 px-4 relative">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Brand */}
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-teal-500 flex items-center justify-center">
               <Zap className="w-4 h-4 text-white" />
@@ -90,20 +83,12 @@ function Footer() {
             </span>
           </div>
 
-          {/* Links */}
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <a href="#features" className="hover:text-foreground transition-colors">
-              Features
-            </a>
-            <a href="#how-it-works" className="hover:text-foreground transition-colors">
-              How It Works
-            </a>
-            <Link to="/dashboard" className="hover:text-foreground transition-colors">
-              Dashboard
-            </Link>
+            <a href="#features" className="hover:text-foreground transition-colors">Features</a>
+            <a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
+            <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
           </div>
 
-          {/* Copyright */}
           <p className="text-xs text-muted-foreground">
             CETRANK &copy; 2025 — Built with ❤️ for Maharashtra CET aspirants
           </p>
@@ -117,7 +102,7 @@ const Index = () => {
   return (
     <div className="min-h-screen relative">
       <Navbar />
-      <HeroSection />
+      <ScrollHero />
       <FeaturesGrid />
       <HowItWorks />
       <TestimonialsSection />
