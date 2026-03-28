@@ -3,6 +3,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { Zap, Menu, X } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useMagicArea } from "./effects/MagicArea";
 
 export function Navbar() {
   const location = useLocation();
@@ -25,6 +26,10 @@ export function Navbar() {
         { label: "How It Works", to: "#how-it-works" },
         { label: "Dashboard", to: "/dashboard" },
       ];
+
+  const { containerRef: magicContainerRef, magicRef } = useMagicArea({
+    tweenBack: true,
+  });
 
   return (
     <>
@@ -56,27 +61,48 @@ export function Navbar() {
             </Link>
 
             {/* Desktop Links */}
-            <div className="hidden md:flex items-center gap-1">
-              {navLinks.map((link) => (
-                <motion.div key={link.label} whileHover={{ y: -1 }}>
-                  {link.to.startsWith("#") ? (
-                    <a
-                      href={link.to}
-                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-4 py-2 rounded-lg hover:bg-primary/5"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      to={link.to}
-                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-4 py-2 rounded-lg hover:bg-primary/5"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </motion.div>
-              ))}
-              <div className="ml-2 pl-2 border-l border-border">
+            <div
+              ref={magicContainerRef}
+              className="hidden md:flex items-center gap-1 relative"
+            >
+              {/* Sliding magic highlight */}
+              <div
+                ref={magicRef}
+                className="c-magic-area c-magic-area--menu"
+                aria-hidden="true"
+              />
+
+              {navLinks.map((link) => {
+                const isActive = link.to === location.pathname;
+                return (
+                  <motion.div key={link.label} whileHover={{ y: -1 }} style={{ position: "relative", zIndex: 1 }}>
+                    {link.to.startsWith("#") ? (
+                      <a
+                        href={link.to}
+                        className={`magic-item text-sm font-medium transition-colors px-4 py-2 rounded-lg block ${
+                          isActive
+                            ? "active text-foreground"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.to}
+                        className={`magic-item text-sm font-medium transition-colors px-4 py-2 rounded-lg block ${
+                          isActive
+                            ? "active text-foreground"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    )}
+                  </motion.div>
+                );
+              })}
+              <div className="ml-2 pl-2 border-l border-border" style={{ position: "relative", zIndex: 1 }}>
                 <ThemeToggle />
               </div>
             </div>

@@ -192,7 +192,6 @@ export function AISidebar() {
                           transition={{ duration: 0.2 }}
                           className="flex items-center gap-1.5"
                         >
-                          <Sparkles className="w-2.5 h-2.5 text-primary shrink-0" />
                           <span>{t}</span>
                         </motion.div>
                       ))}

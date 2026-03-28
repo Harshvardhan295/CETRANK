@@ -81,7 +81,6 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-primary" />
           </div>
           <div>
             <span className="font-semibold text-sm block">Intelligent Filters</span>

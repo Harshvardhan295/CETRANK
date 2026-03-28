@@ -13,20 +13,20 @@ function ProbabilityGauge({ value }: { value: number }) {
     value >= 80
       ? "text-emerald-400"
       : value >= 50
-      ? "text-amber-400"
-      : "text-rose-400";
+        ? "text-amber-400"
+        : "text-rose-400";
   const bg =
     value >= 80
       ? "from-emerald-500 to-emerald-400"
       : value >= 50
-      ? "from-amber-500 to-amber-400"
-      : "from-rose-500 to-rose-400";
+        ? "from-amber-500 to-amber-400"
+        : "from-rose-500 to-rose-400";
   const glowColor =
     value >= 80
       ? "shadow-emerald-500/20"
       : value >= 50
-      ? "shadow-amber-500/20"
-      : "shadow-rose-500/20";
+        ? "shadow-amber-500/20"
+        : "shadow-rose-500/20";
 
   return (
     <div className="flex items-center gap-2.5">
@@ -63,7 +63,6 @@ function AllocationTimeline({ data }: { data: any }) {
   return (
     <div className="mt-4 space-y-3 border-t border-border/50 pt-4">
       <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-        <Sparkles className="w-3 h-3 text-primary" />
         Allocation Validation
       </div>
       {steps.map((step, i) => (
@@ -92,15 +91,31 @@ function AllocationTimeline({ data }: { data: any }) {
 export function CollegeCard({ college, index }: CollegeCardProps) {
   const [expanded, setExpanded] = useState(false);
 
-  const cutoff = college.CET_Percentile || college.cutoff_percentile || college.Percentile || 70;
-  const probability = Math.min(95, Math.max(20, Math.round(100 - Math.abs(cutoff - 85) * 2)));
+  const cutoff =
+    college.CET_Percentile ??
+    college.cet_percentile ??
+    college.cutoff_percentile ??
+    college.Percentile ??
+    college.percentile ??
+    0;
 
-  const collegeName = college.college_name || college.College || college.Name || "Unknown College";
+  const probability =
+    cutoff > 0
+      ? Math.min(95, Math.max(20, Math.round(100 - Math.abs(cutoff - 85) * 2)))
+      : 50;
+
+  const collegeName =
+    college.college_name ||
+    college.College ||
+    college.Name ||
+    college.name ||
+    "Unknown College";
   const branchName = college.branch_name || college.Branch || college.branch || "";
   const city = college.city || college.City || "";
-  const category = college.category || college.Category || "";
+  const category =
+    college.category || college.Category || college.seat_type || college.SeatType || "";
   const year = college.year || college.Year || "";
-  const round = college.round || college.Round || "";
+  const round = college.round || college.Round || college.round_no || "";
 
   return (
     <motion.div

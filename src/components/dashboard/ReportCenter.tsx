@@ -97,7 +97,6 @@ export function ReportCenter({ hasResults }: { hasResults: boolean }) {
                   <div className="h-2 bg-secondary rounded w-full" />
                 </div>
                 <div className="flex items-center justify-center gap-1.5 mt-4 text-xs text-muted-foreground">
-                  <Sparkles className="w-3 h-3" />
                   <span>PDF Preview (Coming Soon)</span>
                 </div>
               </div>

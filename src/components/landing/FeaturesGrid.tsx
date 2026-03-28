@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Brain, Filter, FileText, BarChart3, ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { CircularFeatures } from "./CircularFeatures";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -157,6 +158,25 @@ export function FeaturesGrid() {
               </div>
             </motion.div>
           ))}
+        </div>
+
+        {/* ── Circular Feature Showcase ── */}
+        <div className="mt-24">
+          <div className="text-center mb-10">
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-semibold text-primary uppercase tracking-wider mb-5"
+            >
+              Core Capabilities
+            </motion.div>
+            <h3 className="text-3xl md:text-5xl font-bold font-['Outfit'] mb-3">
+              Advanced{" "}
+              <span className="text-gradient">Intelligence</span>
+            </h3>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              Grounded in official CET rule documents and 4 lakh+ data points for absolute reliability.
+            </p>
+          </div>
+          <CircularFeatures />
         </div>
       </div>
     </section>

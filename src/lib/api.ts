@@ -1,4 +1,4 @@
-const BASE_URL = "https://cetrank-5wly.onrender.com";
+const BASE_URL = "/api";
 
 export interface CutoffRequest {
   user_category: string;
@@ -47,14 +47,46 @@ export async function getBranches(params?: {
   return res.json();
 }
 
-export async function getEligibleCutoffs(request: CutoffRequest) {
+export async function getEligibleCutoffs(request: CutoffRequest): Promise<any[]> {
   const res = await fetch(`${BASE_URL}/eligible-cutoffs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
+    body: JSON.stringify({
+      user_category: request.user_category,
+      user_minority_list: request.user_minority_list ?? [],
+      user_home_university: request.user_home_university,
+      gender: request.gender ?? "Male",
+      cities: request.cities ?? null,
+      divisions: request.divisions ?? null,
+      min_percentile_cet: request.min_percentile_cet ?? 0,
+      max_percentile_cet: request.max_percentile_cet ?? 100,
+      min_percentile_ai: request.min_percentile_ai ?? 0,
+      max_percentile_ai: request.max_percentile_ai ?? 100,
+      is_tech: request.is_tech ?? false,
+      is_electronic: request.is_electronic ?? false,
+      is_other: request.is_other ?? false,
+      is_civil: request.is_civil ?? false,
+      is_mechanical: request.is_mechanical ?? false,
+      is_electrical: request.is_electrical ?? false,
+      is_ews: request.is_ews ?? false,
+    }),
   });
-  if (!res.ok) throw new Error("Failed to fetch eligible cutoffs");
-  return res.json();
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to fetch eligible cutoffs (${res.status}): ${text}`);
+  }
+
+  const data = await res.json();
+
+  // Normalize response: backend may return an array directly, or wrap it
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === "object") {
+    if (Array.isArray(data.results)) return data.results;
+    if (Array.isArray(data.colleges)) return data.colleges;
+    if (Array.isArray(data.data)) return data.data;
+  }
+  return [];
 }
 
 export const CATEGORIES = [

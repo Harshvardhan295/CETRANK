@@ -90,7 +90,7 @@ function Footer() {
           </div>
 
           <p className="text-xs text-muted-foreground">
-            CETRANK &copy; 2025 — Built with ❤️ for Maharashtra CET aspirants
+            © 2026 CETRANK.IN. All rights reserved.
           </p>
         </div>
       </div>

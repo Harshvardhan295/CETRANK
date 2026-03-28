@@ -7,35 +7,41 @@ type Effect = "blink" | "horizontal" | "backwards" | "zoom";
 
 const SECTIONS = [
   {
-    id: "hero-1",
-    title: "Your Admission",
-    subtitle: "Intelligence Engine",
-    description: "Navigate Maharashtra CET counselling with AI-powered predictions and real-time cutoff analysis.",
-    Icon: Sparkles,
+    id: "intelligence",
+    title: "CETRANK",
+    subtitle: "The Admission Intelligence Engine",
+    description:
+      "Navigate the complex Maharashtra CET counselling process with an AI-based system that simplifies choice-filling for 4–5 lakh annual applicants.",
     stats: "4 Lakh+ Data Points",
   },
   {
-    id: "hero-2",
-    title: "Precision",
-    subtitle: "In Every Choice",
-    description: "Our engine processes 500+ colleges across 3 CAP rounds to find your perfect match.",
-    Icon: Database,
-    stats: "500+ Colleges",
+    id: "logic",
+    title: "Rule-Aware",
+    subtitle: "Mimicking CET Cell Logic",
+    description:
+      "Our GenAI-powered reasoning pipeline accurately applies category priorities, quotas, and official fallback logic to ensure valid recommendations.",
+    stats: "RAG-Powered Accuracy",
   },
   {
-    id: "hero-3",
-    title: "Trusted by",
-    subtitle: "Thousands of Aspirants",
-    description: "Built with ❤️ for Maharashtra CET aspirants. Join the community and secure your future.",
-    Icon: ShieldCheck,
-    stats: "Verified Data",
+    id: "counsellor",
+    title: "Digital Counsellor",
+    subtitle: "Adaptive Round Strategy",
+    description:"From aspirational choices in early rounds to realistic vacancy-based options in CAP Round 3—get guidance that adapts to every stage.",
+    stats: "3 CAP Rounds Supported",
+  },
+  {
+    id: "features",
+    title: "Precision Reports",
+    subtitle: "Engineering & Pharmacy",
+    description:
+      "Download comprehensive PDF reports featuring institute codes, ranked college lists, and branch-specific analysis for B.E., B.Tech, and B.Pharm.",
+    stats: "Multi-Stream Support",
   },
   {
     id: "hero-cta",
     title: "Ready to",
     subtitle: "Refine Your Rank?",
     description: "",
-    Icon: Rocket,
     stats: "",
     isCTA: true,
   },
@@ -123,7 +129,6 @@ function HeroPanel({
     return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(raf); };
   }, [effect]);
 
-  const { Icon } = section;
   const isCTASection = "isCTA" in section && section.isCTA;
 
   return (
@@ -136,11 +141,6 @@ function HeroPanel({
         <div className="absolute inset-0 grid-pattern opacity-30" />
         <div className="flex items-center justify-center h-full p-6 relative">
           <div className="max-w-4xl text-center">
-            <div className="flex justify-center mb-8">
-              <div className="p-4 rounded-3xl glass-strong border-primary/20">
-                <Icon className="w-12 h-12 text-primary" />
-              </div>
-            </div>
             <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-4 font-['Outfit']">
               <span className="block text-foreground">{section.title}</span>
               <span className="block text-gradient">{section.subtitle}</span>

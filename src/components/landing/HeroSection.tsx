@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Sparkles, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FloatingParticles } from "@/components/effects/FloatingParticles";
@@ -76,12 +76,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="inline-flex items-center gap-2 px-5 py-2 rounded-full glass mb-8 text-sm font-medium text-muted-foreground"
         >
-          <motion.div
-            animate={{ rotate: [0, 15, -15, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Sparkles className="w-4 h-4 text-primary" />
-          </motion.div>
+          <span className="text-primary text-base">✦</span>
           <span>Powered by AI</span>
           <span className="w-1 h-1 rounded-full bg-primary/50" />
           <span>4 Lakh+ Data Points</span>
