@@ -7,7 +7,7 @@ import { useMagicArea } from "./effects/MagicArea";
 
 export function Navbar() {
   const location = useLocation();
-  const isDashboard = location.pathname === "/dashboard";
+  const isListGenerator = location.pathname === "/list-generator";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { scrollY } = useScroll();
@@ -19,12 +19,12 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const navLinks = isDashboard
+  const navLinks = isListGenerator
     ? [{ label: "Home", to: "/" }]
     : [
         { label: "Features", to: "#features" },
         { label: "How It Works", to: "#how-it-works" },
-        { label: "Dashboard", to: "/dashboard" },
+        { label: "List Generator", to: "/list-generator" },
       ];
 
   const { containerRef: magicContainerRef, magicRef } = useMagicArea({

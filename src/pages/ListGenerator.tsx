@@ -9,7 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 
-const Dashboard = () => {
+const ListGenerator = () => {
   const [results, setResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -43,7 +43,7 @@ const Dashboard = () => {
       toast({
         title: "Error",
         description:
-          "Failed to fetch results. The server might be starting up — try again in a moment.",
+          "Failed to fetch results. The server might be starting up - try again in a moment.",
         variant: "destructive",
       });
       setResults([]);
@@ -54,21 +54,18 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen relative">
-      {/* Subtle background */}
       <div className="fixed inset-0 grid-pattern pointer-events-none" />
       <div className="fixed inset-0 bg-gradient-to-b from-primary/3 via-transparent to-transparent pointer-events-none" />
 
       <Navbar />
       <div className="relative pt-24 pb-12 px-4 max-w-6xl mx-auto">
-        {/* Header */}
         <div ref={headerRef} className="mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-xs font-semibold text-primary uppercase tracking-wider mb-4">
             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             Live Engine
           </div>
           <h1 className="text-3xl md:text-4xl font-bold font-['Outfit']">
-            Prediction{" "}
-            <span className="text-gradient">Dashboard</span>
+            Prediction <span className="text-gradient">List Generator</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-2 max-w-lg">
             Configure your profile, discover eligible colleges, and get AI-powered
@@ -80,12 +77,12 @@ const Dashboard = () => {
           <FilterBar onSearch={handleSearch} isLoading={isLoading} />
 
           <motion.div layout>
-              <CollegeResults
-                results={results}
-                isLoading={isLoading}
-                hasSearched={hasSearched}
-              />
-            </motion.div>
+            <CollegeResults
+              results={results}
+              isLoading={isLoading}
+              hasSearched={hasSearched}
+            />
+          </motion.div>
         </div>
       </div>
 
@@ -94,4 +91,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ListGenerator;

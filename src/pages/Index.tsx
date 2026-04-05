@@ -44,7 +44,7 @@ function CTASection() {
               Start exploring personalized recommendations powered by AI and 4L+ data points.
             </p>
 
-            <Link to="/dashboard">
+            <Link to="/list-generator">
               <motion.div
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -55,7 +55,7 @@ function CTASection() {
                   className="rounded-2xl px-10 py-6 text-base glow-primary group relative overflow-hidden"
                 >
                   <span className="relative z-10 flex items-center gap-2">
-                    Launch Dashboard
+                    Launch List Generator
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </span>
                   <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -86,7 +86,7 @@ function Footer() {
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
-            <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+            <Link to="/list-generator" className="hover:text-foreground transition-colors">List Generator</Link>
           </div>
 
           <p className="text-xs text-muted-foreground">
