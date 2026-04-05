@@ -1,9 +1,7 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { ArrowRight, Sparkles, Database, ShieldCheck, Rocket, Zap } from "lucide-react";
+import { useRef, useEffect, useCallback, useState } from "react";
+import { ArrowRight, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
-type Effect = "blink" | "horizontal" | "backwards" | "zoom";
 
 const SECTIONS = [
   {
@@ -11,7 +9,7 @@ const SECTIONS = [
     title: "CETRANK",
     subtitle: "The Admission Intelligence Engine",
     description:
-      "Navigate the complex Maharashtra CET counselling process with an AI-based system that simplifies choice-filling for 4–5 lakh annual applicants.",
+      "Navigate the complex Maharashtra CET counselling process with an AI-based system that simplifies choice-filling for 4-5 lakh annual applicants.",
     stats: "4 Lakh+ Data Points",
   },
   {
@@ -26,7 +24,8 @@ const SECTIONS = [
     id: "counsellor",
     title: "Digital Counsellor",
     subtitle: "Adaptive Round Strategy",
-    description:"From aspirational choices in early rounds to realistic vacancy-based options in CAP Round 3—get guidance that adapts to every stage.",
+    description:
+      "From aspirational choices in early rounds to realistic vacancy-based options in CAP Round 3-get guidance that adapts to every stage.",
     stats: "3 CAP Rounds Supported",
   },
   {
@@ -47,87 +46,79 @@ const SECTIONS = [
   },
 ];
 
-/* ── Math helpers ── */
 function easeInOut(t: number) {
   return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 }
-function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
-function interpolate(p: number, stops: [number, number][]): number {
+
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
+}
+
+function interpolate(p: number, stops: [number, number][]) {
   if (p <= stops[0][0]) return stops[0][1];
   if (p >= stops[stops.length - 1][0]) return stops[stops.length - 1][1];
+
   for (let i = 0; i < stops.length - 1; i++) {
     if (p >= stops[i][0] && p <= stops[i + 1][0]) {
       const t = (p - stops[i][0]) / (stops[i + 1][0] - stops[i][0]);
       return lerp(stops[i][1], stops[i + 1][1], t);
     }
   }
+
   return stops[stops.length - 1][1];
 }
 
-/* ── Effect styles matching reference keyframes ── */
-function computeStyles(raw: number, effect: Effect) {
+function computeStyles(raw: number) {
   const p = easeInOut(raw);
-  switch (effect) {
-    case "blink":
-      return {
-        opacity: interpolate(p, [[0, 0], [0.5, 1], [1, 0]]),
-        filter: `blur(${interpolate(p, [[0, 8], [0.5, 0], [1, 8]])}px) contrast(${interpolate(p, [[0, 4], [0.5, 1], [1, 4]])})`,
-        transform: "none",
-      };
-    case "horizontal":
-      return {
-        opacity: 1,
-        filter: "none",
-        transform: `translate3d(${interpolate(p, [[0, 100], [0.5, 0], [1, -100]])}%, 0, 0)`,
-      };
-    case "backwards":
-      return {
-        opacity: 1,
-        filter: "none",
-        transform: `translate3d(0, ${interpolate(p, [[0, -100], [0.5, 0], [1, 100]])}%, 0)`,
-      };
-    case "zoom":
-    default:
-      return {
-        opacity: interpolate(p, [[0, 0], [0.5, 1], [1, 0]]),
-        filter: `blur(${interpolate(p, [[0, 80], [0.5, 0], [1, 48]])}px)`,
-        transform: `scale(${interpolate(p, [[0, 0], [0.5, 1], [1, 1.5]])})`,
-      };
-  }
+
+  return {
+    opacity: 1,
+    filter: "none",
+    transform: `translate3d(${interpolate(p, [[0, 100], [0.5, 0], [1, -100]])}%, 0, 0)`,
+  };
 }
 
-/* ── Single section panel ── */
 function HeroPanel({
   section,
-  effect,
 }: {
   section: (typeof SECTIONS)[number];
-  effect: Effect;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let raf = 0;
+
     const update = () => {
       const sec = sectionRef.current;
       const con = contentRef.current;
       if (!sec || !con) return;
+
       const rect = sec.getBoundingClientRect();
       const vh = window.innerHeight;
       const raw = Math.max(0, Math.min(1, (vh - rect.top) / (vh + rect.height)));
-      const s = computeStyles(raw, effect);
-      con.style.opacity = String(s.opacity);
-      con.style.filter = s.filter;
-      con.style.transform = s.transform;
+      const styles = computeStyles(raw);
+
+      con.style.opacity = String(styles.opacity);
+      con.style.filter = styles.filter;
+      con.style.transform = styles.transform;
       con.style.visibility = raw > 0.02 && raw < 0.98 ? "visible" : "hidden";
       con.style.pointerEvents = raw > 0.35 && raw < 0.65 ? "auto" : "none";
     };
-    const onScroll = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); };
+
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
     update();
-    return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(raf); };
-  }, [effect]);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   const isCTASection = "isCTA" in section && section.isCTA;
 
@@ -151,9 +142,9 @@ function HeroPanel({
               </p>
             )}
             {isCTASection ? (
-              <Link to="/dashboard">
+              <Link to="/list-generator">
                 <Button size="lg" className="rounded-2xl px-12 py-8 text-lg glow-primary animate-glow-pulse group">
-                  Launch Dashboard
+                  Launch List Generator
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
@@ -170,35 +161,33 @@ function HeroPanel({
   );
 }
 
-/* ── Main component ── */
 export function ScrollHero() {
-  const [effect, setEffect] = useState<Effect>("blink");
   const [activeIndex, setActiveIndex] = useState(0);
   const [heroVisible, setHeroVisible] = useState(true);
-
-  // Refs for snap logic
   const snapIndexRef = useRef(0);
   const isSnappingRef = useRef(false);
   const touchStartYRef = useRef(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Programmatic snap to a section by index
   const snapTo = useCallback((index: number) => {
     const els = document.querySelectorAll<HTMLElement>("[data-hero-section]");
     if (!els[index]) return;
+
     isSnappingRef.current = true;
     const top = els[index].getBoundingClientRect().top + window.scrollY;
     window.scrollTo({ top, behavior: "smooth" });
     snapIndexRef.current = index;
-    // Release lock after smooth scroll settles
-    setTimeout(() => { isSnappingRef.current = false; }, 800);
+
+    setTimeout(() => {
+      isSnappingRef.current = false;
+    }, 800);
   }, []);
 
-  // Wheel interceptor — only active when inside the hero range
   useEffect(() => {
     const getHeroBounds = () => {
       const els = document.querySelectorAll<HTMLElement>("[data-hero-section]");
       if (!els.length) return { top: 0, bottom: 0 };
+
       const first = els[0].getBoundingClientRect().top + window.scrollY;
       const last = els[els.length - 1].getBoundingClientRect().bottom + window.scrollY;
       return { top: first, bottom: last };
@@ -209,14 +198,12 @@ export function ScrollHero() {
       const scrollY = window.scrollY;
       const vh = window.innerHeight;
 
-      // Not inside hero range at all — let browser handle it
       if (scrollY < top - 10 || scrollY >= bottom - vh + 10) return;
 
       const els = document.querySelectorAll<HTMLElement>("[data-hero-section]");
       const count = els.length;
 
       if (isSnappingRef.current) {
-        // Block scroll while snapping animation is running
         e.preventDefault();
         return;
       }
@@ -225,18 +212,13 @@ export function ScrollHero() {
       const next = snapIndexRef.current + dir;
 
       if (next >= 0 && next < count) {
-        // Snap to next section within hero
         e.preventDefault();
         snapTo(next);
       } else if (next >= count) {
-        // Past the last section — release to normal scroll
-        // Don't preventDefault; let the browser proceed naturally
         isSnappingRef.current = false;
       }
-      // next < 0 means scrolling up past beginning, also release
     };
 
-    // Touch support
     const onTouchStart = (e: TouchEvent) => {
       touchStartYRef.current = e.touches[0].clientY;
     };
@@ -249,7 +231,7 @@ export function ScrollHero() {
       if (isSnappingRef.current) return;
 
       const dy = touchStartYRef.current - e.changedTouches[0].clientY;
-      if (Math.abs(dy) < 30) return; // ignore small swipes
+      if (Math.abs(dy) < 30) return;
 
       const els = document.querySelectorAll<HTMLElement>("[data-hero-section]");
       const count = els.length;
@@ -264,6 +246,7 @@ export function ScrollHero() {
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
+
     return () => {
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
@@ -271,7 +254,6 @@ export function ScrollHero() {
     };
   }, [snapTo]);
 
-  // Track active section for dots + visibility
   useEffect(() => {
     const onScroll = () => {
       const vh = window.innerHeight;
@@ -291,7 +273,6 @@ export function ScrollHero() {
         }
       });
 
-      // Keep snapIndexRef in sync in case user used keyboard/scrollbar
       if (!isSnappingRef.current) snapIndexRef.current = best;
       setActiveIndex(best);
       setHeroVisible(anyVisible);
@@ -304,29 +285,6 @@ export function ScrollHero() {
 
   return (
     <div ref={wrapperRef}>
-      {/* Effect Toggle */}
-      <div
-        className="fixed top-24 right-8 z-50 flex flex-col gap-3 glass p-3 rounded-2xl border-primary/20 transition-opacity duration-500"
-        style={{ opacity: heroVisible ? 1 : 0, pointerEvents: heroVisible ? "auto" : "none" }}
-      >
-        {(["blink", "horizontal", "backwards", "zoom"] as const).map((e) => (
-          <label key={e} className="flex items-center gap-3 cursor-pointer group">
-            <input
-              type="radio"
-              name="hero-effect"
-              className="sr-only"
-              checked={effect === e}
-              onChange={() => setEffect(e)}
-            />
-            <div className={`h-3 rounded-full transition-all duration-300 ${effect === e ? "w-6 bg-primary glow-primary" : "w-3 bg-muted"}`} />
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">
-              {e === "horizontal" ? "H-Scroll" : e === "backwards" ? "Reverse" : e}
-            </span>
-          </label>
-        ))}
-      </div>
-
-      {/* Progress Dots */}
       <div
         className="fixed left-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 transition-opacity duration-500"
         style={{ opacity: heroVisible ? 1 : 0 }}
@@ -342,9 +300,8 @@ export function ScrollHero() {
         ))}
       </div>
 
-      {/* Sections — 100dvh spacers that drive the fixed-panel animations */}
       {SECTIONS.map((section) => (
-        <HeroPanel key={section.id} section={section} effect={effect} />
+        <HeroPanel key={section.id} section={section} />
       ))}
     </div>
   );

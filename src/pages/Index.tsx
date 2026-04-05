@@ -3,11 +3,12 @@ import { ScrollHero } from "@/components/landing/ScrollHero";
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
-import { Zap, ArrowRight, Github, Twitter } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { AppLogo } from "@/components/AppLogo";
 
 function CTASection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -26,15 +27,11 @@ function CTASection() {
           <div className="absolute inset-0 glass" />
 
           <div className="relative p-12 md:p-16 text-center">
-            <motion.div
-              animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="inline-flex"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-teal-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-600/25">
-                <Zap className="w-7 h-7 text-white" />
-              </div>
-            </motion.div>
+            <AppLogo
+              className="mx-auto mb-6 w-fit"
+              imageClassName="h-16 w-16"
+              textClassName="text-left"
+            />
 
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-['Outfit']">
               Ready to find your{" "}
@@ -74,14 +71,7 @@ function Footer() {
     <footer className="border-t border-border/50 py-12 px-4 relative">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-teal-500 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-sm font-bold">
-              CET<span className="text-gradient-static">RANK</span>
-            </span>
-          </div>
+          <AppLogo imageClassName="h-10 w-10" />
 
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
@@ -90,7 +80,7 @@ function Footer() {
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Â© 2026 CETRANK.IN. All rights reserved.
+            © 2026 CETRANK.IN. All rights reserved.
           </p>
         </div>
       </div>

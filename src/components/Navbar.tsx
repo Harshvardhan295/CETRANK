@@ -1,17 +1,17 @@
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
-import { Zap, Menu, X } from "lucide-react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { Menu, Sparkles, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useMagicArea } from "./effects/MagicArea";
+import { Button } from "./ui/button";
+import { AppLogo } from "./AppLogo";
 
 export function Navbar() {
   const location = useLocation();
   const isListGenerator = location.pathname === "/list-generator";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { scrollY } = useScroll();
-  const bgOpacity = useTransform(scrollY, [0, 100], [0, 1]);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -37,133 +37,153 @@ export function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 200, damping: 30 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "glass-strong shadow-lg shadow-black/5"
-            : "bg-transparent border-transparent"
-        }`}
+        className="fixed top-0 left-0 right-0 z-50 px-3 pt-3 transition-all duration-500 sm:px-4"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2.5 group">
-              <motion.div
-                whileHover={{ rotate: [0, -10, 10, 0] }}
-                transition={{ duration: 0.5 }}
-                className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-teal-500 flex items-center justify-center shadow-lg shadow-blue-600/25"
-              >
-                <Zap className="w-5 h-5 text-white" />
-                <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </motion.div>
-              <span className="text-lg font-bold tracking-tight font-['Outfit']">
-                CET<span className="text-gradient-static">RANK</span>
-              </span>
-            </Link>
+        <div
+          className={`mx-auto flex max-w-7xl items-center justify-between rounded-[28px] border px-3 py-2 transition-all duration-500 sm:px-5 ${
+            scrolled
+              ? "glass-strong border-white/20 shadow-[0_20px_60px_rgba(15,23,42,0.18)] backdrop-blur-2xl"
+              : "border-white/10 bg-background/55 shadow-[0_12px_40px_rgba(15,23,42,0.10)] backdrop-blur-xl"
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <AppLogo imageClassName="h-12 w-12" />
+            {!isListGenerator ? (
+              <div className="hidden lg:flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-primary/80">
+                <Sparkles className="h-3.5 w-3.5" />
+                AI Admission Intelligence
+              </div>
+            ) : null}
+          </div>
 
-            {/* Desktop Links */}
+          <div
+            ref={magicContainerRef}
+            className="relative hidden md:flex items-center gap-1 rounded-full border border-white/10 bg-background/65 p-1 shadow-inner"
+          >
             <div
-              ref={magicContainerRef}
-              className="hidden md:flex items-center gap-1 relative"
-            >
-              {/* Sliding magic highlight */}
-              <div
-                ref={magicRef}
-                className="c-magic-area c-magic-area--menu"
-                aria-hidden="true"
-              />
+              ref={magicRef}
+              className="c-magic-area c-magic-area--menu"
+              aria-hidden="true"
+            />
 
-              {navLinks.map((link) => {
-                const isActive = link.to === location.pathname;
-                return (
-                  <motion.div key={link.label} whileHover={{ y: -1 }} style={{ position: "relative", zIndex: 1 }}>
+            {navLinks.map((link) => {
+              const isActive = link.to === location.pathname;
+              const linkClassName = `magic-item block rounded-full px-4 py-2.5 text-sm font-semibold transition-colors ${
+                isActive
+                  ? "active text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`;
+
+              return (
+                <motion.div
+                  key={link.label}
+                  whileHover={{ y: -1 }}
+                  style={{ position: "relative", zIndex: 1 }}
+                >
+                  {link.to.startsWith("#") ? (
+                    <a href={link.to} className={linkClassName}>
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={link.to} className={linkClassName}>
+                      {link.label}
+                    </Link>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
+            {!isListGenerator ? (
+              <Button asChild className="rounded-full px-5 shadow-[0_12px_30px_rgba(59,130,246,0.22)]">
+                <Link to="/list-generator">Open Generator</Link>
+              </Button>
+            ) : null}
+          </div>
+
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="rounded-2xl border border-white/10 bg-background/70 p-2.5 shadow-sm transition-colors hover:bg-primary/5"
+              aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+            >
+              {mobileOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+        </div>
+      </motion.nav>
+
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.button
+              type="button"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-slate-950/30 backdrop-blur-sm md:hidden"
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close mobile menu"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: -18, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -18, scale: 0.98 }}
+              transition={{ duration: 0.22 }}
+              className="fixed left-3 right-3 top-24 z-50 overflow-hidden rounded-[28px] border border-white/15 bg-background/92 p-4 shadow-[0_30px_80px_rgba(15,23,42,0.28)] backdrop-blur-2xl md:hidden"
+            >
+              <div className="mb-4 flex items-center justify-between rounded-2xl bg-primary/5 px-3 py-3">
+                <AppLogo imageClassName="h-11 w-11" textClassName="text-left" />
+                <div className="rounded-full border border-primary/20 bg-background px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-primary/75">
+                  Menu
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {navLinks.map((link) => (
+                  <motion.div
+                    key={link.label}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 }}
+                  >
                     {link.to.startsWith("#") ? (
                       <a
                         href={link.to}
-                        className={`magic-item text-sm font-medium transition-colors px-4 py-2 rounded-lg block ${
-                          isActive
-                            ? "active text-foreground"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
+                        onClick={() => setMobileOpen(false)}
+                        className="block rounded-2xl border border-transparent px-4 py-3.5 text-sm font-semibold text-foreground transition-colors hover:border-primary/10 hover:bg-primary/5"
                       >
                         {link.label}
                       </a>
                     ) : (
                       <Link
                         to={link.to}
-                        className={`magic-item text-sm font-medium transition-colors px-4 py-2 rounded-lg block ${
-                          isActive
-                            ? "active text-foreground"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
+                        onClick={() => setMobileOpen(false)}
+                        className="block rounded-2xl border border-transparent px-4 py-3.5 text-sm font-semibold text-foreground transition-colors hover:border-primary/10 hover:bg-primary/5"
                       >
                         {link.label}
                       </Link>
                     )}
                   </motion.div>
-                );
-              })}
-              <div className="ml-2 pl-2 border-l border-border" style={{ position: "relative", zIndex: 1 }}>
-                <ThemeToggle />
+                ))}
               </div>
-            </div>
 
-            {/* Mobile toggle */}
-            <div className="md:hidden flex items-center gap-2">
-              <ThemeToggle />
-              <button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                className="p-2 rounded-lg hover:bg-primary/5 transition-colors"
-              >
-                {mobileOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </motion.nav>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed top-16 left-0 right-0 z-40 glass-strong border-b border-border p-4 md:hidden"
-          >
-            <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <motion.div
-                  key={link.label}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 }}
-                >
-                  {link.to.startsWith("#") ? (
-                    <a
-                      href={link.to}
-                      onClick={() => setMobileOpen(false)}
-                      className="block px-4 py-3 text-sm font-medium rounded-lg hover:bg-primary/5 transition-colors"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      to={link.to}
-                      onClick={() => setMobileOpen(false)}
-                      className="block px-4 py-3 text-sm font-medium rounded-lg hover:bg-primary/5 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+              {!isListGenerator ? (
+                <Button asChild className="mt-4 h-12 w-full rounded-2xl">
+                  <Link to="/list-generator" onClick={() => setMobileOpen(false)}>
+                    Open Generator
+                  </Link>
+                </Button>
+              ) : null}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
