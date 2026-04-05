@@ -80,7 +80,7 @@ function Footer() {
           </div>
 
           <p className="text-xs text-muted-foreground">
-            © 2026 CETRANK.IN. All rights reserved.
+            @ 2026 CETRANK.IN. All rights reserved.
           </p>
         </div>
       </div>

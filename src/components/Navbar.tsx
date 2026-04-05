@@ -48,12 +48,7 @@ export function Navbar() {
         >
           <div className="flex items-center gap-3">
             <AppLogo imageClassName="h-12 w-12" />
-            {!isListGenerator ? (
-              <div className="hidden lg:flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-primary/80">
-                <Sparkles className="h-3.5 w-3.5" />
-                AI Admission Intelligence
-              </div>
-            ) : null}
+            
           </div>
 
           <div
