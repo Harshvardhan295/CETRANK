@@ -7,6 +7,8 @@ import {
   Sparkles,
   University,
   UserRound,
+  Gauge,
+  WandSparkles,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -114,7 +116,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   ];
 
   return (
-    <motion.div layout className="glass rounded-[30px] overflow-hidden relative border border-white/10">
+    <motion.div layout className="panel-surface overflow-hidden relative">
       <AnimatePresence>
         {pulseKey > 0 && (
           <motion.div
@@ -135,15 +137,18 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
           </div>
           <div>
             <span className="font-semibold text-base block">Intelligent Filters</span>
-            <span className="text-[11px] text-muted-foreground">
-              {category} · {gender} · {activeBranchCount} active branch{activeBranchCount !== 1 ? "es" : ""}
+            <span className="text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
+              {category} / {gender} / {activeBranchCount} active branch{activeBranchCount !== 1 ? "es" : ""}
             </span>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="rounded-full px-3 py-1">
+          <Badge variant="secondary" className="rounded-full px-3 py-1 bg-white/5">
             {percentileRange[0]} - {percentileRange[1]} percentile
+          </Badge>
+          <Badge variant="outline" className="rounded-full px-3 py-1 border-white/10">
+            {selectedBranchLabels.length || 1} branch mode
           </Badge>
           <Button variant="ghost" size="sm" onClick={resetFilters} className="rounded-full">
             <RotateCcw className="w-4 h-4 mr-2" />
@@ -191,8 +196,36 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 ))}
               </div>
 
+              <div className="rounded-[26px] border border-white/10 bg-white/5 p-4">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
+                      <WandSparkles className="h-3.5 w-3.5" />
+                      Quick setup
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      Start with a percentile strategy, then fine-tune category and branch preferences below.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {percentilePresets.map((preset) => (
+                      <Button
+                        key={preset.label}
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="rounded-full border-white/10 bg-background/40"
+                        onClick={() => setPercentileRange(preset.value)}
+                      >
+                        {preset.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_1.15fr_0.85fr]">
-                <div ref={categoryRef} className="relative rounded-2xl border border-white/10 bg-background/40 p-4">
+                <div ref={categoryRef} className="relative rounded-[26px] border border-white/10 bg-white/5 p-4">
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     <Sparkles className="w-3.5 h-3.5" />
                     Category
@@ -208,7 +241,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                       placeholder="Search category..."
                       value={showCatDropdown ? categorySearch : category}
                       onChange={(e) => setCategorySearch(e.target.value)}
-                      className="pr-8 rounded-2xl border-white/10 bg-background/70"
+                      className="pr-8 rounded-2xl border-white/10 bg-background/70 focus-visible:ring-primary/40"
                     />
                     <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
@@ -242,7 +275,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </AnimatePresence>
                 </div>
 
-                <div ref={universityRef} className="relative rounded-2xl border border-white/10 bg-background/40 p-4">
+                <div ref={universityRef} className="relative rounded-[26px] border border-white/10 bg-white/5 p-4">
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     <University className="w-3.5 h-3.5" />
                     Home University
@@ -258,7 +291,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                       placeholder="Search university..."
                       value={showUniDropdown ? uniSearch : university}
                       onChange={(e) => setUniSearch(e.target.value)}
-                      className="pr-8 rounded-2xl border-white/10 bg-background/70"
+                      className="pr-8 rounded-2xl border-white/10 bg-background/70 focus-visible:ring-primary/40"
                     />
                     <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
@@ -292,7 +325,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </AnimatePresence>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-background/40 p-4">
+                <div className="rounded-[26px] border border-white/10 bg-white/5 p-4">
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     <UserRound className="w-3.5 h-3.5" />
                     Gender
@@ -315,9 +348,10 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-background/40 p-4 md:p-5">
+              <div className="rounded-[26px] border border-white/10 bg-white/5 p-4 md:p-5">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3">
-                  <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  <Label className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    <Gauge className="h-3.5 w-3.5" />
                     CET Percentile Range
                   </Label>
                   <span className="text-sm font-mono font-bold text-primary tabular-nums">
@@ -332,23 +366,12 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   onValueChange={setPercentileRange}
                   className="py-2"
                 />
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {percentilePresets.map((preset) => (
-                    <Button
-                      key={preset.label}
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="rounded-full"
-                      onClick={() => setPercentileRange(preset.value)}
-                    >
-                      {preset.label}
-                    </Button>
-                  ))}
-                </div>
+                <p className="mt-4 text-xs leading-5 text-muted-foreground">
+                  Use a wider range for discovery and a narrower range when you are ready to finalise the shortlist.
+                </p>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-background/40 p-4 md:p-5">
+              <div className="rounded-[26px] border border-white/10 bg-white/5 p-4 md:p-5">
                 <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
                   Branch Filters
                 </Label>
@@ -373,7 +396,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-background/40 p-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-col gap-4 rounded-[26px] border border-white/10 bg-slate-950/55 p-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center gap-3">
                   <Switch checked={isEws} onCheckedChange={setIsEws} />
                   <div>
@@ -383,11 +406,14 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                     </p>
                   </div>
                 </div>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} className="md:text-right">
+                  <p className="mb-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                    Run shortlist search
+                  </p>
                   <Button
                     onClick={handleSearch}
                     disabled={isLoading}
-                    className="rounded-2xl px-8 glow-primary relative overflow-hidden group min-w-[180px]"
+                    className="rounded-2xl px-8 glow-primary relative overflow-hidden group min-w-[200px] h-12"
                   >
                     {isLoading ? (
                       <motion.div

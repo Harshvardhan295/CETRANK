@@ -20,6 +20,36 @@ export interface CutoffRequest {
   is_ews?: boolean;
 }
 
+export interface CollegeResult {
+  [key: string]: string | number | boolean | null | undefined;
+  CET_Percentile?: number;
+  cet_percentile?: number;
+  cutoff_percentile?: number;
+  Percentile?: number;
+  percentile?: number;
+  college_name?: string;
+  College?: string;
+  Name?: string;
+  name?: string;
+  branch_name?: string;
+  Branch?: string;
+  branch?: string;
+  city?: string;
+  City?: string;
+  category?: string;
+  Category?: string;
+  seat_type?: string;
+  SeatType?: string;
+  year?: string | number;
+  Year?: string | number;
+  round?: string | number;
+  Round?: string | number;
+  round_no?: string | number;
+  home_university?: string;
+  University?: string;
+  status?: string;
+}
+
 export async function getColleges(params?: {
   city?: string;
   division?: string;
@@ -47,7 +77,7 @@ export async function getBranches(params?: {
   return res.json();
 }
 
-export async function getEligibleCutoffs(request: CutoffRequest): Promise<any[]> {
+export async function getEligibleCutoffs(request: CutoffRequest): Promise<CollegeResult[]> {
   const res = await fetch(`${BASE_URL}/eligible-cutoffs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

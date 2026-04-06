@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
-import { UserCheck, SlidersHorizontal, GraduationCap, CheckCircle2 } from "lucide-react";
+import { UserCheck, SlidersHorizontal, GraduationCap, CheckCircle2, Radar, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -158,25 +158,76 @@ export function HowItWorks() {
     <section id="how-it-works" ref={sectionRef} className="py-28 px-4 relative">
       <div className="absolute inset-0 dot-pattern opacity-50 pointer-events-none" />
 
-      <div className="max-w-3xl mx-auto relative">
-        {/* Section header */}
-        <div className="how-title text-center mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-semibold text-primary uppercase tracking-wider mb-6">
+      <div className="max-w-6xl mx-auto relative">
+        <div className="how-title text-center mb-16">
+          <div className="section-badge mb-6">
+            <Sparkles className="h-3.5 w-3.5" />
             Process
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 font-['Outfit']">
-            How It <span className="text-gradient">Works</span>
+          <h2 className="section-title">
+            How it <span className="text-gradient">works</span>
           </h2>
-          <p className="text-muted-foreground max-w-md mx-auto text-lg">
-            Three simple steps to your personalized admission roadmap.
+          <p className="section-copy max-w-2xl mx-auto mt-4">
+            The flow keeps the hard parts structured: collect the right inputs, filter them against rule-aware logic, then review results in a format that is actually usable.
           </p>
         </div>
 
-        {/* Steps */}
-        <div className="relative">
-          {steps.map((step, index) => (
-            <StepCard key={step.title} step={step} index={index} />
-          ))}
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+          <div className="relative">
+            {steps.map((step, index) => (
+              <StepCard key={step.title} step={step} index={index} />
+            ))}
+          </div>
+
+          <div className="panel-surface sticky top-28 rounded-[34px] p-6">
+            <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
+              <Radar className="h-3.5 w-3.5" />
+              Student flow
+            </div>
+            <h3 className="mt-3 text-2xl font-semibold text-foreground">
+              Designed to reduce counselling overload.
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-muted-foreground">
+              Each step narrows ambiguity instead of adding more tabs, more tables, or more guesswork.
+            </p>
+
+            <div className="mt-6 space-y-3">
+              {[
+                "Collect only the profile signals that actually change eligibility.",
+                "Translate those signals into a filtered, rankable result set.",
+                "Surface the strongest options with better readability and next-step context.",
+              ].map((item, index) => (
+                <div
+                  key={item}
+                  className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+                >
+                  <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[0.7rem] font-semibold text-primary">
+                    {index + 1}
+                  </div>
+                  <p className="text-sm leading-6 text-slate-200/90">{item}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-[26px] border border-white/10 bg-slate-950/55 p-5">
+              <div className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                Outcome
+              </div>
+              <div className="mt-2 text-lg font-semibold text-foreground">
+                Better shortlists with less second-guessing.
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {["Cleaner filters", "Readable results", "Faster refinement"].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-200/85"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

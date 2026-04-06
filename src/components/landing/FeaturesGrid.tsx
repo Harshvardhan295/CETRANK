@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Brain, Filter, FileText, BarChart3, ArrowUpRight } from "lucide-react";
+import { Brain, Filter, FileText, BarChart3, ArrowUpRight, Radar, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -11,41 +11,41 @@ const features = [
     icon: BarChart3,
     title: "Prediction Engine",
     description:
-      "AI-powered probability gauges with historical cutoff analysis across 3 years of CET data.",
-    gradient: "from-blue-500/20 to-blue-600/20",
+      "Confidence-led recommendation cards paired with historical cutoff framing, so every option is easier to evaluate quickly.",
     iconBg: "bg-blue-500/10",
     iconColor: "text-blue-600",
-    tag: "Core",
+    tag: "Confidence",
+    bullets: ["Probability-led ranking", "Historical context", "Faster compare flow"],
   },
   {
     icon: Brain,
     title: "AI Counselor",
     description:
-      "RAG-powered digital counselor that reasons through admission rules step-by-step.",
-    gradient: "from-sky-500/20 to-cyan-500/20",
+      "A guided assistant surface that helps translate profile inputs and counselling logic into clearer next actions.",
     iconBg: "bg-sky-500/10",
     iconColor: "text-sky-500",
-    tag: "AI-Powered",
+    tag: "Guided",
+    bullets: ["Intent-aware prompts", "Friendly explanations", "Decision support"],
   },
   {
     icon: Filter,
     title: "Smart Filters",
     description:
-      "Intelligent filtering by category, university, city, branch — recalculates 4L+ data points in real-time.",
-    gradient: "from-teal-500/20 to-emerald-500/20",
+      "Structured filters keep category, university, percentile, and branch selection in one compact flow instead of scattered controls.",
     iconBg: "bg-teal-500/10",
     iconColor: "text-teal-500",
-    tag: "Real-time",
+    tag: "Focused",
+    bullets: ["Compact workflow", "Fewer dead ends", "Clearer active state"],
   },
   {
     icon: FileText,
     title: "Explainable Reports",
     description:
-      "Transparent recommendations with clear reasoning. Download detailed PDF reports for counselling.",
-    gradient: "from-amber-500/20 to-orange-500/20",
+      "Results are packaged like a decision brief with readable structure, quick-read insights, and a more professional presentation.",
     iconBg: "bg-amber-500/10",
     iconColor: "text-amber-500",
-    tag: "Transparent",
+    tag: "Readable",
+    bullets: ["Clean summaries", "Better information hierarchy", "Presentation-ready"],
   },
 ];
 
@@ -92,44 +92,54 @@ export function FeaturesGrid() {
 
   return (
     <section id="features" ref={sectionRef} className="py-28 px-4 relative">
-      {/* Subtle bg gradient */}
       <div className="absolute inset-0 bg-gradient-radial opacity-50 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative">
-        {/* Section header */}
         <div className="features-title text-center mb-16">
-          <motion.div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-semibold text-primary uppercase tracking-wider mb-6"
-          >
+          <motion.div className="section-badge mb-6">
+            <Sparkles className="h-3.5 w-3.5" />
             Features
           </motion.div>
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 font-['Outfit']">
-            Built for{" "}
-            <span className="text-gradient">Precision</span>
+          <h2 className="section-title">
+            Built for <span className="text-gradient">precision under pressure</span>
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto text-lg">
-            Every feature designed to eliminate uncertainty from your admission journey.
+          <p className="section-copy max-w-2xl mx-auto mt-4">
+            The product is designed to lower noise, increase confidence, and help students reach better shortlist decisions faster.
           </p>
         </div>
 
-        {/* Cards grid */}
+        <div className="mb-8 grid gap-4 md:grid-cols-3">
+          {[
+            { label: "Cutoff intelligence", value: "4L+ mapped records" },
+            { label: "Counselling coverage", value: "3 CAP rounds guided" },
+            { label: "Decision style", value: "Fast, readable, profile-aware" },
+          ].map((item) => (
+            <div key={item.label} className="rounded-[26px] border border-white/10 bg-white/5 p-5">
+              <div className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                {item.label}
+              </div>
+              <div className="mt-2 text-base font-semibold text-foreground">{item.value}</div>
+            </div>
+          ))}
+        </div>
+
         <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {features.map((feature, index) => (
+          {features.map((feature) => (
             <motion.div
               key={feature.title}
               whileHover={{ y: -6, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="feature-card group relative rounded-2xl glass card-beam p-8 cursor-pointer"
+              className="feature-card group relative rounded-[30px] glass card-beam p-8 cursor-pointer"
             >
-              {/* Gradient border on hover */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 p-[1px]"
-                style={{ 
+              <div
+                className="absolute inset-0 rounded-[30px] bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 p-[1px]"
+                style={{
                   background: `linear-gradient(135deg, hsl(var(--primary) / 0.2), transparent, hsl(var(--glow-secondary) / 0.2))`,
-                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                  WebkitMaskComposite: 'xor',
-                  maskComposite: 'exclude',
-                  padding: '1px',
-                  borderRadius: '1rem',
+                  WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                  WebkitMaskComposite: "xor",
+                  maskComposite: "exclude",
+                  padding: "1px",
+                  borderRadius: "1.75rem",
                 }}
               />
 
@@ -151,6 +161,17 @@ export function FeaturesGrid() {
                 {feature.description}
               </p>
 
+              <div className="mt-5 flex flex-wrap gap-2">
+                {feature.bullets.map((bullet) => (
+                  <div
+                    key={bullet}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-200/85"
+                  >
+                    {bullet}
+                  </div>
+                ))}
+              </div>
+
               <div className="mt-5 flex items-center gap-1.5 text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 Learn more
                 <ArrowUpRight className="w-3.5 h-3.5" />
@@ -159,7 +180,22 @@ export function FeaturesGrid() {
           ))}
         </div>
 
-        
+        <div className="mt-6 rounded-[32px] border border-white/10 bg-gradient-to-r from-primary/10 to-teal-400/10 p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
+                <Radar className="h-3.5 w-3.5" />
+                UX outcome
+              </div>
+              <h3 className="mt-2 text-xl font-semibold text-foreground">
+                A calmer, more professional shortlist experience from landing page to results.
+              </h3>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-muted-foreground">
+              Better hierarchy, better motion, better decision support.
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

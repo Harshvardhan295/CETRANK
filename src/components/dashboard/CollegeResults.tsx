@@ -1,10 +1,11 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CollegeCard } from "./CollegeCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GraduationCap, Search, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowUpRight, GraduationCap, MapPin, Search, Sparkles, TrendingUp } from "lucide-react";
+import type { CollegeResult } from "@/lib/api";
 
 interface CollegeResultsProps {
-  results: any[];
+  results: CollegeResult[];
   isLoading: boolean;
   hasSearched: boolean;
 }
@@ -25,6 +26,11 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
   const uniqueCities = new Set(
     results.map((college) => college.city || college.City).filter(Boolean),
   ).size;
+  const topCollege = results[0];
+  const topCollegeName =
+    topCollege?.college_name || topCollege?.College || topCollege?.Name || topCollege?.name;
+  const topBranch = topCollege?.branch_name || topCollege?.Branch || topCollege?.branch;
+  const topCity = topCollege?.city || topCollege?.City;
 
   if (isLoading) {
     return (
@@ -104,21 +110,21 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
   return (
     <div className="space-y-5">
       <div className="grid gap-3 md:grid-cols-3">
-        <div className="glass rounded-2xl border border-white/10 p-4">
+        <div className="glass rounded-[26px] border border-white/10 p-4">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             Total Results
           </div>
           <div className="mt-2 text-2xl font-bold text-foreground">{results.length}</div>
         </div>
-        <div className="glass rounded-2xl border border-white/10 p-4">
+        <div className="glass rounded-[26px] border border-white/10 p-4">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
             <TrendingUp className="w-3.5 h-3.5 text-primary" />
             Highest Cutoff Match
           </div>
           <div className="mt-2 text-2xl font-bold text-foreground">{strongestMatch || "-"}</div>
         </div>
-        <div className="glass rounded-2xl border border-white/10 p-4">
+        <div className="glass rounded-[26px] border border-white/10 p-4">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
             <GraduationCap className="w-3.5 h-3.5 text-primary" />
             Cities Covered
@@ -135,6 +141,41 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
           </span>
         </div>
       </div>
+
+      {topCollegeName ? (
+        <div className="rounded-[30px] border border-white/10 bg-gradient-to-r from-primary/12 to-teal-400/10 p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
+                <Sparkles className="h-3.5 w-3.5" />
+                Top spotlight
+              </div>
+              <h3 className="mt-2 text-xl font-semibold text-foreground">{topCollegeName}</h3>
+              <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-200/85">
+                {topBranch ? (
+                  <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                    {topBranch}
+                  </div>
+                ) : null}
+                {topCity ? (
+                  <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 inline-flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3" />
+                    {topCity}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="rounded-[24px] border border-white/10 bg-slate-950/45 px-4 py-3 text-sm text-muted-foreground">
+              Start with the strongest match, then compare nearby options before locking the shortlist.
+              <div className="mt-2 inline-flex items-center gap-1.5 text-primary font-medium">
+                Review the first cards
+                <ArrowUpRight className="h-4 w-4" />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <AnimatePresence mode="popLayout">
         <div className="space-y-3">

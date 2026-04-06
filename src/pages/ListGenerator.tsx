@@ -4,14 +4,15 @@ import { FilterBar } from "@/components/dashboard/FilterBar";
 import { CollegeResults } from "@/components/dashboard/CollegeResults";
 import { AISidebar } from "@/components/dashboard/AISidebar";
 import { getEligibleCutoffs } from "@/lib/api";
-import type { CutoffRequest } from "@/lib/api";
+import type { CollegeResult, CutoffRequest } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { BrainCircuit, ClipboardList, Sparkles, Target } from "lucide-react";
 import gsap from "gsap";
+import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
 
 const ListGenerator = () => {
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<CollegeResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -26,6 +27,16 @@ const ListGenerator = () => {
       }, {});
   const leadingCity =
     Object.entries(topCity).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "Awaiting results";
+  const topBranchMap =
+    results
+      .map((college) => college.branch_name || college.Branch || college.branch)
+      .filter(Boolean)
+      .reduce<Record<string, number>>((acc, branch) => {
+        acc[branch] = (acc[branch] || 0) + 1;
+        return acc;
+      }, {});
+  const leadingBranch =
+    Object.entries(topBranchMap).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "Branch mix updates after search";
 
   useEffect(() => {
     if (!headerRef.current) return;
@@ -65,25 +76,23 @@ const ListGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
-      <div className="fixed inset-0 grid-pattern pointer-events-none" />
-      <div className="fixed inset-0 bg-gradient-to-b from-primary/3 via-transparent to-transparent pointer-events-none" />
+    <div className="app-shell">
+      <SiteBackdrop particleCount={12} variant="focused" />
 
       <Navbar />
-      <div className="relative pt-28 pb-12 px-4 max-w-7xl mx-auto">
+      <div className="relative z-10 pt-28 pb-12 px-4 max-w-7xl mx-auto">
         <div ref={headerRef} className="mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-xs font-semibold text-primary uppercase tracking-wider mb-5">
+          <div className="section-badge mb-5">
             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             Live List Engine
           </div>
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="glass rounded-[32px] border border-white/10 p-6 md:p-8">
-              <h1 className="text-3xl md:text-5xl font-bold font-['Outfit'] leading-tight">
-                Build a smarter <span className="text-gradient">college shortlist</span>
+            <div className="panel-surface p-6 md:p-8">
+              <h1 className="text-3xl md:text-5xl font-bold font-['Outfit'] leading-tight tracking-tight">
+                Build a sharper <span className="text-gradient">college shortlist</span>
               </h1>
-              <p className="text-sm md:text-base text-muted-foreground mt-3 max-w-2xl leading-relaxed">
-                Configure your profile once, compare realistic options faster, and
-                generate a recommendation list that feels clearer than a raw cutoff table.
+              <p className="text-sm md:text-base text-muted-foreground mt-3 max-w-2xl leading-7">
+                Configure your profile once, scan realistic options faster, and review a shortlist that feels more like a decision workspace than a spreadsheet.
               </p>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -106,7 +115,7 @@ const ListGenerator = () => {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className="rounded-2xl border border-white/10 bg-background/50 p-4"
+                    className="rounded-2xl border border-white/10 bg-white/5 p-4"
                   >
                     <item.icon className="w-4 h-4 text-primary mb-3" />
                     <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -117,6 +126,19 @@ const ListGenerator = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <div className="mt-6 rounded-[28px] border border-white/10 bg-slate-950/50 p-5">
+                <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Current signal
+                </div>
+                <div className="mt-2 text-lg font-semibold text-foreground">
+                  {leadingBranch}
+                </div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Use the filter controls below to tighten the shortlist, then compare result cards for fit, probability, and trend context.
+                </p>
               </div>
             </div>
 
@@ -158,7 +180,7 @@ const ListGenerator = () => {
         <div className="space-y-6">
           <FilterBar onSearch={handleSearch} isLoading={isLoading} />
 
-          <motion.div layout>
+          <motion.div layout className="space-y-4">
             <CollegeResults
               results={results}
               isLoading={isLoading}

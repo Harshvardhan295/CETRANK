@@ -2,19 +2,18 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Compass } from "lucide-react";
+import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
 
 const NotFound = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 grid-pattern" />
-      <div className="absolute inset-0 bg-gradient-radial opacity-30" />
+    <div className="app-shell flex items-center justify-center px-4">
+      <SiteBackdrop particleCount={10} />
 
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="text-center relative z-10"
+        className="panel-surface relative z-10 max-w-lg p-10 text-center"
       >
         <motion.div
           animate={{ y: [0, -10, 0], rotate: [0, 5, -5, 0] }}

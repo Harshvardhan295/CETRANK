@@ -1,17 +1,23 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, ChevronLeft, ChevronRight, Send, Sparkles, X } from "lucide-react";
+import { Bot, Send, Sparkles, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const MOCK_THOUGHTS = [
-  "> Loading CET Rule Documents...",
+  "> Loading CET rule documents...",
   "> Parsing cutoff data for 2023-2025...",
-  "> Applying Home University preference...",
+  "> Applying home university preference...",
   "> Evaluating category: GOPEN...",
   "> Cross-referencing 4,12,000 records...",
   "> Ranking colleges by eligibility...",
-  "> ✓ Analysis complete.",
+  "> Analysis complete.",
+];
+
+const QUICK_PROMPTS = [
+  "What is a safe college mix for my profile?",
+  "How should I approach CAP Round 2?",
+  "Explain home university preference simply.",
 ];
 
 interface Message {
@@ -37,6 +43,10 @@ export function AISidebar() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, thoughts]);
 
+  const addPrompt = (prompt: string) => {
+    setInput(prompt);
+  };
+
   const handleSend = () => {
     if (!input.trim()) return;
     const userMsg = input.trim();
@@ -59,7 +69,7 @@ export function AISidebar() {
         {
           role: "assistant",
           content:
-            "This is a preview of the AI Counselor. The full chatbot integration with RAG pipeline will provide detailed, context-aware responses about your admission profile. Stay tuned! 🎓",
+            "This is a preview of the AI Counselor. The full chatbot integration with the RAG pipeline will provide detailed, context-aware responses about your admission profile.",
         },
       ]);
     }, MOCK_THOUGHTS.length * 400 + 500);
@@ -67,13 +77,11 @@ export function AISidebar() {
 
   return (
     <>
-      {/* Toggle Button */}
       <motion.button
         onClick={() => setOpen(!open)}
-        className="fixed right-4 bottom-6 z-40 rounded-2xl p-4 transition-all group"
+        className="fixed right-4 bottom-6 z-40 flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/85 px-4 py-3 transition-all group backdrop-blur-xl"
         style={{
-          background: "linear-gradient(135deg, #2563eb, #14b8a6)",
-          boxShadow: "0 8px 30px rgba(37, 99, 235, 0.35)",
+          boxShadow: "0 16px 38px rgba(37, 99, 235, 0.28)",
         }}
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
@@ -99,12 +107,19 @@ export function AISidebar() {
               exit={{ rotate: 90, opacity: 0 }}
               className="relative"
             >
-              <Bot className="w-5 h-5 text-white" />
-              {/* Notification dot */}
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-teal-400">
+                <Bot className="w-5 h-5 text-white" />
+              </div>
               <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white animate-pulse" />
             </motion.div>
           )}
         </AnimatePresence>
+        <div className="hidden text-left sm:block">
+          <div className="text-sm font-semibold text-foreground">AI Counselor</div>
+          <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            Ask strategy questions
+          </div>
+        </div>
       </motion.button>
 
       {/* Sidebar */}
@@ -132,7 +147,6 @@ export function AISidebar() {
                 borderLeft: "1px solid hsl(var(--border) / 0.5)",
               }}
             >
-              {/* Header */}
               <div className="p-5 border-b border-border/50">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -150,6 +164,25 @@ export function AISidebar() {
                         Powered by RAG + LangGraph
                       </p>
                     </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-[24px] border border-white/10 bg-white/5 p-4">
+                  <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Suggested prompts
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {QUICK_PROMPTS.map((prompt) => (
+                      <button
+                        key={prompt}
+                        type="button"
+                        onClick={() => addPrompt(prompt)}
+                        className="rounded-full border border-white/10 bg-slate-950/55 px-3 py-1.5 text-left text-xs text-slate-200/90 transition-colors hover:border-primary/20 hover:bg-primary/10"
+                      >
+                        {prompt}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>

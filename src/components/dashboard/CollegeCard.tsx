@@ -2,9 +2,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, TrendingUp, ChevronDown, CheckCircle2, Sparkles, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import type { CollegeResult } from "@/lib/api";
 
 interface CollegeCardProps {
-  college: any;
+  college: CollegeResult;
   index: number;
 }
 
@@ -51,7 +52,7 @@ function ProbabilityGauge({ value }: { value: number }) {
   );
 }
 
-function AllocationTimeline({ data }: { data: any }) {
+function AllocationTimeline({ data }: { data: CollegeResult }) {
   const steps = [
     { label: "Home Univ.", value: data.home_university || data.University || "Validated", status: true },
     { label: "Category", value: data.category || data.Category || "Applied", status: true },
@@ -115,6 +116,8 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
     college.category || college.Category || college.seat_type || college.SeatType || "";
   const year = college.year || college.Year || "";
   const round = college.round || college.Round || college.round_no || "";
+  const fitLabel =
+    probability >= 80 ? "Strong fit" : probability >= 60 ? "Worth comparing" : "Stretch option";
 
   return (
     <motion.div
@@ -124,7 +127,7 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -2 }}
-      className="glass rounded-[28px] overflow-hidden cursor-pointer group card-beam transition-shadow hover:shadow-lg hover:shadow-primary/5 border border-white/10"
+      className="glass rounded-[30px] overflow-hidden cursor-pointer group card-beam transition-shadow hover:shadow-lg hover:shadow-primary/5 border border-white/10"
       onClick={() => setExpanded(!expanded)}
     >
       <div className="p-5 md:p-6">
@@ -134,9 +137,9 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
               <Badge variant="outline" className="rounded-full px-2.5 py-1 text-[10px]">
                 #{index + 1}
               </Badge>
-              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                Match Card
-              </span>
+              <Badge variant="secondary" className="rounded-full px-2.5 py-1 text-[10px] bg-white/5">
+                {fitLabel}
+              </Badge>
             </div>
             <h3 className="font-semibold text-base leading-snug pr-3 group-hover:text-primary transition-colors">
               {collegeName}
@@ -170,10 +173,27 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
           ) : null}
         </div>
 
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+            <div className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              Match quality
+            </div>
+            <div className="mt-1 text-sm font-semibold text-foreground">{fitLabel}</div>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+            <div className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              Next move
+            </div>
+            <div className="mt-1 text-sm font-semibold text-foreground">
+              Compare against similar branches
+            </div>
+          </div>
+        </div>
+
         <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span>Tap to inspect trend and seat validation</span>
+            <span>Inspect trend, validation, and quick read</span>
           </div>
           <motion.div
             animate={{ rotate: expanded ? 180 : 0 }}

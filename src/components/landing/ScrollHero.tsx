@@ -1,48 +1,79 @@
 import { useRef, useEffect, useCallback, useState } from "react";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight, Database, FileText, Radar, ShieldCheck, Sparkles, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
 
 const SECTIONS = [
   {
     id: "intelligence",
     title: "CETRANK",
-    subtitle: "The Admission Intelligence Engine",
+    subtitle: "The admission intelligence layer",
     description:
-      "Navigate the complex Maharashtra CET counselling process with an AI-based system that simplifies choice-filling for 4-5 lakh annual applicants.",
+      "Navigate Maharashtra CET counselling with a product that converts dense cutoff data into a calmer, clearer shortlist workflow.",
     stats: "4 Lakh+ Data Points",
+    highlights: ["Profile-aware ranking", "Faster shortlist building", "Confidence-first UX"],
+    metrics: [
+      { label: "Coverage", value: "4L+ records" },
+      { label: "Audience", value: "Engineering + Pharmacy" },
+      { label: "Focus", value: "Actionable CAP decisions" },
+    ],
   },
   {
     id: "logic",
     title: "Rule-Aware",
-    subtitle: "Mimicking CET Cell Logic",
+    subtitle: "Mirrors CET cell logic",
     description:
-      "Our GenAI-powered reasoning pipeline accurately applies category priorities, quotas, and official fallback logic to ensure valid recommendations.",
+      "The engine reasons through category priorities, quota rules, and fallback paths so your recommendations feel reliable, not random.",
     stats: "RAG-Powered Accuracy",
+    highlights: ["Quota-sensitive matching", "Priority and fallback aware", "Explainable decision trail"],
+    metrics: [
+      { label: "Validation", value: "Seat-type aware" },
+      { label: "Logic", value: "Rule-first filtering" },
+      { label: "Outcome", value: "Cleaner eligible set" },
+    ],
   },
   {
     id: "counsellor",
     title: "Digital Counsellor",
-    subtitle: "Adaptive Round Strategy",
+    subtitle: "Adaptive round strategy",
     description:
-      "From aspirational choices in early rounds to realistic vacancy-based options in CAP Round 3-get guidance that adapts to every stage.",
+      "From aspirational early-round exploration to realistic final-round choices, the experience stays aligned with how students actually decide.",
     stats: "3 CAP Rounds Supported",
+    highlights: ["Ambitious to safe balancing", "Round-by-round adjustments", "Less guesswork under pressure"],
+    metrics: [
+      { label: "CAP rounds", value: "Round 1 to 3" },
+      { label: "Mode", value: "Guided refinement" },
+      { label: "Benefit", value: "Reduced shortlist fatigue" },
+    ],
   },
   {
     id: "features",
     title: "Precision Reports",
-    subtitle: "Engineering & Pharmacy",
+    subtitle: "Engineering and pharmacy ready",
     description:
-      "Download comprehensive PDF reports featuring institute codes, ranked college lists, and branch-specific analysis for B.E., B.Tech, and B.Pharm.",
+      "Capture ranked options, branch context, and supporting signals in a format that feels closer to a professional decision brief than a raw table.",
     stats: "Multi-Stream Support",
+    highlights: ["Readable result cards", "Branch-level context", "Professional presentation"],
+    metrics: [
+      { label: "Exports", value: "Decision-ready summaries" },
+      { label: "Streams", value: "B.E. / B.Tech / B.Pharm" },
+      { label: "Signal", value: "Historical cutoff framing" },
+    ],
   },
   {
     id: "hero-cta",
     title: "Ready to",
-    subtitle: "Refine Your Rank?",
+    subtitle: "Refine your rank?",
     description: "",
     stats: "",
     isCTA: true,
+    highlights: ["Start with your profile", "Explore realistic options", "Refine faster with confidence"],
+    metrics: [
+      { label: "Setup", value: "Under a minute" },
+      { label: "Flow", value: "Search, review, refine" },
+      { label: "Goal", value: "Shortlist with clarity" },
+    ],
   },
 ];
 
@@ -129,31 +160,111 @@ function HeroPanel({
         className="fixed inset-0 overflow-hidden bg-background"
         style={{ zIndex: 5, willChange: "transform, opacity, filter" }}
       >
-        <div className="absolute inset-0 grid-pattern opacity-30" />
-        <div className="flex items-center justify-center h-full p-6 relative">
-          <div className="max-w-4xl text-center">
-            <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-4 font-['Outfit']">
-              <span className="block text-foreground">{section.title}</span>
-              <span className="block text-gradient">{section.subtitle}</span>
-            </h2>
-            {section.description && (
-              <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-                {section.description}
-              </p>
-            )}
-            {isCTASection ? (
-              <Link to="/list-generator">
-                <Button size="lg" className="rounded-2xl px-12 py-8 text-lg glow-primary animate-glow-pulse group">
-                  Launch List Generator
-                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-            ) : section.stats ? (
-              <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full glass border-primary/10 text-primary font-mono-display text-sm">
-                <Zap className="w-4 h-4 fill-primary" />
-                {section.stats}
+        <SiteBackdrop particleCount={10} className="opacity-90" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.06),transparent_18%),radial-gradient(circle_at_80%_28%,rgba(45,212,191,0.08),transparent_20%)]" />
+
+        <div className="relative flex h-full items-center justify-center p-6 pt-28">
+          <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div className="max-w-3xl text-center lg:text-left">
+              <div className="section-badge mb-6">
+                <Sparkles className="h-3.5 w-3.5" />
+                {section.stats || "Interactive counselling flow"}
               </div>
-            ) : null}
+
+              <h2 className="font-['Outfit'] text-5xl font-black tracking-[-0.05em] md:text-7xl lg:text-[5.5rem]">
+                <span className="block text-foreground">{section.title}</span>
+                <span className="block text-gradient">{section.subtitle}</span>
+              </h2>
+
+              {section.description && (
+                <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground md:text-[1.35rem] lg:mx-0 mx-auto">
+                  {section.description}
+                </p>
+              )}
+
+              <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+                {section.highlights.map((item) => (
+                  <div key={item} className="hero-chip">
+                    <ShieldCheck className="h-4 w-4 text-teal-300" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
+                {isCTASection ? (
+                  <Link to="/list-generator">
+                    <Button
+                      size="lg"
+                      className="group h-14 rounded-2xl px-8 text-base glow-primary animate-glow-pulse"
+                    >
+                      Launch List Generator
+                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <div className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/5 px-5 py-2 text-sm text-primary">
+                    <Zap className="h-4 w-4" />
+                    {section.stats}
+                  </div>
+                )}
+
+                <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-muted-foreground">
+                  Product-led counselling for focused, faster decisions
+                </div>
+              </div>
+            </div>
+
+            <div className="panel-surface relative overflow-hidden rounded-[36px] p-5 sm:p-6">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.14),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent)]" />
+              <div className="relative">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-primary">
+                    {isCTASection ? <Radar className="h-3.5 w-3.5" /> : <Database className="h-3.5 w-3.5" />}
+                    Experience Layer
+                  </div>
+                  <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground">
+                    {section.id.replace("-", " ")}
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                  {section.metrics.map((metric) => (
+                    <div
+                      key={metric.label}
+                      className="rounded-[24px] border border-white/10 bg-white/5 p-4"
+                    >
+                      <div className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                        {metric.label}
+                      </div>
+                      <div className="mt-2 text-sm font-semibold text-foreground">
+                        {metric.value}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 rounded-[28px] border border-white/10 bg-slate-950/60 p-5">
+                  <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
+                    <FileText className="h-3.5 w-3.5" />
+                    What this screen improves
+                  </div>
+                  <div className="mt-4 space-y-3">
+                    {section.highlights.map((item, index) => (
+                      <div
+                        key={item}
+                        className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                      >
+                        <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[0.7rem] font-semibold text-primary">
+                          {index + 1}
+                        </div>
+                        <p className="text-sm leading-6 text-slate-200/90">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -286,7 +397,7 @@ export function ScrollHero() {
   return (
     <div ref={wrapperRef}>
       <div
-        className="fixed left-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 transition-opacity duration-500"
+        className="fixed left-8 top-1/2 z-50 hidden -translate-y-1/2 flex-col gap-3 transition-opacity duration-500 lg:flex"
         style={{ opacity: heroVisible ? 1 : 0 }}
       >
         {SECTIONS.map((_, i) => (
@@ -298,6 +409,23 @@ export function ScrollHero() {
             }`}
           />
         ))}
+      </div>
+
+      <div
+        className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-4 transition-opacity duration-500 lg:hidden"
+        style={{ opacity: heroVisible ? 1 : 0 }}
+      >
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/70 px-3 py-2 backdrop-blur-xl">
+          {SECTIONS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => snapTo(i)}
+              className={`rounded-full transition-all duration-500 ${
+                i === activeIndex ? "h-2 w-8 bg-primary" : "h-2 w-2 bg-white/25"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       {SECTIONS.map((section) => (

@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
-import { Quote, Star } from "lucide-react";
+import { motion } from "framer-motion";
+import { Quote, Sparkles, Star } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -29,7 +29,7 @@ const testimonials = [
     name: "Sneha Kulkarni",
     college: "WCE, Sangli",
     branch: "Information Technology",
-    text: "What sets CETRANK apart is the explainable reports. I didn't just get recommendations — I understood WHY each college was suggested.",
+    text: "What sets CETRANK apart is the explainable reports. I did not just get recommendations, I understood why each college was suggested.",
     rating: 5,
     avatar: "SK",
     color: "from-emerald-500 to-teal-600",
@@ -65,34 +65,46 @@ export function TestimonialsSection() {
       <div className="absolute inset-0 bg-gradient-radial opacity-30 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative">
-        {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-semibold text-primary uppercase tracking-wider mb-6">
+          <div className="section-badge mb-6">
+            <Sparkles className="h-3.5 w-3.5" />
             Testimonials
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 font-['Outfit']">
-            Loved by <span className="text-gradient">Students</span>
+          <h2 className="section-title">
+            Trusted by <span className="text-gradient">students</span>
           </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto text-lg">
-            See how CETRANK has helped students navigate their admission journey.
+          <p className="section-copy max-w-2xl mx-auto mt-4">
+            The strongest UX signal is confidence after use. These stories reflect the kind of clarity the product is designed to create.
           </p>
         </div>
 
-        {/* Cards */}
+        <div className="mb-8 grid gap-4 md:grid-cols-3">
+          {[
+            { label: "Prediction confidence", value: "92% exact match story" },
+            { label: "Round support", value: "Useful through CAP decisions" },
+            { label: "Student sentiment", value: "Clearer and more trustworthy" },
+          ].map((item) => (
+            <div key={item.label} className="rounded-[24px] border border-white/10 bg-white/5 p-5">
+              <div className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                {item.label}
+              </div>
+              <div className="mt-2 text-base font-semibold text-foreground">{item.value}</div>
+            </div>
+          ))}
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((t, i) => (
+          {testimonials.map((t) => (
             <motion.div
               key={t.name}
               whileHover={{ y: -6 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="testimonial-card glass rounded-2xl p-6 relative group card-beam"
+              className="testimonial-card glass rounded-[30px] p-6 relative group card-beam"
             >
-              {/* Quote icon */}
               <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Quote className="w-10 h-10" />
               </div>
 
-              {/* Stars */}
               <div className="flex gap-1 mb-4">
                 {Array.from({ length: t.rating }).map((_, j) => (
                   <Star
@@ -102,12 +114,10 @@ export function TestimonialsSection() {
                 ))}
               </div>
 
-              {/* Text */}
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">
                 "{t.text}"
               </p>
 
-              {/* Author */}
               <div className="flex items-center gap-3">
                 <div
                   className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white text-xs font-bold`}
@@ -117,9 +127,12 @@ export function TestimonialsSection() {
                 <div>
                   <div className="text-sm font-semibold">{t.name}</div>
                   <div className="text-xs text-muted-foreground">
-                    {t.college} · {t.branch}
+                    {t.college} / {t.branch}
                   </div>
                 </div>
+              </div>
+              <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-xs text-slate-200/85">
+                Student takeaway: clearer decisions with less uncertainty.
               </div>
             </motion.div>
           ))}
