@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, TrendingUp, ChevronDown, CheckCircle2, Sparkles } from "lucide-react";
+import { MapPin, TrendingUp, ChevronDown, CheckCircle2, Sparkles, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 
@@ -30,14 +30,13 @@ function ProbabilityGauge({ value }: { value: number }) {
 
   return (
     <div className="flex items-center gap-2.5">
-      <div className={`relative w-24 h-2.5 bg-secondary/50 rounded-full overflow-hidden shadow-inner`}>
+      <div className="relative w-24 h-2.5 bg-secondary/50 rounded-full overflow-hidden shadow-inner">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${value}%` }}
           transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className={`h-full rounded-full bg-gradient-to-r ${bg} ${glowColor} shadow-lg`}
         />
-        {/* Shimmer */}
         <motion.div
           initial={{ x: "-100%" }}
           animate={{ x: "200%" }}
@@ -125,50 +124,64 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -2 }}
-      className="glass rounded-2xl overflow-hidden cursor-pointer group card-beam transition-shadow hover:shadow-lg hover:shadow-primary/5"
+      className="glass rounded-[28px] overflow-hidden cursor-pointer group card-beam transition-shadow hover:shadow-lg hover:shadow-primary/5 border border-white/10"
       onClick={() => setExpanded(!expanded)}
     >
-      <div className="p-5">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm leading-snug truncate pr-3 group-hover:text-primary transition-colors">
+      <div className="p-5 md:p-6">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="min-w-0 flex-1">
+            <div className="mb-3 flex items-center gap-2">
+              <Badge variant="outline" className="rounded-full px-2.5 py-1 text-[10px]">
+                #{index + 1}
+              </Badge>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                Match Card
+              </span>
+            </div>
+            <h3 className="font-semibold text-base leading-snug pr-3 group-hover:text-primary transition-colors">
               {collegeName}
             </h3>
             {branchName && (
-              <p className="text-xs text-muted-foreground mt-1 truncate">{branchName}</p>
+              <p className="text-sm text-muted-foreground mt-1.5">{branchName}</p>
             )}
           </div>
           <ProbabilityGauge value={probability} />
         </div>
 
-        <div className="flex items-center gap-1.5 mt-3 flex-wrap">
+        <div className="flex items-center gap-1.5 flex-wrap">
           {city && (
-            <Badge variant="secondary" className="text-[10px] gap-1 rounded-lg">
+            <Badge variant="secondary" className="text-[10px] gap-1 rounded-full px-2.5 py-1">
               <MapPin className="w-3 h-3" /> {city}
             </Badge>
           )}
           {category && (
-            <Badge variant="outline" className="text-[10px] rounded-lg">{category}</Badge>
+            <Badge variant="outline" className="text-[10px] rounded-full px-2.5 py-1">{category}</Badge>
           )}
           {year && (
-            <Badge variant="outline" className="text-[10px] rounded-lg">{year}</Badge>
+            <Badge variant="outline" className="text-[10px] rounded-full px-2.5 py-1">{year}</Badge>
           )}
           {round && (
-            <Badge variant="outline" className="text-[10px] rounded-lg">R{round}</Badge>
+            <Badge variant="outline" className="text-[10px] rounded-full px-2.5 py-1">R{round}</Badge>
           )}
-          {cutoff && (
-            <Badge variant="secondary" className="text-[10px] gap-1 rounded-lg">
+          {cutoff ? (
+            <Badge variant="secondary" className="text-[10px] gap-1 rounded-full px-2.5 py-1">
               <TrendingUp className="w-3 h-3" /> {cutoff}
             </Badge>
-          )}
+          ) : null}
         </div>
 
-        <div className="flex justify-center mt-3">
+        <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span>Tap to inspect trend and seat validation</span>
+          </div>
           <motion.div
             animate={{ rotate: expanded ? 180 : 0 }}
             transition={{ duration: 0.3 }}
+            className="flex items-center gap-1 font-medium text-primary"
           >
-            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            <span>{expanded ? "Hide" : "Details"}</span>
+            <ChevronDown className="w-4 h-4" />
           </motion.div>
         </div>
       </div>
@@ -182,28 +195,44 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5">
+            <div className="px-5 pb-5 md:px-6 md:pb-6">
               <AllocationTimeline data={college} />
 
-              {/* Sparkline */}
-              <div className="mt-5 p-4 rounded-xl bg-secondary/20 border border-border/30">
-                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
-                  Historical Cutoff Trend
+              <div className="mt-5 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="p-4 rounded-2xl bg-secondary/20 border border-border/30">
+                  <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
+                    Historical Cutoff Trend
+                  </div>
+                  <div className="flex items-end gap-1.5 h-14">
+                    {[65, 70, 68, 72, 75, 73, 78, cutoff].map((v, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ height: 0 }}
+                        animate={{ height: `${(v / 100) * 100}%` }}
+                        transition={{ delay: i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                        className="flex-1 bg-gradient-to-t from-primary/40 to-primary/80 rounded-t-sm hover:from-primary/60 hover:to-primary transition-colors"
+                      />
+                    ))}
+                  </div>
+                  <div className="flex justify-between text-[9px] text-muted-foreground mt-2 font-mono">
+                    <span>2023</span>
+                    <span>2025</span>
+                  </div>
                 </div>
-                <div className="flex items-end gap-1.5 h-14">
-                  {[65, 70, 68, 72, 75, 73, 78, cutoff].map((v, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ height: 0 }}
-                      animate={{ height: `${(v / 100) * 100}%` }}
-                      transition={{ delay: i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      className="flex-1 bg-gradient-to-t from-primary/40 to-primary/80 rounded-t-sm hover:from-primary/60 hover:to-primary transition-colors"
-                    />
-                  ))}
-                </div>
-                <div className="flex justify-between text-[9px] text-muted-foreground mt-2 font-mono">
-                  <span>2023</span>
-                  <span>2025</span>
+
+                <div className="p-4 rounded-2xl bg-background/50 border border-white/10">
+                  <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
+                    Quick Read
+                  </div>
+                  <div className="space-y-2 text-sm text-muted-foreground leading-relaxed">
+                    <p>
+                      This card appears strongest when your profile stays close to the shown cutoff and seat category.
+                    </p>
+                    <div className="flex items-center gap-2 text-primary font-medium">
+                      <ArrowUpRight className="w-4 h-4" />
+                      Save this into your shortlist bucket after comparing similar branches.
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

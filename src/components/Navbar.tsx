@@ -20,7 +20,10 @@ export function Navbar() {
   }, []);
 
   const navLinks = isListGenerator
-    ? [{ label: "Home", to: "/" }]
+    ? [{ label: "Home", to: "/" },
+      { label: "Features", to: "#features" },
+      { label: "How It Works", to: "#how-it-works" },
+    ]
     : [
         { label: "Features", to: "#features" },
         { label: "How It Works", to: "#how-it-works" },

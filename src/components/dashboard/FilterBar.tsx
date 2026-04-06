@@ -1,12 +1,20 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ChevronDown, Sparkles } from "lucide-react";
+import {
+  Search,
+  ChevronDown,
+  RotateCcw,
+  SlidersHorizontal,
+  Sparkles,
+  University,
+  UserRound,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CATEGORIES, HOME_UNIVERSITIES, BRANCH_FILTERS } from "@/lib/api";
 import type { CutoffRequest } from "@/lib/api";
 
@@ -35,13 +43,32 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const [showCatDropdown, setShowCatDropdown] = useState(false);
   const [showUniDropdown, setShowUniDropdown] = useState(false);
   const [pulseKey, setPulseKey] = useState(0);
+  const categoryRef = useRef<HTMLDivElement>(null);
+  const universityRef = useRef<HTMLDivElement>(null);
 
   const filteredCategories = CATEGORIES.filter((c) =>
-    c.toLowerCase().includes(categorySearch.toLowerCase())
+    c.toLowerCase().includes(categorySearch.toLowerCase()),
   );
   const filteredUniversities = HOME_UNIVERSITIES.filter((u) =>
-    u.toLowerCase().includes(uniSearch.toLowerCase())
+    u.toLowerCase().includes(uniSearch.toLowerCase()),
   );
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      if (categoryRef.current && !categoryRef.current.contains(target)) {
+        setShowCatDropdown(false);
+      }
+
+      if (universityRef.current && !universityRef.current.contains(target)) {
+        setShowUniDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSearch = () => {
     setPulseKey((k) => k + 1);
@@ -56,14 +83,38 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     });
   };
 
+  const resetFilters = () => {
+    setCategory("GOPEN");
+    setUniversity("Savitribai Phule Pune University");
+    setGender("Male");
+    setPercentileRange([50, 100]);
+    setBranches({
+      is_tech: true,
+      is_electronic: false,
+      is_other: false,
+      is_civil: false,
+      is_mechanical: false,
+      is_electrical: false,
+    });
+    setIsEws(false);
+    setCategorySearch("");
+    setUniSearch("");
+    setShowCatDropdown(false);
+    setShowUniDropdown(false);
+  };
+
   const activeBranchCount = Object.values(branches).filter(Boolean).length;
+  const selectedBranchLabels = BRANCH_FILTERS.filter((branch) => branches[branch.key]).map(
+    (branch) => branch.label,
+  );
+  const percentilePresets = [
+    { label: "Safe", value: [65, 100] },
+    { label: "Balanced", value: [50, 90] },
+    { label: "Ambitious", value: [80, 100] },
+  ];
 
   return (
-    <motion.div
-      layout
-      className="glass rounded-2xl overflow-hidden relative"
-    >
-      {/* Pulse overlay on search */}
+    <motion.div layout className="glass rounded-[30px] overflow-hidden relative border border-white/10">
       <AnimatePresence>
         {pulseKey > 0 && (
           <motion.div
@@ -72,33 +123,43 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
             animate={{ opacity: 0, scale: 1.01 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            className="absolute inset-0 border-2 border-primary rounded-2xl pointer-events-none z-20"
+            className="absolute inset-0 border-2 border-primary rounded-[30px] pointer-events-none z-20"
           />
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <div className="p-4 flex items-center justify-between">
+      <div className="p-5 md:p-6 flex flex-col gap-4 border-b border-white/10 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/10">
+            <SlidersHorizontal className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <span className="font-semibold text-sm block">Intelligent Filters</span>
-            <span className="text-[10px] text-muted-foreground">
-              {category} Â· {activeBranchCount} branches
+            <span className="font-semibold text-base block">Intelligent Filters</span>
+            <span className="text-[11px] text-muted-foreground">
+              {category} · {gender} · {activeBranchCount} active branch{activeBranchCount !== 1 ? "es" : ""}
             </span>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setExpanded(!expanded)}
-          className="rounded-lg"
-        >
-          <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.3 }}>
-            <ChevronDown className="w-4 h-4" />
-          </motion.div>
-        </Button>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="secondary" className="rounded-full px-3 py-1">
+            {percentileRange[0]} - {percentileRange[1]} percentile
+          </Badge>
+          <Button variant="ghost" size="sm" onClick={resetFilters} className="rounded-full">
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Reset
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setExpanded(!expanded)}
+            className="rounded-full"
+          >
+            <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.3 }}>
+              <ChevronDown className="w-4 h-4" />
+            </motion.div>
+          </Button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -110,22 +171,44 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-5 space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Category Selector */}
-                <div className="relative">
-                  <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+            <div className="px-5 pb-6 pt-5 md:px-6 space-y-6">
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="rounded-full px-3 py-1.5">
+                  {category}
+                </Badge>
+                <Badge variant="outline" className="rounded-full px-3 py-1.5">
+                  {gender}
+                </Badge>
+                {isEws ? (
+                  <Badge variant="outline" className="rounded-full px-3 py-1.5">
+                    EWS enabled
+                  </Badge>
+                ) : null}
+                {selectedBranchLabels.slice(0, 3).map((label) => (
+                  <Badge key={label} variant="secondary" className="rounded-full px-3 py-1.5">
+                    {label}
+                  </Badge>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_1.15fr_0.85fr]">
+                <div ref={categoryRef} className="relative rounded-2xl border border-white/10 bg-background/40 p-4">
+                  <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    <Sparkles className="w-3.5 h-3.5" />
                     Category
                   </Label>
                   <div
                     className="relative cursor-pointer"
-                    onClick={() => { setShowCatDropdown(!showCatDropdown); setShowUniDropdown(false); }}
+                    onClick={() => {
+                      setShowCatDropdown(!showCatDropdown);
+                      setShowUniDropdown(false);
+                    }}
                   >
                     <Input
                       placeholder="Search category..."
                       value={showCatDropdown ? categorySearch : category}
                       onChange={(e) => setCategorySearch(e.target.value)}
-                      className="pr-8 rounded-xl"
+                      className="pr-8 rounded-2xl border-white/10 bg-background/70"
                     />
                     <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
@@ -136,7 +219,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -5, scale: 0.98 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute z-30 top-full mt-1 w-full max-h-48 overflow-y-auto rounded-xl glass-strong shadow-2xl border border-border/50"
+                        className="absolute z-30 top-full mt-2 w-full max-h-48 overflow-y-auto rounded-2xl glass-strong shadow-2xl border border-border/50"
                       >
                         {filteredCategories.map((c) => (
                           <button
@@ -159,20 +242,23 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </AnimatePresence>
                 </div>
 
-                {/* University Selector */}
-                <div className="relative">
-                  <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                <div ref={universityRef} className="relative rounded-2xl border border-white/10 bg-background/40 p-4">
+                  <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    <University className="w-3.5 h-3.5" />
                     Home University
                   </Label>
                   <div
                     className="relative cursor-pointer"
-                    onClick={() => { setShowUniDropdown(!showUniDropdown); setShowCatDropdown(false); }}
+                    onClick={() => {
+                      setShowUniDropdown(!showUniDropdown);
+                      setShowCatDropdown(false);
+                    }}
                   >
                     <Input
                       placeholder="Search university..."
-                      value={showUniDropdown ? uniSearch : university.split(" ").slice(0, 3).join(" ") + "..."}
+                      value={showUniDropdown ? uniSearch : university}
                       onChange={(e) => setUniSearch(e.target.value)}
-                      className="pr-8 text-ellipsis rounded-xl"
+                      className="pr-8 rounded-2xl border-white/10 bg-background/70"
                     />
                     <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
@@ -183,7 +269,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -5, scale: 0.98 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute z-30 top-full mt-1 w-full max-h-48 overflow-y-auto rounded-xl glass-strong shadow-2xl border border-border/50"
+                        className="absolute z-30 top-full mt-2 w-full max-h-48 overflow-y-auto rounded-2xl glass-strong shadow-2xl border border-border/50"
                       >
                         {filteredUniversities.map((u) => (
                           <button
@@ -206,9 +292,9 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </AnimatePresence>
                 </div>
 
-                {/* Gender */}
-                <div>
-                  <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                <div className="rounded-2xl border border-white/10 bg-background/40 p-4">
+                  <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    <UserRound className="w-3.5 h-3.5" />
                     Gender
                   </Label>
                   <div className="flex gap-2">
@@ -229,14 +315,13 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 </div>
               </div>
 
-              {/* Percentile Range */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
+              <div className="rounded-2xl border border-white/10 bg-background/40 p-4 md:p-5">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3">
                   <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     CET Percentile Range
                   </Label>
                   <span className="text-sm font-mono font-bold text-primary tabular-nums">
-                    {percentileRange[0]} â€” {percentileRange[1]}
+                    {percentileRange[0]} - {percentileRange[1]}
                   </span>
                 </div>
                 <Slider
@@ -247,10 +332,23 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   onValueChange={setPercentileRange}
                   className="py-2"
                 />
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {percentilePresets.map((preset) => (
+                    <Button
+                      key={preset.label}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => setPercentileRange(preset.value)}
+                    >
+                      {preset.label}
+                    </Button>
+                  ))}
+                </div>
               </div>
 
-              {/* Branch Toggles */}
-              <div>
+              <div className="rounded-2xl border border-white/10 bg-background/40 p-4 md:p-5">
                 <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
                   Branch Filters
                 </Label>
@@ -275,17 +373,21 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 </div>
               </div>
 
-              {/* EWS + Search Button */}
-              <div className="flex items-center justify-between pt-1">
+              <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-background/40 p-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center gap-3">
                   <Switch checked={isEws} onCheckedChange={setIsEws} />
-                  <Label className="text-xs text-muted-foreground font-medium">EWS Quota</Label>
+                  <div>
+                    <Label className="text-xs text-foreground font-medium">EWS Quota</Label>
+                    <p className="text-[11px] text-muted-foreground">
+                      Include EWS seat consideration in the shortlist.
+                    </p>
+                  </div>
                 </div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
                   <Button
                     onClick={handleSearch}
                     disabled={isLoading}
-                    className="rounded-xl px-8 glow-primary relative overflow-hidden group"
+                    className="rounded-2xl px-8 glow-primary relative overflow-hidden group min-w-[180px]"
                   >
                     {isLoading ? (
                       <motion.div

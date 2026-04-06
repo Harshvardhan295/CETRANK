@@ -7,6 +7,7 @@ import { getEligibleCutoffs } from "@/lib/api";
 import type { CutoffRequest } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { BrainCircuit, ClipboardList, Sparkles, Target } from "lucide-react";
 import gsap from "gsap";
 
 const ListGenerator = () => {
@@ -14,6 +15,17 @@ const ListGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
+  const totalResults = results.length;
+  const topCity =
+    results
+      .map((college) => college.city || college.City)
+      .filter(Boolean)
+      .reduce<Record<string, number>>((acc, city) => {
+        acc[city] = (acc[city] || 0) + 1;
+        return acc;
+      }, {});
+  const leadingCity =
+    Object.entries(topCity).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "Awaiting results";
 
   useEffect(() => {
     if (!headerRef.current) return;
@@ -58,19 +70,89 @@ const ListGenerator = () => {
       <div className="fixed inset-0 bg-gradient-to-b from-primary/3 via-transparent to-transparent pointer-events-none" />
 
       <Navbar />
-      <div className="relative pt-24 pb-12 px-4 max-w-6xl mx-auto">
+      <div className="relative pt-28 pb-12 px-4 max-w-7xl mx-auto">
         <div ref={headerRef} className="mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-xs font-semibold text-primary uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-xs font-semibold text-primary uppercase tracking-wider mb-5">
             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Live Engine
+            Live List Engine
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold font-['Outfit']">
-            Prediction <span className="text-gradient">List Generator</span>
-          </h1>
-          <p className="text-sm text-muted-foreground mt-2 max-w-lg">
-            Configure your profile, discover eligible colleges, and get AI-powered
-            probability assessments.
-          </p>
+          <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="glass rounded-[32px] border border-white/10 p-6 md:p-8">
+              <h1 className="text-3xl md:text-5xl font-bold font-['Outfit'] leading-tight">
+                Build a smarter <span className="text-gradient">college shortlist</span>
+              </h1>
+              <p className="text-sm md:text-base text-muted-foreground mt-3 max-w-2xl leading-relaxed">
+                Configure your profile once, compare realistic options faster, and
+                generate a recommendation list that feels clearer than a raw cutoff table.
+              </p>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {[
+                  {
+                    icon: BrainCircuit,
+                    label: "Profile-aware",
+                    value: "Category + branch logic",
+                  },
+                  {
+                    icon: Target,
+                    label: "Current status",
+                    value: hasSearched ? `${totalResults} results loaded` : "Ready to search",
+                  },
+                  {
+                    icon: ClipboardList,
+                    label: "Best coverage",
+                    value: leadingCity,
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-2xl border border-white/10 bg-background/50 p-4"
+                  >
+                    <item.icon className="w-4 h-4 text-primary mb-3" />
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                      {item.label}
+                    </div>
+                    <div className="mt-1 text-sm font-semibold text-foreground">
+                      {item.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+              {[
+                {
+                  title: "1. Set Filters",
+                  description: "Start with category, university, percentile and branch preferences.",
+                },
+                {
+                  title: "2. Review Matches",
+                  description: "Scan strongest colleges first, then expand cards for details.",
+                },
+                {
+                  title: "3. Refine Fast",
+                  description: "Adjust percentile or branch toggles to tighten the final shortlist.",
+                },
+              ].map((step, index) => (
+                <div
+                  key={step.title}
+                  className="glass rounded-[28px] border border-white/10 p-5"
+                >
+                  <div className="flex items-center gap-2 text-primary mb-3">
+                    <Sparkles className="w-4 h-4" />
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
+                      Step {index + 1}
+                    </span>
+                  </div>
+                  <h2 className="text-base font-semibold">{step.title}</h2>
+                  <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                    {step.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-6">

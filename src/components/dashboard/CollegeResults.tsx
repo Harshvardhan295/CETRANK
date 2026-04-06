@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CollegeCard } from "./CollegeCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GraduationCap, Search } from "lucide-react";
+import { GraduationCap, Search, Sparkles, TrendingUp } from "lucide-react";
 
 interface CollegeResultsProps {
   results: any[];
@@ -10,10 +10,25 @@ interface CollegeResultsProps {
 }
 
 export function CollegeResults({ results, isLoading, hasSearched }: CollegeResultsProps) {
+  const strongestMatch = results.reduce((best, college) => {
+    const cutoff =
+      college.CET_Percentile ??
+      college.cet_percentile ??
+      college.cutoff_percentile ??
+      college.Percentile ??
+      college.percentile ??
+      0;
+
+    return cutoff > best ? cutoff : best;
+  }, 0);
+
+  const uniqueCities = new Set(
+    results.map((college) => college.city || college.City).filter(Boolean),
+  ).size;
+
   if (isLoading) {
     return (
       <div className="space-y-3 relative">
-        {/* Scanner animation */}
         <motion.div
           initial={{ top: 0 }}
           animate={{ top: "100%" }}
@@ -50,7 +65,7 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="flex flex-col items-center justify-center py-24 text-center"
+        className="glass rounded-[32px] border border-white/10 flex flex-col items-center justify-center py-24 px-6 text-center"
       >
         <motion.div
           animate={{ y: [0, -8, 0] }}
@@ -60,11 +75,10 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
             <GraduationCap className="w-10 h-10 text-primary" />
           </div>
         </motion.div>
-        <h3 className="text-xl font-bold mb-2 font-['Outfit']">Configure Your Profile</h3>
+        <h3 className="text-xl font-bold mb-2 font-['Outfit']">Start Building Your List</h3>
         <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-          Set your filters above and click{" "}
-          <span className="text-primary font-medium">"Find Colleges"</span>{" "}
-          to see personalized recommendations.
+          Set your filters above and click <span className="text-primary font-medium">Find Colleges</span>
+          to generate a cleaner shortlist with realistic options.
         </p>
       </motion.div>
     );
@@ -75,19 +89,45 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="flex flex-col items-center justify-center py-24 text-center"
+        className="glass rounded-[32px] border border-white/10 flex flex-col items-center justify-center py-24 px-6 text-center"
       >
         <div className="w-16 h-16 rounded-2xl bg-secondary/50 flex items-center justify-center mb-4">
           <Search className="w-8 h-8 text-muted-foreground" />
         </div>
-        <p className="text-muted-foreground">No results found. Try adjusting your filters.</p>
+        <p className="text-muted-foreground max-w-md leading-relaxed">
+          No results found for the current profile. Try widening your percentile range or enabling more branches.
+        </p>
       </motion.div>
     );
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
+    <div className="space-y-5">
+      <div className="grid gap-3 md:grid-cols-3">
+        <div className="glass rounded-2xl border border-white/10 p-4">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            Total Results
+          </div>
+          <div className="mt-2 text-2xl font-bold text-foreground">{results.length}</div>
+        </div>
+        <div className="glass rounded-2xl border border-white/10 p-4">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <TrendingUp className="w-3.5 h-3.5 text-primary" />
+            Highest Cutoff Match
+          </div>
+          <div className="mt-2 text-2xl font-bold text-foreground">{strongestMatch || "-"}</div>
+        </div>
+        <div className="glass rounded-2xl border border-white/10 p-4">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <GraduationCap className="w-3.5 h-3.5 text-primary" />
+            Cities Covered
+          </div>
+          <div className="mt-2 text-2xl font-bold text-foreground">{uniqueCities || 1}</div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-sm text-muted-foreground font-medium">
@@ -95,6 +135,7 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
           </span>
         </div>
       </div>
+
       <AnimatePresence mode="popLayout">
         <div className="space-y-3">
           {results.slice(0, 50).map((college, index) => (
@@ -102,6 +143,7 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
           ))}
         </div>
       </AnimatePresence>
+
       {results.length > 50 && (
         <p className="text-xs text-muted-foreground text-center mt-6 font-medium">
           Showing top 50 of {results.length} results
