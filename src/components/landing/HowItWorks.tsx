@@ -199,17 +199,17 @@ export function HowItWorks() {
               ].map((item, index) => (
                 <div
                   key={item}
-                  className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+                className="flex items-start gap-3 rounded-2xl border border-border/70 bg-white/80 px-4 py-3"
                 >
                   <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[0.7rem] font-semibold text-primary">
                     {index + 1}
                   </div>
-                  <p className="text-sm leading-6 text-slate-200/90">{item}</p>
+                  <p className="text-sm leading-6 text-slate-700">{item}</p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-6 rounded-[26px] border border-white/10 bg-slate-950/55 p-5">
+            <div className="mt-6 rounded-[26px] border border-border/70 bg-slate-50/90 p-5">
               <div className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                 Outcome
               </div>
@@ -220,7 +220,7 @@ export function HowItWorks() {
                 {["Cleaner filters", "Readable results", "Faster refinement"].map((item) => (
                   <div
                     key={item}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-200/85"
+                    className="rounded-full border border-border/70 bg-white/80 px-3 py-1.5 text-xs text-slate-700"
                   >
                     {item}
                   </div>

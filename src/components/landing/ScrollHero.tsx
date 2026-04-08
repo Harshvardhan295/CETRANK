@@ -160,8 +160,8 @@ function HeroPanel({
         className="fixed inset-0 overflow-hidden bg-background"
         style={{ zIndex: 5, willChange: "transform, opacity, filter" }}
       >
-        <SiteBackdrop particleCount={10} className="opacity-90" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.06),transparent_18%),radial-gradient(circle_at_80%_28%,rgba(45,212,191,0.08),transparent_20%)]" />
+        <SiteBackdrop particleCount={10} className="opacity-100" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.5),transparent_18%),radial-gradient(circle_at_80%_28%,rgba(45,212,191,0.08),transparent_20%)]" />
 
         <div className="relative flex h-full items-center justify-center p-6 pt-28">
           <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
@@ -185,7 +185,7 @@ function HeroPanel({
               <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
                 {section.highlights.map((item) => (
                   <div key={item} className="hero-chip">
-                    <ShieldCheck className="h-4 w-4 text-teal-300" />
+                    <ShieldCheck className="h-4 w-4 text-teal-600" />
                     {item}
                   </div>
                 ))}
@@ -203,27 +203,27 @@ function HeroPanel({
                     </Button>
                   </Link>
                 ) : (
-                  <div className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/5 px-5 py-2 text-sm text-primary">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/80 px-5 py-2 text-sm text-primary">
                     <Zap className="h-4 w-4" />
                     {section.stats}
                   </div>
                 )}
 
-                <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-muted-foreground">
+                <div className="rounded-full border border-border/80 bg-white/85 px-4 py-2 text-sm text-muted-foreground">
                   Product-led counselling for focused, faster decisions
                 </div>
               </div>
             </div>
 
             <div className="panel-surface relative overflow-hidden rounded-[36px] p-5 sm:p-6">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.14),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.12),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.65),transparent)]" />
               <div className="relative">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-primary">
+                  <div className="flex items-center gap-2 rounded-full border border-primary/10 bg-white/80 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-primary">
                     {isCTASection ? <Radar className="h-3.5 w-3.5" /> : <Database className="h-3.5 w-3.5" />}
                     Experience Layer
                   </div>
-                  <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground">
+                  <div className="rounded-full border border-border/80 bg-white/80 px-3 py-1.5 text-xs text-muted-foreground">
                     {section.id.replace("-", " ")}
                   </div>
                 </div>
@@ -232,7 +232,7 @@ function HeroPanel({
                   {section.metrics.map((metric) => (
                     <div
                       key={metric.label}
-                      className="rounded-[24px] border border-white/10 bg-white/5 p-4"
+                      className="rounded-[24px] border border-border/70 bg-white/75 p-4"
                     >
                       <div className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                         {metric.label}
@@ -244,7 +244,7 @@ function HeroPanel({
                   ))}
                 </div>
 
-                <div className="mt-5 rounded-[28px] border border-white/10 bg-slate-950/60 p-5">
+                <div className="mt-5 rounded-[28px] border border-border/70 bg-slate-50/95 p-5">
                   <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
                     <FileText className="h-3.5 w-3.5" />
                     What this screen improves
@@ -253,12 +253,12 @@ function HeroPanel({
                     {section.highlights.map((item, index) => (
                       <div
                         key={item}
-                        className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                        className="flex items-start gap-3 rounded-2xl border border-border/70 bg-white/80 px-4 py-3"
                       >
                         <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[0.7rem] font-semibold text-primary">
                           {index + 1}
                         </div>
-                        <p className="text-sm leading-6 text-slate-200/90">{item}</p>
+                        <p className="text-sm leading-6 text-slate-700">{item}</p>
                       </div>
                     ))}
                   </div>
@@ -415,13 +415,13 @@ export function ScrollHero() {
         className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-4 transition-opacity duration-500 lg:hidden"
         style={{ opacity: heroVisible ? 1 : 0 }}
       >
-        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/70 px-3 py-2 backdrop-blur-xl">
+        <div className="flex items-center gap-2 rounded-full border border-border/80 bg-white/90 px-3 py-2 backdrop-blur-xl">
           {SECTIONS.map((_, i) => (
             <button
               key={i}
               onClick={() => snapTo(i)}
               className={`rounded-full transition-all duration-500 ${
-                i === activeIndex ? "h-2 w-8 bg-primary" : "h-2 w-2 bg-white/25"
+                i === activeIndex ? "h-2 w-8 bg-primary" : "h-2 w-2 bg-slate-300"
               }`}
             />
           ))}

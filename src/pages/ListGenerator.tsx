@@ -115,7 +115,7 @@ const ListGenerator = () => {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                    className="rounded-2xl border border-border/70 bg-white/75 p-4"
                   >
                     <item.icon className="w-4 h-4 text-primary mb-3" />
                     <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -128,7 +128,7 @@ const ListGenerator = () => {
                 ))}
               </div>
 
-              <div className="mt-6 rounded-[28px] border border-white/10 bg-slate-950/50 p-5">
+              <div className="mt-6 rounded-[28px] border border-border/70 bg-slate-50/90 p-5">
                 <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
                   <Sparkles className="h-3.5 w-3.5" />
                   Current signal
@@ -159,7 +159,7 @@ const ListGenerator = () => {
               ].map((step, index) => (
                 <div
                   key={step.title}
-                  className="glass rounded-[28px] border border-white/10 p-5"
+                  className="glass rounded-[28px] border border-border/70 p-5"
                 >
                   <div className="flex items-center gap-2 text-primary mb-3">
                     <Sparkles className="w-4 h-4" />

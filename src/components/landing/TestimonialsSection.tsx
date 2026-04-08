@@ -84,7 +84,7 @@ export function TestimonialsSection() {
             { label: "Round support", value: "Useful through CAP decisions" },
             { label: "Student sentiment", value: "Clearer and more trustworthy" },
           ].map((item) => (
-            <div key={item.label} className="rounded-[24px] border border-white/10 bg-white/5 p-5">
+            <div key={item.label} className="rounded-[24px] border border-border/70 bg-white/75 p-5">
               <div className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                 {item.label}
               </div>
@@ -131,7 +131,7 @@ export function TestimonialsSection() {
                   </div>
                 </div>
               </div>
-              <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-xs text-slate-200/85">
+              <div className="mt-5 rounded-2xl border border-border/70 bg-white/80 px-3 py-3 text-xs text-slate-700">
                 Student takeaway: clearer decisions with less uncertainty.
               </div>
             </motion.div>

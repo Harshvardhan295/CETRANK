@@ -12,10 +12,10 @@ interface CollegeCardProps {
 function ProbabilityGauge({ value }: { value: number }) {
   const color =
     value >= 80
-      ? "text-emerald-400"
+      ? "text-emerald-600"
       : value >= 50
-        ? "text-amber-400"
-        : "text-rose-400";
+        ? "text-amber-500"
+        : "text-rose-500";
   const bg =
     value >= 80
       ? "from-emerald-500 to-emerald-400"
@@ -24,10 +24,10 @@ function ProbabilityGauge({ value }: { value: number }) {
         : "from-rose-500 to-rose-400";
   const glowColor =
     value >= 80
-      ? "shadow-emerald-500/20"
+      ? "shadow-emerald-500/18"
       : value >= 50
-        ? "shadow-amber-500/20"
-        : "shadow-rose-500/20";
+        ? "shadow-amber-500/18"
+        : "shadow-rose-500/18";
 
   return (
     <div className="flex items-center gap-2.5">
@@ -127,7 +127,7 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -2 }}
-      className="glass rounded-[30px] overflow-hidden cursor-pointer group card-beam transition-shadow hover:shadow-lg hover:shadow-primary/5 border border-white/10"
+      className="glass rounded-[30px] overflow-hidden cursor-pointer group card-beam transition-shadow hover:shadow-lg hover:shadow-primary/5 border border-border/70"
       onClick={() => setExpanded(!expanded)}
     >
       <div className="p-5 md:p-6">
@@ -137,7 +137,7 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
               <Badge variant="outline" className="rounded-full px-2.5 py-1 text-[10px]">
                 #{index + 1}
               </Badge>
-              <Badge variant="secondary" className="rounded-full px-2.5 py-1 text-[10px] bg-white/5">
+              <Badge variant="secondary" className="rounded-full px-2.5 py-1 text-[10px] bg-white/80">
                 {fitLabel}
               </Badge>
             </div>
@@ -174,13 +174,13 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+          <div className="rounded-2xl border border-border/70 bg-white/80 p-3">
             <div className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               Match quality
             </div>
             <div className="mt-1 text-sm font-semibold text-foreground">{fitLabel}</div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+          <div className="rounded-2xl border border-border/70 bg-white/80 p-3">
             <div className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               Next move
             </div>
@@ -240,7 +240,7 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-background/50 border border-white/10">
+                <div className="p-4 rounded-2xl bg-background/70 border border-border/70">
                   <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
                     Quick Read
                   </div>

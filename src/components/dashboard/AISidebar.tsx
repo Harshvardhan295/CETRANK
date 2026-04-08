@@ -79,9 +79,9 @@ export function AISidebar() {
     <>
       <motion.button
         onClick={() => setOpen(!open)}
-        className="fixed right-4 bottom-6 z-40 flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/85 px-4 py-3 transition-all group backdrop-blur-xl"
+        className="fixed right-4 bottom-6 z-40 flex items-center gap-3 rounded-2xl border border-border/80 bg-white/90 px-4 py-3 transition-all group backdrop-blur-xl"
         style={{
-          boxShadow: "0 16px 38px rgba(37, 99, 235, 0.28)",
+          boxShadow: "0 16px 38px rgba(59, 130, 246, 0.18)",
         }}
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
@@ -97,7 +97,7 @@ export function AISidebar() {
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: 90, opacity: 0 }}
             >
-              <X className="w-5 h-5 text-white" />
+              <X className="w-5 h-5 text-foreground" />
             </motion.div>
           ) : (
             <motion.div
@@ -167,7 +167,7 @@ export function AISidebar() {
                   </div>
                 </div>
 
-                <div className="mt-4 rounded-[24px] border border-white/10 bg-white/5 p-4">
+                <div className="mt-4 rounded-[24px] border border-border/70 bg-white/85 p-4">
                   <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
                     <Sparkles className="h-3.5 w-3.5" />
                     Suggested prompts
@@ -178,7 +178,7 @@ export function AISidebar() {
                         key={prompt}
                         type="button"
                         onClick={() => addPrompt(prompt)}
-                        className="rounded-full border border-white/10 bg-slate-950/55 px-3 py-1.5 text-left text-xs text-slate-200/90 transition-colors hover:border-primary/20 hover:bg-primary/10"
+                        className="rounded-full border border-border/70 bg-slate-50/95 px-3 py-1.5 text-left text-xs text-slate-700 transition-colors hover:border-primary/20 hover:bg-primary/10"
                       >
                         {prompt}
                       </button>

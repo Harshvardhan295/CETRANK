@@ -130,7 +130,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
         )}
       </AnimatePresence>
 
-      <div className="p-5 md:p-6 flex flex-col gap-4 border-b border-white/10 md:flex-row md:items-center md:justify-between">
+      <div className="p-5 md:p-6 flex flex-col gap-4 border-b border-border/70 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/10">
             <SlidersHorizontal className="w-5 h-5 text-primary" />
@@ -144,10 +144,10 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="rounded-full px-3 py-1 bg-white/5">
+          <Badge variant="secondary" className="rounded-full px-3 py-1 bg-white/80">
             {percentileRange[0]} - {percentileRange[1]} percentile
           </Badge>
-          <Badge variant="outline" className="rounded-full px-3 py-1 border-white/10">
+          <Badge variant="outline" className="rounded-full px-3 py-1 border-border/80">
             {selectedBranchLabels.length || 1} branch mode
           </Badge>
           <Button variant="ghost" size="sm" onClick={resetFilters} className="rounded-full">
@@ -196,7 +196,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 ))}
               </div>
 
-              <div className="rounded-[26px] border border-white/10 bg-white/5 p-4">
+              <div className="rounded-[26px] border border-border/70 bg-white/80 p-4">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
@@ -214,7 +214,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="rounded-full border-white/10 bg-background/40"
+                        className="rounded-full border-border/80 bg-white/80"
                         onClick={() => setPercentileRange(preset.value)}
                       >
                         {preset.label}
@@ -225,7 +225,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
               </div>
 
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_1.15fr_0.85fr]">
-                <div ref={categoryRef} className="relative rounded-[26px] border border-white/10 bg-white/5 p-4">
+                <div ref={categoryRef} className="relative rounded-[26px] border border-border/70 bg-white/80 p-4">
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     <Sparkles className="w-3.5 h-3.5" />
                     Category
@@ -241,7 +241,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                       placeholder="Search category..."
                       value={showCatDropdown ? categorySearch : category}
                       onChange={(e) => setCategorySearch(e.target.value)}
-                      className="pr-8 rounded-2xl border-white/10 bg-background/70 focus-visible:ring-primary/40"
+                      className="pr-8 rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
                     />
                     <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
@@ -275,7 +275,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </AnimatePresence>
                 </div>
 
-                <div ref={universityRef} className="relative rounded-[26px] border border-white/10 bg-white/5 p-4">
+                <div ref={universityRef} className="relative rounded-[26px] border border-border/70 bg-white/80 p-4">
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     <University className="w-3.5 h-3.5" />
                     Home University
@@ -291,7 +291,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                       placeholder="Search university..."
                       value={showUniDropdown ? uniSearch : university}
                       onChange={(e) => setUniSearch(e.target.value)}
-                      className="pr-8 rounded-2xl border-white/10 bg-background/70 focus-visible:ring-primary/40"
+                      className="pr-8 rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
                     />
                     <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
@@ -325,7 +325,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </AnimatePresence>
                 </div>
 
-                <div className="rounded-[26px] border border-white/10 bg-white/5 p-4">
+                <div className="rounded-[26px] border border-border/70 bg-white/80 p-4">
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     <UserRound className="w-3.5 h-3.5" />
                     Gender
@@ -348,7 +348,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 </div>
               </div>
 
-              <div className="rounded-[26px] border border-white/10 bg-white/5 p-4 md:p-5">
+              <div className="rounded-[26px] border border-border/70 bg-white/80 p-4 md:p-5">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3">
                   <Label className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     <Gauge className="h-3.5 w-3.5" />
@@ -371,7 +371,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 </p>
               </div>
 
-              <div className="rounded-[26px] border border-white/10 bg-white/5 p-4 md:p-5">
+              <div className="rounded-[26px] border border-border/70 bg-white/80 p-4 md:p-5">
                 <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
                   Branch Filters
                 </Label>
@@ -396,7 +396,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4 rounded-[26px] border border-white/10 bg-slate-950/55 p-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-col gap-4 rounded-[26px] border border-border/70 bg-slate-50/95 p-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center gap-3">
                   <Switch checked={isEws} onCheckedChange={setIsEws} />
                   <div>

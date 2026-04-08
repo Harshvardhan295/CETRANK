@@ -87,8 +87,8 @@ export function Navbar() {
         <div
           className={`mx-auto max-w-7xl overflow-hidden rounded-[30px] border transition-all duration-500 ${
             scrolled
-              ? "glass-strong border-white/20 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
-              : "border-white/10 bg-background/60 shadow-[0_16px_48px_rgba(2,6,23,0.28)] backdrop-blur-xl"
+              ? "glass-strong border-border/80 shadow-[0_24px_72px_rgba(148,163,184,0.22)]"
+              : "border-border/70 bg-white/75 shadow-[0_16px_48px_rgba(148,163,184,0.18)] backdrop-blur-xl"
           }`}
         >
           <div
@@ -99,7 +99,7 @@ export function Navbar() {
           <div className="flex items-center justify-between gap-3 px-3 py-3 sm:px-5">
             <div className="flex items-center gap-3">
               <AppLogo imageClassName="h-12 w-12 rounded-[20px]" />
-              <div className="hidden lg:flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-primary/90">
+              <div className="hidden lg:flex items-center gap-2 rounded-full border border-primary/10 bg-white/80 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-primary/90">
                 <Sparkles className="h-3.5 w-3.5" />
                 {headerStatus}
               </div>
@@ -107,7 +107,7 @@ export function Navbar() {
 
             <div
               ref={magicContainerRef}
-              className="relative hidden items-center gap-1 rounded-full border border-white/10 bg-background/60 p-1 shadow-inner md:flex"
+              className="relative hidden items-center gap-1 rounded-full border border-border/70 bg-white/75 p-1 shadow-inner shadow-slate-200/60 md:flex"
             >
               <div
                 ref={magicRef}
@@ -136,7 +136,7 @@ export function Navbar() {
             </div>
 
             <div className="hidden items-center gap-3 md:flex">
-              <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-muted-foreground">
+              <div className="rounded-full border border-border/80 bg-white/80 px-3 py-1.5 text-xs font-medium text-muted-foreground">
                 4L+ cutoffs mapped
               </div>
 
@@ -159,7 +159,7 @@ export function Navbar() {
               </div>
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="rounded-2xl border border-white/10 bg-background/70 p-2.5 shadow-sm transition-colors hover:bg-primary/5"
+                className="rounded-2xl border border-border/80 bg-white/85 p-2.5 shadow-sm transition-colors hover:bg-primary/5"
                 aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
               >
                 {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -177,7 +177,7 @@ export function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-slate-900/12 backdrop-blur-sm md:hidden"
               onClick={() => setMobileOpen(false)}
               aria-label="Close mobile menu"
             />
@@ -187,9 +187,9 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -18, scale: 0.98 }}
               transition={{ duration: 0.22 }}
-              className="fixed left-3 right-3 top-24 z-50 overflow-hidden rounded-[30px] border border-white/15 bg-background/95 p-4 shadow-[0_30px_80px_rgba(2,6,23,0.55)] backdrop-blur-2xl md:hidden"
+              className="fixed left-3 right-3 top-24 z-50 overflow-hidden rounded-[30px] border border-border/80 bg-white/95 p-4 shadow-[0_30px_80px_rgba(148,163,184,0.28)] backdrop-blur-2xl md:hidden"
             >
-              <div className="mb-4 rounded-[26px] border border-white/10 bg-white/5 p-4">
+              <div className="mb-4 rounded-[26px] border border-border/70 bg-slate-50/90 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <AppLogo imageClassName="h-11 w-11" textClassName="text-left" />
                   <div className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-primary">
@@ -224,7 +224,7 @@ export function Navbar() {
                 ))}
               </div>
 
-              <div className="mt-4 rounded-[24px] border border-white/10 bg-gradient-to-r from-primary/10 to-teal-400/10 p-4">
+              <div className="mt-4 rounded-[24px] border border-border/70 bg-gradient-to-r from-primary/10 to-teal-400/10 p-4">
                 <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
                   <Sparkles className="h-3.5 w-3.5" />
                   {headerStatus}

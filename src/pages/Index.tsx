@@ -25,7 +25,7 @@ function CTASection() {
           className="panel-surface relative overflow-hidden rounded-[36px] noise"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_32%),radial-gradient(circle_at_80%_20%,_rgba(45,212,191,0.16),_transparent_28%)]" />
-          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),transparent)] lg:block" />
+          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.46),transparent)] lg:block" />
 
           <div className="relative grid gap-8 p-8 md:p-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:p-16">
             <div className="text-center lg:text-left">
@@ -67,7 +67,7 @@ function CTASection() {
                 </Link>
 
                 <div className="hero-chip">
-                  <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
                   Built for CAP-round decision making
                 </div>
               </div>
@@ -93,7 +93,7 @@ function CTASection() {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-[26px] border border-white/10 bg-white/5 p-5"
+                  className="rounded-[26px] border border-border/70 bg-white/75 p-5"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/12">
@@ -121,7 +121,7 @@ function CTASection() {
 function Footer() {
   return (
     <footer className="relative px-4 pb-10 pt-6">
-      <div className="mx-auto max-w-6xl rounded-[32px] border border-white/10 bg-white/5 px-6 py-8 backdrop-blur-xl md:px-8">
+      <div className="mx-auto max-w-6xl rounded-[32px] border border-border/70 bg-white/80 px-6 py-8 backdrop-blur-xl md:px-8">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <AppLogo imageClassName="h-10 w-10 rounded-[18px]" />

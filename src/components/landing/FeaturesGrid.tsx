@@ -114,7 +114,7 @@ export function FeaturesGrid() {
             { label: "Counselling coverage", value: "3 CAP rounds guided" },
             { label: "Decision style", value: "Fast, readable, profile-aware" },
           ].map((item) => (
-            <div key={item.label} className="rounded-[26px] border border-white/10 bg-white/5 p-5">
+            <div key={item.label} className="rounded-[26px] border border-border/70 bg-white/75 p-5">
               <div className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                 {item.label}
               </div>
@@ -165,7 +165,7 @@ export function FeaturesGrid() {
                 {feature.bullets.map((bullet) => (
                   <div
                     key={bullet}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-200/85"
+                    className="rounded-full border border-border/70 bg-white/80 px-3 py-1.5 text-xs text-slate-700"
                   >
                     {bullet}
                   </div>
@@ -180,7 +180,7 @@ export function FeaturesGrid() {
           ))}
         </div>
 
-        <div className="mt-6 rounded-[32px] border border-white/10 bg-gradient-to-r from-primary/10 to-teal-400/10 p-6">
+        <div className="mt-6 rounded-[32px] border border-border/70 bg-gradient-to-r from-primary/10 to-teal-400/10 p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
@@ -191,7 +191,7 @@ export function FeaturesGrid() {
                 A calmer, more professional shortlist experience from landing page to results.
               </h3>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-muted-foreground">
+            <div className="rounded-2xl border border-border/70 bg-white/85 px-4 py-3 text-sm text-muted-foreground">
               Better hierarchy, better motion, better decision support.
             </div>
           </div>
