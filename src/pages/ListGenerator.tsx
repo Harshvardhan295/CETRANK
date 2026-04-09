@@ -10,12 +10,16 @@ import { motion } from "framer-motion";
 import { BrainCircuit, ClipboardList, Sparkles, Target } from "lucide-react";
 import gsap from "gsap";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 const ListGenerator = () => {
+  const { user } = useAuth(); // Access the authenticated user
   const [results, setResults] = useState<CollegeResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
+  
   const totalResults = results.length;
   const topCity =
     results
@@ -25,8 +29,10 @@ const ListGenerator = () => {
         acc[city] = (acc[city] || 0) + 1;
         return acc;
       }, {});
+      
   const leadingCity =
     Object.entries(topCity).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "Awaiting results";
+    
   const topBranchMap =
     results
       .map((college) => college.branch_name || college.Branch || college.branch)
@@ -35,6 +41,7 @@ const ListGenerator = () => {
         acc[branch] = (acc[branch] || 0) + 1;
         return acc;
       }, {});
+      
   const leadingBranch =
     Object.entries(topBranchMap).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "Branch mix updates after search";
 
@@ -53,14 +60,42 @@ const ListGenerator = () => {
     setIsLoading(true);
     setHasSearched(true);
     try {
+      // 1. Fetch data from your backend
       const list = await getEligibleCutoffs(filters);
       setResults(list);
+      
       if (list.length === 0) {
         toast({
           title: "No results",
           description: "Try adjusting your filters for more options.",
         });
+        return; // Exit early if no results
       }
+
+      // 2. Save the successful results to Supabase history
+      if (user && list.length > 0) {
+        const { error } = await supabase
+          .from("college_lists")
+          .insert({
+            user_id: user.id,
+            list_data: list // Saving the array of objects as JSONB
+          });
+
+        if (error) {
+          console.error("Failed to save list to history:", error);
+          toast({
+            title: "History update failed",
+            description: "Generated successfully, but couldn't save to your profile history.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Success",
+            description: "List generated and saved securely to your profile!",
+          });
+        }
+      }
+
     } catch (err) {
       console.error(err);
       toast({

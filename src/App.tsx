@@ -4,9 +4,16 @@ import { ThemeProvider } from "next-themes";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
+// Import Auth components
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import AuthPage from "./pages/AuthPage.tsx";
 import Index from "./pages/Index.tsx";
 import ListGenerator from "./pages/ListGenerator.tsx";
 import NotFound from "./pages/NotFound.tsx";
+// Create this page to handle Supabase Login/Signup
+// import Login from "./pages/Login.tsx"; 
 
 const queryClient = new QueryClient();
 
@@ -14,15 +21,28 @@ const App = () => (
   <ThemeProvider attribute="class" forcedTheme="light" disableTransitionOnChange>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/list-generator" element={<ListGenerator />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Index />} />
+              {/* <Route path="/login" element={<Login />} /> */}
+              
+              {/* Protected Routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/list-generator" element={<ListGenerator />} />
+              </Route>
+
+              {/* Auth Route */}
+              <Route path="/auth" element={<AuthPage />} />
+
+              {/* Catch-all Route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </ThemeProvider>

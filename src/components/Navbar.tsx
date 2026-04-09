@@ -1,10 +1,11 @@
-import { Link, useLocation } from "react-router-dom";
-import { Menu, ArrowRight, Sparkles, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, ArrowRight, Sparkles, X, LogOut, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useMagicArea } from "./effects/MagicArea";
 import { Button } from "./ui/button";
 import { AppLogo } from "./AppLogo";
+import { useAuth } from "@/contexts/AuthContext"; // Imported Auth Context
 
 type NavLink = {
   label: string;
@@ -14,6 +15,9 @@ type NavLink = {
 
 export function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth(); // Destructured auth state and actions
+  
   const isListGenerator = location.pathname === "/list-generator";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -41,6 +45,12 @@ export function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname, location.hash]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    setMobileOpen(false);
+    navigate("/");
+  };
 
   const navLinks: NavLink[] = isListGenerator
     ? [
@@ -98,7 +108,9 @@ export function Navbar() {
 
           <div className="flex items-center justify-between gap-3 px-3 py-3 sm:px-5">
             <div className="flex items-center gap-3">
-              <AppLogo imageClassName="h-12 w-12 rounded-[20px]" />
+              <Link to="/">
+                <AppLogo imageClassName="h-12 w-12 rounded-[20px]" />
+              </Link>
               <div className="hidden lg:flex items-center gap-2 rounded-full border border-primary/10 bg-white/80 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-primary/90">
                 <Sparkles className="h-3.5 w-3.5" />
                 {headerStatus}
@@ -151,6 +163,25 @@ export function Navbar() {
                   </Link>
                 </Button>
               ) : null}
+
+              {/* Desktop Auth Buttons */}
+              {user ? (
+                <Button 
+                  variant="outline" 
+                  className="rounded-full px-5 border-border/70"
+                  onClick={handleSignOut}
+                >
+                  Sign Out
+                </Button>
+              ) : (
+                <Button 
+                  asChild 
+                  variant="secondary" 
+                  className="rounded-full px-5 bg-slate-100 hover:bg-slate-200 text-slate-900"
+                >
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+              )}
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
@@ -232,14 +263,40 @@ export function Navbar() {
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   A focused experience for analysing colleges, shortlisting options, and refining CAP-round choices.
                 </p>
+                
                 {!isListGenerator ? (
                   <Button asChild className="mt-4 h-12 w-full rounded-2xl">
                     <Link to="/list-generator" onClick={() => setMobileOpen(false)}>
                       Open Generator
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight className="h-4 w-4 ml-2" />
                     </Link>
                   </Button>
                 ) : null}
+
+                {/* Mobile Auth Buttons */}
+                <div className="mt-3 pt-3 border-t border-primary/10">
+                  {user ? (
+                    <Button 
+                      variant="outline" 
+                      className="h-12 w-full rounded-2xl bg-white/50" 
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  ) : (
+                    <Button 
+                      asChild 
+                      variant="outline" 
+                      className="h-12 w-full rounded-2xl bg-white hover:bg-slate-50"
+                    >
+                      <Link to="/auth" onClick={() => setMobileOpen(false)}>
+                        <LogIn className="h-4 w-4 mr-2" />
+                        Sign In / Register
+                      </Link>
+                    </Button>
+                  )}
+                </div>
               </div>
             </motion.div>
           </>
