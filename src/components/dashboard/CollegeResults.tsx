@@ -1,16 +1,25 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CollegeCard } from "./CollegeCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowUpRight, GraduationCap, MapPin, Search, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowUpRight, Download, GraduationCap, MapPin, Search, Sparkles, TrendingUp } from "lucide-react";
 import type { CollegeResult } from "@/lib/api";
+import { Button } from "@/components/ui/button";
 
 interface CollegeResultsProps {
   results: CollegeResult[];
   isLoading: boolean;
   hasSearched: boolean;
+  onDownloadPdf: () => void;
+  isDownloadingPdf: boolean;
 }
 
-export function CollegeResults({ results, isLoading, hasSearched }: CollegeResultsProps) {
+export function CollegeResults({
+  results,
+  isLoading,
+  hasSearched,
+  onDownloadPdf,
+  isDownloadingPdf,
+}: CollegeResultsProps) {
   const strongestMatch = results.reduce((best, college) => {
     const cutoff =
       college.CET_Percentile ??
@@ -140,6 +149,16 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
             {results.length} college{results.length !== 1 ? "s" : ""} found
           </span>
         </div>
+        <Button
+          type="button"
+          variant="outline"
+          className="rounded-full border-border/70 bg-white/85"
+          onClick={onDownloadPdf}
+          disabled={isDownloadingPdf}
+        >
+          <Download className="h-4 w-4" />
+          {isDownloadingPdf ? "Preparing PDF..." : "Download PDF"}
+        </Button>
       </div>
 
       {topCollegeName ? (
@@ -187,7 +206,7 @@ export function CollegeResults({ results, isLoading, hasSearched }: CollegeResul
 
       {results.length > 50 && (
         <p className="text-xs text-muted-foreground text-center mt-6 font-medium">
-          Showing top 50 of {results.length} results
+          Showing top 50 of {results.length} results on screen. The PDF includes the full generated list.
         </p>
       )}
     </div>

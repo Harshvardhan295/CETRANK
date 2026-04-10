@@ -12,12 +12,15 @@ import gsap from "gsap";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { downloadCollegeListPdf } from "@/lib/collegePdf";
 
 const ListGenerator = () => {
   const { user } = useAuth(); // Access the authenticated user
   const [results, setResults] = useState<CollegeResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [lastFilters, setLastFilters] = useState<CutoffRequest | null>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   
   const totalResults = results.length;
@@ -59,6 +62,7 @@ const ListGenerator = () => {
   const handleSearch = async (filters: CutoffRequest) => {
     setIsLoading(true);
     setHasSearched(true);
+    setLastFilters(filters);
     try {
       // 1. Fetch data from your backend
       const list = await getEligibleCutoffs(filters);
@@ -107,6 +111,31 @@ const ListGenerator = () => {
       setResults([]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (results.length === 0) {
+      return;
+    }
+
+    setIsDownloadingPdf(true);
+
+    try {
+      downloadCollegeListPdf({ results, filters: lastFilters });
+      toast({
+        title: "PDF downloaded",
+        description: `Saved ${results.length} college${results.length !== 1 ? "s" : ""} as a PDF.`,
+      });
+    } catch (error) {
+      console.error("Failed to generate PDF:", error);
+      toast({
+        title: "PDF export failed",
+        description: "We couldn't generate the PDF for this list. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloadingPdf(false);
     }
   };
 
@@ -220,6 +249,8 @@ const ListGenerator = () => {
               results={results}
               isLoading={isLoading}
               hasSearched={hasSearched}
+              onDownloadPdf={handleDownloadPdf}
+              isDownloadingPdf={isDownloadingPdf}
             />
           </motion.div>
         </div>
