@@ -26,19 +26,20 @@ interface FilterBarProps {
 }
 
 export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
-  const [expanded, setExpanded] = useState(true);
-  const [category, setCategory] = useState("GOPEN");
-  const [university, setUniversity] = useState("Savitribai Phule Pune University");
-  const [gender, setGender] = useState("Male");
-  const [percentileRange, setPercentileRange] = useState([50, 100]);
-  const [branches, setBranches] = useState<Record<string, boolean>>({
-    is_tech: true,
+  const emptyBranches = {
+    is_tech: false,
     is_electronic: false,
     is_other: false,
     is_civil: false,
     is_mechanical: false,
     is_electrical: false,
-  });
+  };
+  const [expanded, setExpanded] = useState(true);
+  const [category, setCategory] = useState("");
+  const [university, setUniversity] = useState("");
+  const [gender, setGender] = useState("");
+  const [percentileRange, setPercentileRange] = useState([50, 100]);
+  const [branches, setBranches] = useState<Record<string, boolean>>(emptyBranches);
   const [isEws, setIsEws] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
   const [uniSearch, setUniSearch] = useState("");
@@ -77,7 +78,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     onSearch({
       user_category: category,
       user_home_university: university,
-      gender,
+      gender: gender || undefined,
       min_percentile_cet: percentileRange[0],
       max_percentile_cet: percentileRange[1],
       ...branches,
@@ -86,18 +87,11 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   };
 
   const resetFilters = () => {
-    setCategory("GOPEN");
-    setUniversity("Savitribai Phule Pune University");
-    setGender("Male");
+    setCategory("");
+    setUniversity("");
+    setGender("");
     setPercentileRange([50, 100]);
-    setBranches({
-      is_tech: true,
-      is_electronic: false,
-      is_other: false,
-      is_civil: false,
-      is_mechanical: false,
-      is_electrical: false,
-    });
+    setBranches(emptyBranches);
     setIsEws(false);
     setCategorySearch("");
     setUniSearch("");
@@ -109,11 +103,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const selectedBranchLabels = BRANCH_FILTERS.filter((branch) => branches[branch.key]).map(
     (branch) => branch.label,
   );
-  const percentilePresets = [
-    { label: "Safe", value: [65, 100] },
-    { label: "Balanced", value: [50, 90] },
-    { label: "Ambitious", value: [80, 100] },
-  ];
+  const canSearch = Boolean(category && university && gender);
 
   return (
     <motion.div layout className="panel-surface overflow-hidden relative">
@@ -137,19 +127,12 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
           </div>
           <div>
             <span className="font-semibold text-base block">Intelligent Filters</span>
-            <span className="text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
-              {category} / {gender} / {activeBranchCount} active branch{activeBranchCount !== 1 ? "es" : ""}
-            </span>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="rounded-full px-3 py-1 bg-white/80">
-            {percentileRange[0]} - {percentileRange[1]} percentile
-          </Badge>
-          <Badge variant="outline" className="rounded-full px-3 py-1 border-border/80">
-            {selectedBranchLabels.length || 1} branch mode
-          </Badge>
+          
+          
           <Button variant="ghost" size="sm" onClick={resetFilters} className="rounded-full">
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset
@@ -177,57 +160,10 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
             className="overflow-hidden"
           >
             <div className="px-5 pb-6 pt-5 md:px-6 space-y-6">
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="rounded-full px-3 py-1.5">
-                  {category}
-                </Badge>
-                <Badge variant="outline" className="rounded-full px-3 py-1.5">
-                  {gender}
-                </Badge>
-                {isEws ? (
-                  <Badge variant="outline" className="rounded-full px-3 py-1.5">
-                    EWS enabled
-                  </Badge>
-                ) : null}
-                {selectedBranchLabels.slice(0, 3).map((label) => (
-                  <Badge key={label} variant="secondary" className="rounded-full px-3 py-1.5">
-                    {label}
-                  </Badge>
-                ))}
-              </div>
-
-              <div className="rounded-[26px] border border-border/70 bg-white/80 p-4">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
-                      <WandSparkles className="h-3.5 w-3.5" />
-                      Quick setup
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      Start with a percentile strategy, then fine-tune category and branch preferences below.
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {percentilePresets.map((preset) => (
-                      <Button
-                        key={preset.label}
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="rounded-full border-border/80 bg-white/80"
-                        onClick={() => setPercentileRange(preset.value)}
-                      >
-                        {preset.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
 
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_1.15fr_0.85fr]">
                 <div ref={categoryRef} className="relative rounded-[26px] border border-border/70 bg-white/80 p-4">
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    <Sparkles className="w-3.5 h-3.5" />
                     Category
                   </Label>
                   <div
@@ -238,7 +174,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                     }}
                   >
                     <Input
-                      placeholder="Search category..."
+                      placeholder="Select category"
                       value={showCatDropdown ? categorySearch : category}
                       onChange={(e) => setCategorySearch(e.target.value)}
                       className="pr-8 rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
@@ -277,7 +213,6 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
 
                 <div ref={universityRef} className="relative rounded-[26px] border border-border/70 bg-white/80 p-4">
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    <University className="w-3.5 h-3.5" />
                     Home University
                   </Label>
                   <div
@@ -288,7 +223,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                     }}
                   >
                     <Input
-                      placeholder="Search university..."
+                      placeholder="Select home university"
                       value={showUniDropdown ? uniSearch : university}
                       onChange={(e) => setUniSearch(e.target.value)}
                       className="pr-8 rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
@@ -327,21 +262,24 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
 
                 <div className="rounded-[26px] border border-border/70 bg-white/80 p-4">
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    <UserRound className="w-3.5 h-3.5" />
                     Gender
                   </Label>
                   <div className="flex gap-2">
-                    {["Male", "Female"].map((g) => (
+                    {[
+                      { label: "Select", value: "" },
+                      { label: "Male", value: "Male" },
+                      { label: "Female", value: "Female" },
+                    ].map((g) => (
                       <Button
-                        key={g}
-                        variant={gender === g ? "default" : "outline"}
+                        key={g.label}
+                        variant={gender === g.value ? "default" : "outline"}
                         size="sm"
                         className={`flex-1 rounded-xl transition-all ${
-                          gender === g ? "glow-subtle" : ""
+                          gender === g.value ? "glow-subtle" : ""
                         }`}
-                        onClick={() => setGender(g)}
+                        onClick={() => setGender(g.value)}
                       >
-                        {g}
+                        {g.label}
                       </Button>
                     ))}
                   </div>
@@ -366,9 +304,6 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   onValueChange={setPercentileRange}
                   className="py-2"
                 />
-                <p className="mt-4 text-xs leading-5 text-muted-foreground">
-                  Use a wider range for discovery and a narrower range when you are ready to finalise the shortlist.
-                </p>
               </div>
 
               <div className="rounded-[26px] border border-border/70 bg-white/80 p-4 md:p-5">
@@ -407,12 +342,9 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </div>
                 </div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} className="md:text-right">
-                  <p className="mb-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Run shortlist search
-                  </p>
                   <Button
                     onClick={handleSearch}
-                    disabled={isLoading}
+                    disabled={isLoading || !canSearch}
                     className="rounded-2xl px-8 glow-primary relative overflow-hidden group min-w-[200px] h-12"
                   >
                     {isLoading ? (

@@ -122,7 +122,7 @@ const ListGenerator = () => {
     setIsDownloadingPdf(true);
 
     try {
-      downloadCollegeListPdf({ results, filters: lastFilters });
+      await downloadCollegeListPdf({ results, filters: lastFilters });
       toast({
         title: "PDF downloaded",
         description: `Saved ${results.length} college${results.length !== 1 ? "s" : ""} as a PDF.`,
@@ -146,98 +146,10 @@ const ListGenerator = () => {
       <Navbar />
       <div className="relative z-10 pt-28 pb-12 px-4 max-w-7xl mx-auto">
         <div ref={headerRef} className="mb-8">
-          <div className="section-badge mb-5">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Live List Engine
-          </div>
+          
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="panel-surface p-6 md:p-8">
-              <h1 className="text-3xl md:text-5xl font-bold font-['Outfit'] leading-tight tracking-tight">
-                Build a sharper <span className="text-gradient">college shortlist</span>
-              </h1>
-              <p className="text-sm md:text-base text-muted-foreground mt-3 max-w-2xl leading-7">
-                Configure your profile once, scan realistic options faster, and review a shortlist that feels more like a decision workspace than a spreadsheet.
-              </p>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                {[
-                  {
-                    icon: BrainCircuit,
-                    label: "Profile-aware",
-                    value: "Category + branch logic",
-                  },
-                  {
-                    icon: Target,
-                    label: "Current status",
-                    value: hasSearched ? `${totalResults} results loaded` : "Ready to search",
-                  },
-                  {
-                    icon: ClipboardList,
-                    label: "Best coverage",
-                    value: leadingCity,
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-2xl border border-border/70 bg-white/75 p-4"
-                  >
-                    <item.icon className="w-4 h-4 text-primary mb-3" />
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                      {item.label}
-                    </div>
-                    <div className="mt-1 text-sm font-semibold text-foreground">
-                      {item.value}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 rounded-[28px] border border-border/70 bg-slate-50/90 p-5">
-                <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Current signal
-                </div>
-                <div className="mt-2 text-lg font-semibold text-foreground">
-                  {leadingBranch}
-                </div>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Use the filter controls below to tighten the shortlist, then compare result cards for fit, probability, and trend context.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-              {[
-                {
-                  title: "1. Set Filters",
-                  description: "Start with category, university, percentile and branch preferences.",
-                },
-                {
-                  title: "2. Review Matches",
-                  description: "Scan strongest colleges first, then expand cards for details.",
-                },
-                {
-                  title: "3. Refine Fast",
-                  description: "Adjust percentile or branch toggles to tighten the final shortlist.",
-                },
-              ].map((step, index) => (
-                <div
-                  key={step.title}
-                  className="glass rounded-[28px] border border-border/70 p-5"
-                >
-                  <div className="flex items-center gap-2 text-primary mb-3">
-                    <Sparkles className="w-4 h-4" />
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
-                      Step {index + 1}
-                    </span>
-                  </div>
-                  <h2 className="text-base font-semibold">{step.title}</h2>
-                  <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
-              ))}
-            </div>
+            
           </div>
         </div>
 
@@ -256,7 +168,7 @@ const ListGenerator = () => {
         </div>
       </div>
 
-      <AISidebar />
+      
     </div>
   );
 };

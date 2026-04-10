@@ -1,15 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CollegeCard } from "./CollegeCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowUpRight, Download, GraduationCap, MapPin, Search, Sparkles, TrendingUp } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, GraduationCap, Search } from "lucide-react";
 import type { CollegeResult } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 interface CollegeResultsProps {
   results: CollegeResult[];
   isLoading: boolean;
   hasSearched: boolean;
-  onDownloadPdf: () => void;
+  onDownloadPdf: () => void | Promise<void>;
   isDownloadingPdf: boolean;
 }
 
@@ -20,26 +21,15 @@ export function CollegeResults({
   onDownloadPdf,
   isDownloadingPdf,
 }: CollegeResultsProps) {
-  const strongestMatch = results.reduce((best, college) => {
-    const cutoff =
-      college.CET_Percentile ??
-      college.cet_percentile ??
-      college.cutoff_percentile ??
-      college.Percentile ??
-      college.percentile ??
-      0;
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 50;
+  const totalPages = Math.max(1, Math.ceil(results.length / pageSize));
+  const pageStart = (currentPage - 1) * pageSize;
+  const paginatedResults = results.slice(pageStart, pageStart + pageSize);
 
-    return cutoff > best ? cutoff : best;
-  }, 0);
-
-  const uniqueCities = new Set(
-    results.map((college) => college.city || college.City).filter(Boolean),
-  ).size;
-  const topCollege = results[0];
-  const topCollegeName =
-    topCollege?.college_name || topCollege?.College || topCollege?.Name || topCollege?.name;
-  const topBranch = topCollege?.branch_name || topCollege?.Branch || topCollege?.branch;
-  const topCity = topCollege?.city || topCollege?.City;
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [results]);
 
   if (isLoading) {
     return (
@@ -82,14 +72,10 @@ export function CollegeResults({
         transition={{ duration: 0.6 }}
         className="glass rounded-[32px] border border-border/70 flex flex-col items-center justify-center py-24 px-6 text-center"
       >
-        <motion.div
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        >
+        
           <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-600/10 to-teal-500/10 flex items-center justify-center mb-6 shadow-lg shadow-blue-600/5">
             <GraduationCap className="w-10 h-10 text-primary" />
           </div>
-        </motion.div>
         <h3 className="text-xl font-bold mb-2 font-['Outfit']">Start Building Your List</h3>
         <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
           Set your filters above and click <span className="text-primary font-medium">Find Colleges</span>
@@ -118,29 +104,6 @@ export function CollegeResults({
 
   return (
     <div className="space-y-5">
-      <div className="grid gap-3 md:grid-cols-3">
-        <div className="glass rounded-[26px] border border-border/70 p-4">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            Total Results
-          </div>
-          <div className="mt-2 text-2xl font-bold text-foreground">{results.length}</div>
-        </div>
-        <div className="glass rounded-[26px] border border-border/70 p-4">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            <TrendingUp className="w-3.5 h-3.5 text-primary" />
-            Highest Cutoff Match
-          </div>
-          <div className="mt-2 text-2xl font-bold text-foreground">{strongestMatch || "-"}</div>
-        </div>
-        <div className="glass rounded-[26px] border border-border/70 p-4">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            <GraduationCap className="w-3.5 h-3.5 text-primary" />
-            Cities Covered
-          </div>
-          <div className="mt-2 text-2xl font-bold text-foreground">{uniqueCities || 1}</div>
-        </div>
-      </div>
 
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
@@ -161,53 +124,62 @@ export function CollegeResults({
         </Button>
       </div>
 
-      {topCollegeName ? (
-        <div className="rounded-[30px] border border-border/70 bg-gradient-to-r from-primary/12 to-teal-400/10 p-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
-                <Sparkles className="h-3.5 w-3.5" />
-                Top spotlight
-              </div>
-              <h3 className="mt-2 text-xl font-semibold text-foreground">{topCollegeName}</h3>
-              <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-700">
-                {topBranch ? (
-                  <div className="rounded-full border border-border/70 bg-white/80 px-3 py-1.5">
-                    {topBranch}
-                  </div>
-                ) : null}
-                {topCity ? (
-                  <div className="rounded-full border border-border/70 bg-white/80 px-3 py-1.5 inline-flex items-center gap-1.5">
-                    <MapPin className="h-3 w-3" />
-                    {topCity}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="rounded-[24px] border border-border/70 bg-white/85 px-4 py-3 text-sm text-muted-foreground">
-              Start with the strongest match, then compare nearby options before locking the shortlist.
-              <div className="mt-2 inline-flex items-center gap-1.5 text-primary font-medium">
-                Review the first cards
-                <ArrowUpRight className="h-4 w-4" />
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
       <AnimatePresence mode="popLayout">
         <div className="space-y-3">
-          {results.slice(0, 50).map((college, index) => (
-            <CollegeCard key={index} college={college} index={index} />
+          {paginatedResults.map((college, index) => (
+            <CollegeCard key={pageStart + index} college={college} index={pageStart + index} />
           ))}
         </div>
       </AnimatePresence>
 
-      {results.length > 50 && (
-        <p className="text-xs text-muted-foreground text-center mt-6 font-medium">
-          Showing top 50 of {results.length} results on screen. The PDF includes the full generated list.
-        </p>
+      {results.length > pageSize && (
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <p className="text-xs text-muted-foreground text-center font-medium">
+            Showing {pageStart + 1} - {Math.min(pageStart + pageSize, results.length)} of {results.length} results.
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="rounded-full"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+
+            {Array.from({ length: totalPages }, (_, index) => index + 1)
+              .filter((page) => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1)
+              .map((page, index, pages) => (
+                <div key={page} className="flex items-center gap-2">
+                  {index > 0 && page - pages[index - 1] > 1 ? (
+                    <span className="px-1 text-sm text-muted-foreground">...</span>
+                  ) : null}
+                  <Button
+                    type="button"
+                    variant={page === currentPage ? "default" : "outline"}
+                    size="sm"
+                    className="min-w-10 rounded-full"
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                </div>
+              ))}
+
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="rounded-full"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,8 +1,9 @@
 import { useRef, useEffect, useCallback, useState } from "react";
-import { ArrowRight, Database, FileText, Radar, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, Database, FileText, Radar, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
+import { LottieAsset } from "@/components/effects/LottieAsset";
 
 const SECTIONS = [
   {
@@ -11,41 +12,7 @@ const SECTIONS = [
     subtitle: "The admission intelligence layer",
     description:
       "Navigate Maharashtra CET counselling with a product that converts dense cutoff data into a calmer, clearer shortlist workflow.",
-    stats: "4 Lakh+ Data Points",
-    highlights: ["Profile-aware ranking", "Faster shortlist building", "Confidence-first UX"],
-    metrics: [
-      { label: "Coverage", value: "4L+ records" },
-      { label: "Audience", value: "Engineering + Pharmacy" },
-      { label: "Focus", value: "Actionable CAP decisions" },
-    ],
-  },
-  {
-    id: "logic",
-    title: "Rule-Aware",
-    subtitle: "Mirrors CET cell logic",
-    description:
-      "The engine reasons through category priorities, quota rules, and fallback paths so your recommendations feel reliable, not random.",
-    stats: "RAG-Powered Accuracy",
-    highlights: ["Quota-sensitive matching", "Priority and fallback aware", "Explainable decision trail"],
-    metrics: [
-      { label: "Validation", value: "Seat-type aware" },
-      { label: "Logic", value: "Rule-first filtering" },
-      { label: "Outcome", value: "Cleaner eligible set" },
-    ],
-  },
-  {
-    id: "counsellor",
-    title: "Digital Counsellor",
-    subtitle: "Adaptive round strategy",
-    description:
-      "From aspirational early-round exploration to realistic final-round choices, the experience stays aligned with how students actually decide.",
-    stats: "3 CAP Rounds Supported",
-    highlights: ["Ambitious to safe balancing", "Round-by-round adjustments", "Less guesswork under pressure"],
-    metrics: [
-      { label: "CAP rounds", value: "Round 1 to 3" },
-      { label: "Mode", value: "Guided refinement" },
-      { label: "Benefit", value: "Reduced shortlist fatigue" },
-    ],
+    animationPath: "/online study.json",
   },
   {
     id: "features",
@@ -53,27 +20,15 @@ const SECTIONS = [
     subtitle: "Engineering and pharmacy ready",
     description:
       "Capture ranked options, branch context, and supporting signals in a format that feels closer to a professional decision brief than a raw table.",
-    stats: "Multi-Stream Support",
-    highlights: ["Readable result cards", "Branch-level context", "Professional presentation"],
-    metrics: [
-      { label: "Exports", value: "Decision-ready summaries" },
-      { label: "Streams", value: "B.E. / B.Tech / B.Pharm" },
-      { label: "Signal", value: "Historical cutoff framing" },
-    ],
+    animationPath: "/Business Analytics.json",
   },
   {
     id: "hero-cta",
     title: "Ready to",
     subtitle: "Refine your rank?",
     description: "",
-    stats: "",
     isCTA: true,
-    highlights: ["Start with your profile", "Explore realistic options", "Refine faster with confidence"],
-    metrics: [
-      { label: "Setup", value: "Under a minute" },
-      { label: "Flow", value: "Search, review, refine" },
-      { label: "Goal", value: "Shortlist with clarity" },
-    ],
+    animationPath: "/Ready for Career.json",
   },
 ];
 
@@ -116,38 +71,64 @@ function HeroPanel({
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const currentProgressRef = useRef(0);
+  const targetProgressRef = useRef(0);
 
   useEffect(() => {
-    let raf = 0;
+    let scrollRaf = 0;
+    let animationFrame = 0;
 
-    const update = () => {
-      const sec = sectionRef.current;
+    const render = () => {
       const con = contentRef.current;
-      if (!sec || !con) return;
+      if (!con) return;
 
-      const rect = sec.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const raw = Math.max(0, Math.min(1, (vh - rect.top) / (vh + rect.height)));
-      const styles = computeStyles(raw);
+      currentProgressRef.current = lerp(
+        currentProgressRef.current,
+        targetProgressRef.current,
+        0.12,
+      );
+      const styles = computeStyles(currentProgressRef.current);
 
       con.style.opacity = String(styles.opacity);
       con.style.filter = styles.filter;
       con.style.transform = styles.transform;
-      con.style.visibility = raw > 0.02 && raw < 0.98 ? "visible" : "hidden";
-      con.style.pointerEvents = raw > 0.35 && raw < 0.65 ? "auto" : "none";
+      con.style.visibility =
+        currentProgressRef.current > 0.02 && currentProgressRef.current < 0.98
+          ? "visible"
+          : "hidden";
+      con.style.pointerEvents =
+        currentProgressRef.current > 0.3 && currentProgressRef.current < 0.7
+          ? "auto"
+          : "none";
+
+      if (Math.abs(currentProgressRef.current - targetProgressRef.current) > 0.001) {
+        animationFrame = requestAnimationFrame(render);
+      }
+    };
+
+    const updateTarget = () => {
+      const sec = sectionRef.current;
+      if (!sec) return;
+
+      const rect = sec.getBoundingClientRect();
+      const vh = window.innerHeight;
+      targetProgressRef.current = Math.max(0, Math.min(1, (vh - rect.top) / (vh + rect.height)));
+      cancelAnimationFrame(animationFrame);
+      animationFrame = requestAnimationFrame(render);
     };
 
     const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
+      cancelAnimationFrame(scrollRaf);
+      scrollRaf = requestAnimationFrame(updateTarget);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    update();
+    updateTarget();
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(scrollRaf);
+      cancelAnimationFrame(animationFrame);
     };
   }, []);
 
@@ -166,10 +147,6 @@ function HeroPanel({
         <div className="relative flex h-full items-center justify-center p-6 pt-28">
           <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div className="max-w-3xl text-center lg:text-left">
-              <div className="section-badge mb-6">
-                <Sparkles className="h-3.5 w-3.5" />
-                {section.stats || "Interactive counselling flow"}
-              </div>
 
               <h2 className="font-['Outfit'] text-5xl font-black tracking-[-0.05em] md:text-7xl lg:text-[5.5rem]">
                 <span className="block text-foreground">{section.title}</span>
@@ -182,15 +159,6 @@ function HeroPanel({
                 </p>
               )}
 
-              <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
-                {section.highlights.map((item) => (
-                  <div key={item} className="hero-chip">
-                    <ShieldCheck className="h-4 w-4 text-teal-600" />
-                    {item}
-                  </div>
-                ))}
-              </div>
-
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
                 {isCTASection ? (
                   <Link to="/list-generator">
@@ -202,67 +170,22 @@ function HeroPanel({
                       <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
-                ) : (
-                  <div className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/80 px-5 py-2 text-sm text-primary">
-                    <Zap className="h-4 w-4" />
-                    {section.stats}
-                  </div>
-                )}
-
-                <div className="rounded-full border border-border/80 bg-white/85 px-4 py-2 text-sm text-muted-foreground">
-                  Product-led counselling for focused, faster decisions
-                </div>
+                ) : null}
               </div>
             </div>
 
             <div className="panel-surface relative overflow-hidden rounded-[36px] p-5 sm:p-6">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.12),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.65),transparent)]" />
               <div className="relative">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 rounded-full border border-primary/10 bg-white/80 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-primary">
-                    {isCTASection ? <Radar className="h-3.5 w-3.5" /> : <Database className="h-3.5 w-3.5" />}
-                    Experience Layer
-                  </div>
-                  <div className="rounded-full border border-border/80 bg-white/80 px-3 py-1.5 text-xs text-muted-foreground">
-                    {section.id.replace("-", " ")}
-                  </div>
+                
+
+                <div className="mt-6 rounded-[28px] border border-border/70 bg-white/85 p-4">
+                  <LottieAsset
+                    src={section.animationPath}
+                    className="mx-auto aspect-square w-full max-w-[360px]"
+                  />
                 </div>
 
-                <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                  {section.metrics.map((metric) => (
-                    <div
-                      key={metric.label}
-                      className="rounded-[24px] border border-border/70 bg-white/75 p-4"
-                    >
-                      <div className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                        {metric.label}
-                      </div>
-                      <div className="mt-2 text-sm font-semibold text-foreground">
-                        {metric.value}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-5 rounded-[28px] border border-border/70 bg-slate-50/95 p-5">
-                  <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
-                    <FileText className="h-3.5 w-3.5" />
-                    What this screen improves
-                  </div>
-                  <div className="mt-4 space-y-3">
-                    {section.highlights.map((item, index) => (
-                      <div
-                        key={item}
-                        className="flex items-start gap-3 rounded-2xl border border-border/70 bg-white/80 px-4 py-3"
-                      >
-                        <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[0.7rem] font-semibold text-primary">
-                          {index + 1}
-                        </div>
-                        <p className="text-sm leading-6 text-slate-700">{item}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           </div>

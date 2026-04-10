@@ -3,13 +3,15 @@ import { ScrollHero } from "@/components/landing/ScrollHero";
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
-import { ArrowRight, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { AppLogo } from "@/components/AppLogo";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
+import { useLocation } from "react-router-dom";
+import { LottieAsset } from "@/components/effects/LottieAsset";
 
 function CTASection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -24,15 +26,9 @@ function CTASection() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="panel-surface relative overflow-hidden rounded-[36px] noise"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_32%),radial-gradient(circle_at_80%_20%,_rgba(45,212,191,0.16),_transparent_28%)]" />
-          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.46),transparent)] lg:block" />
-
-          <div className="relative grid gap-8 p-8 md:p-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:p-16">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.12),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.55),transparent)]" />
+          <div className="relative grid gap-8 p-8 md:p-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:p-16">
             <div className="text-center lg:text-left">
-              <div className="section-badge mb-6">
-                <Sparkles className="h-3.5 w-3.5" />
-                Ready To Launch
-              </div>
               <AppLogo
                 className="mx-auto mb-6 w-fit lg:mx-0"
                 imageClassName="h-16 w-16 rounded-[24px]"
@@ -65,51 +61,14 @@ function CTASection() {
                     </Button>
                   </motion.div>
                 </Link>
-
-                <div className="hero-chip">
-                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                  Built for CAP-round decision making
-                </div>
               </div>
             </div>
 
-            <div className="grid gap-4">
-              {[
-                {
-                  icon: TrendingUp,
-                  label: "Data confidence",
-                  value: "4L+ records analysed",
-                },
-                {
-                  icon: ShieldCheck,
-                  label: "Rule-aware logic",
-                  value: "Category and quota sensitive",
-                },
-                {
-                  icon: Sparkles,
-                  label: "Shortlist quality",
-                  value: "Faster compare, clearer next step",
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-[26px] border border-border/70 bg-white/75 p-5"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/12">
-                      <item.icon className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                        {item.label}
-                      </div>
-                      <div className="mt-1 text-sm font-semibold text-foreground">
-                        {item.value}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="rounded-[30px] border border-border/70 bg-white/75 p-5">
+              <LottieAsset
+                src="/seo search.json"
+                className="mx-auto aspect-square w-full max-w-[380px]"
+              />
             </div>
           </div>
         </motion.div>
@@ -125,9 +84,6 @@ function Footer() {
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <AppLogo imageClassName="h-10 w-10 rounded-[18px]" />
-            <p className="mt-4 max-w-md text-sm leading-6 text-muted-foreground">
-              CETRANK helps students move from uncertainty to a shortlist they can actually use during counselling.
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
@@ -143,7 +99,7 @@ function Footer() {
           </div>
 
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            2026 CETRANK.IN
+            © {new Date().getFullYear()} CETRANK.IN
           </p>
         </div>
       </div>
@@ -152,15 +108,32 @@ function Footer() {
 }
 
 const Index = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) {
+      return;
+    }
+
+    const elementId = location.hash.replace("#", "");
+    const scrollToSection = () => {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+
+    const timeoutId = window.setTimeout(scrollToSection, 100);
+    return () => window.clearTimeout(timeoutId);
+  }, [location.hash]);
+
   return (
     <div className="app-shell">
       <SiteBackdrop particleCount={14} />
       <div className="relative z-10">
         <Navbar />
         <ScrollHero />
-        <FeaturesGrid />
         <HowItWorks />
-        <TestimonialsSection />
         <CTASection />
         <Footer />
       </div>

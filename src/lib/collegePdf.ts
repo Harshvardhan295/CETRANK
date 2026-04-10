@@ -1,19 +1,80 @@
+import { jsPDF } from "jspdf";
 import type { CollegeResult, CutoffRequest } from "@/lib/api";
-import { BRANCH_FILTERS } from "@/lib/api";
 
-const PAGE_WIDTH = 595;
-const PAGE_HEIGHT = 842;
-const CONTENT_START_Y = 742;
-const CONTENT_MARGIN_X = 48;
-const CONTENT_LINE_HEIGHT = 14;
-const MAX_LINE_CHARS = 86;
-const MAX_LINES_PER_PAGE = 46;
+const PAGE_WIDTH = 612;
+const PAGE_HEIGHT = 792;
+const TABLE_X = 8.5;
+const TABLE_Y = 26;
+const TABLE_WIDTH = 595;
+const TABLE_HEADER_HEIGHT = 18;
+const TABLE_BODY_HEIGHT = 696;
+const CELL_PADDING_X = 6;
+const CELL_LINE_HEIGHT = 12;
+const MIN_ROW_HEIGHT = 30;
+const ROW_BASE_HEIGHT = 18;
+const WATERMARK_PATH = "/logoup_cetrank.png";
 
-const getCollegeField = (college: CollegeResult, keys: string[]) => {
+const COLUMNS = [
+  {
+    header: "Code",
+    width: 45,
+    keys: ["college_code", "College_Code", "institute_code", "Institute_Code", "code", "Code"],
+  },
+  {
+    header: "College Name",
+    width: 140,
+    keys: ["college_name", "College", "Name", "name"],
+  },
+  {
+    header: "Branch",
+    width: 90,
+    keys: ["branch_name", "Branch", "branch"],
+  },
+  {
+    header: "Branch Code",
+    width: 80,
+    keys: ["branch_code", "Branch_Code", "choice_code", "ChoiceCode", "choiceCode"],
+  },
+  {
+    header: "Category",
+    width: 55,
+    keys: ["category", "Category", "seat_type", "SeatType"],
+  },
+  {
+    header: "Rank",
+    width: 55,
+    keys: ["rank", "Rank", "merit_no", "Merit_No", "merit", "Merit", "cap_rank", "CAP_Rank"],
+  },
+  {
+    header: "Percentile",
+    width: 65,
+    keys: [],
+  },
+  {
+    header: "City",
+    width: 65,
+    keys: ["city", "City"],
+  },
+] as const;
+
+type TableColumn = (typeof COLUMNS)[number];
+type TableRow = {
+  cells: string[][];
+  height: number;
+};
+
+const normalizeText = (value: string) =>
+  value
+    .normalize("NFKD")
+    .replace(/[^\x20-\x7E]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const getCollegeField = (college: CollegeResult, keys: readonly string[]) => {
   for (const key of keys) {
     const value = college[key];
     if (value !== null && value !== undefined && value !== "") {
-      return String(value);
+      return normalizeText(String(value));
     }
   }
 
@@ -32,258 +93,194 @@ const formatCutoff = (college: CollegeResult) => {
     return "-";
   }
 
-  return String(cutoffValue);
+  return normalizeText(String(cutoffValue));
 };
 
-const normalizeAscii = (value: string) =>
-  value
-    .normalize("NFKD")
-    .replace(/[^\x20-\x7E]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+const loadImageWithOpacity = (src: string, opacity: number) =>
+  new Promise<string>((resolve, reject) => {
+    const image = new Image();
 
-const escapePdfText = (value: string) =>
-  normalizeAscii(value)
-    .replace(/\\/g, "\\\\")
-    .replace(/\(/g, "\\(")
-    .replace(/\)/g, "\\)");
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
 
-const wrapText = (value: string, maxChars: number) => {
-  const normalized = normalizeAscii(value);
-
-  if (!normalized) {
-    return [""];
-  }
-
-  const words = normalized.split(" ");
-  const lines: string[] = [];
-  let currentLine = "";
-
-  for (const word of words) {
-    if (!word) {
-      continue;
-    }
-
-    if (word.length > maxChars) {
-      if (currentLine) {
-        lines.push(currentLine);
-        currentLine = "";
+      const context = canvas.getContext("2d");
+      if (!context) {
+        reject(new Error("Canvas context is unavailable."));
+        return;
       }
 
-      for (let index = 0; index < word.length; index += maxChars) {
-        lines.push(word.slice(index, index + maxChars));
-      }
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.globalAlpha = opacity;
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/png"));
+    };
 
-      continue;
-    }
-
-    const nextLine = currentLine ? `${currentLine} ${word}` : word;
-
-    if (nextLine.length <= maxChars) {
-      currentLine = nextLine;
-      continue;
-    }
-
-    lines.push(currentLine);
-    currentLine = word;
-  }
-
-  if (currentLine) {
-    lines.push(currentLine);
-  }
-
-  return lines.length > 0 ? lines : [""];
-};
-
-const formatFilters = (filters?: CutoffRequest | null) => {
-  if (!filters) {
-    return [];
-  }
-
-  const percentileRange =
-    filters.min_percentile_cet !== undefined || filters.max_percentile_cet !== undefined
-      ? `${filters.min_percentile_cet ?? 0} - ${filters.max_percentile_cet ?? 100}`
-      : "Not specified";
-
-  const selectedBranches = BRANCH_FILTERS.filter(({ key }) => Boolean(filters[key])).map(
-    ({ label }) => label,
-  );
-
-  const filterLines = [
-    `Profile: ${filters.user_category || "-"} | ${filters.user_home_university || "-"} | ${filters.gender || "Male"}`,
-    `CET percentile range: ${percentileRange}`,
-    `Cities: ${filters.cities?.length ? filters.cities.join(", ") : "Any"}`,
-    `Divisions: ${filters.divisions?.length ? filters.divisions.join(", ") : "Any"}`,
-    `Minority tags: ${filters.user_minority_list?.length ? filters.user_minority_list.join(", ") : "None"}`,
-    `Branch focus: ${selectedBranches.length ? selectedBranches.join(", ") : "All branches"}`,
-    `EWS considered: ${filters.is_ews ? "Yes" : "No"}`,
-  ];
-
-  return filterLines.flatMap((line) => wrapText(line, MAX_LINE_CHARS));
-};
-
-const buildCollegeLines = (results: CollegeResult[]) =>
-  results.flatMap((college, index) => {
-    const collegeName = getCollegeField(college, ["college_name", "College", "Name", "name"]) || "Unknown College";
-    const branchName = getCollegeField(college, ["branch_name", "Branch", "branch"]) || "-";
-    const city = getCollegeField(college, ["city", "City"]) || "-";
-    const category = getCollegeField(college, ["category", "Category", "seat_type", "SeatType"]) || "-";
-    const year = getCollegeField(college, ["year", "Year"]) || "-";
-    const round = getCollegeField(college, ["round", "Round", "round_no"]) || "-";
-    const university = getCollegeField(college, ["home_university", "University"]) || "-";
-    const status = getCollegeField(college, ["status"]) || "-";
-    const cutoff = formatCutoff(college);
-
-    return [
-      ...wrapText(`${index + 1}. ${collegeName}`, MAX_LINE_CHARS),
-      ...wrapText(`   Branch: ${branchName}`, MAX_LINE_CHARS),
-      ...wrapText(
-        `   City: ${city} | Category: ${category} | Round: ${round} | Year: ${year} | Cutoff: ${cutoff}`,
-        MAX_LINE_CHARS,
-      ),
-      ...wrapText(`   University: ${university} | Status: ${status}`, MAX_LINE_CHARS),
-      "",
-    ];
+    image.onerror = () => reject(new Error(`Failed to load PDF background from ${src}.`));
+    image.src = src;
   });
 
-const paginateLines = (lines: string[]) => {
-  const pages: string[][] = [];
+const buildRowValues = (college: CollegeResult) =>
+  COLUMNS.map((column) => {
+    if (column.header === "Percentile") {
+      return formatCutoff(college);
+    }
 
-  for (let index = 0; index < lines.length; index += MAX_LINES_PER_PAGE) {
-    pages.push(lines.slice(index, index + MAX_LINES_PER_PAGE));
+    return getCollegeField(college, column.keys) || "-";
+  });
+
+const buildTableRow = (doc: jsPDF, college: CollegeResult): TableRow => {
+  const values = buildRowValues(college);
+
+  const cells = values.map((value, index) => {
+    const column = COLUMNS[index];
+    const wrapped = doc.splitTextToSize(value || "-", column.width - CELL_PADDING_X * 2);
+    return wrapped.length > 0 ? wrapped : ["-"];
+  });
+
+  const maxLines = Math.max(...cells.map((lines) => lines.length));
+  const height = Math.max(MIN_ROW_HEIGHT, ROW_BASE_HEIGHT + maxLines * CELL_LINE_HEIGHT);
+
+  return { cells, height };
+};
+
+const paginateRows = (rows: TableRow[]) => {
+  const pages: TableRow[][] = [];
+  let currentPage: TableRow[] = [];
+  let usedHeight = 0;
+
+  for (const row of rows) {
+    const nextHeight = usedHeight + row.height;
+
+    if (currentPage.length > 0 && nextHeight > TABLE_BODY_HEIGHT) {
+      pages.push(currentPage);
+      currentPage = [row];
+      usedHeight = row.height;
+      continue;
+    }
+
+    currentPage.push(row);
+    usedHeight = nextHeight;
+  }
+
+  if (currentPage.length > 0) {
+    pages.push(currentPage);
   }
 
   return pages.length > 0 ? pages : [[]];
 };
 
-const buildPageContent = ({
-  lines,
-  pageNumber,
-  totalPages,
-  generatedAt,
-  totalResults,
-}: {
-  lines: string[];
-  pageNumber: number;
-  totalPages: number;
-  generatedAt: string;
-  totalResults: number;
-}) => {
-  const contentLines = lines.map((line) => `(${escapePdfText(line)}) Tj`).join("\nT*\n");
+const drawWatermark = (doc: jsPDF, watermarkDataUrl?: string) => {
+  if (!watermarkDataUrl) {
+    return;
+  }
 
-  return [
-    "q",
-    "BT",
-    "/F1 18 Tf",
-    `${CONTENT_MARGIN_X} ${PAGE_HEIGHT - 52} Td`,
-    "(CETRANK College List) Tj",
-    "ET",
-    "BT",
-    "/F1 10 Tf",
-    `${CONTENT_MARGIN_X} ${PAGE_HEIGHT - 72} Td`,
-    `(${escapePdfText(`Generated on ${generatedAt} | Total colleges: ${totalResults}`)}) Tj`,
-    "ET",
-    "BT",
-    "/F1 9 Tf",
-    `${PAGE_WIDTH - 120} ${PAGE_HEIGHT - 52} Td`,
-    `(${escapePdfText(`Page ${pageNumber} of ${totalPages}`)}) Tj`,
-    "ET",
-    "0.85 w",
-    `${CONTENT_MARGIN_X} ${PAGE_HEIGHT - 82} m`,
-    `${PAGE_WIDTH - CONTENT_MARGIN_X} ${PAGE_HEIGHT - 82} l`,
-    "S",
-    "BT",
-    "/F2 10 Tf",
-    `${CONTENT_LINE_HEIGHT} TL`,
-    `${CONTENT_MARGIN_X} ${CONTENT_START_Y} Td`,
-    contentLines || "() Tj",
-    "ET",
-    "Q",
-  ].join("\n");
+  doc.addImage(watermarkDataUrl, "PNG", 56, 146, 500, 500, undefined, "FAST");
 };
 
-const createPdf = (pageContents: string[]) => {
-  const objects: string[] = [];
-  const pageReferences: string[] = [];
+const drawHeader = (doc: jsPDF, tableHeight: number) => {
+  doc.setFillColor(128, 128, 128);
+  doc.rect(TABLE_X, TABLE_Y, TABLE_WIDTH, TABLE_HEADER_HEIGHT, "F");
 
-  objects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
-  objects[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>";
-  objects[4] = "<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>";
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(245, 245, 245);
 
-  let objectNumber = 5;
-
-  for (const pageContent of pageContents) {
-    const contentObjectNumber = objectNumber++;
-    const pageObjectNumber = objectNumber++;
-
-    objects[contentObjectNumber] = `<< /Length ${pageContent.length} >>\nstream\n${pageContent}\nendstream`;
-    objects[pageObjectNumber] =
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_WIDTH} ${PAGE_HEIGHT}] ` +
-      `/Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentObjectNumber} 0 R >>`;
-    pageReferences.push(`${pageObjectNumber} 0 R`);
+  let cursorX = TABLE_X;
+  for (const column of COLUMNS) {
+    doc.text(column.header, cursorX + CELL_PADDING_X, TABLE_Y + 12);
+    cursorX += column.width;
   }
 
-  objects[2] = `<< /Type /Pages /Count ${pageReferences.length} /Kids [${pageReferences.join(" ")}] >>`;
-
-  let pdf = "%PDF-1.4\n";
-  const offsets: number[] = [0];
-
-  for (let index = 1; index < objects.length; index += 1) {
-    offsets[index] = pdf.length;
-    pdf += `${index} 0 obj\n${objects[index]}\nendobj\n`;
-  }
-
-  const xrefPosition = pdf.length;
-  pdf += `xref\n0 ${objects.length}\n`;
-  pdf += "0000000000 65535 f \n";
-
-  for (let index = 1; index < objects.length; index += 1) {
-    pdf += `${String(offsets[index]).padStart(10, "0")} 00000 n \n`;
-  }
-
-  pdf += `trailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xrefPosition}\n%%EOF`;
-  return pdf;
+  doc.setLineWidth(0.5);
+  doc.setDrawColor(0, 0, 0);
+  doc.rect(TABLE_X, TABLE_Y, TABLE_WIDTH, tableHeight);
 };
 
-export const downloadCollegeListPdf = ({
+const drawGrid = (doc: jsPDF, pageRows: TableRow[]) => {
+  let y = TABLE_Y + TABLE_HEADER_HEIGHT;
+
+  for (const row of pageRows) {
+    y += row.height;
+    doc.line(TABLE_X, y, TABLE_X + TABLE_WIDTH, y);
+  }
+
+  let x = TABLE_X;
+  for (const column of COLUMNS.slice(0, -1)) {
+    x += column.width;
+    doc.line(x, TABLE_Y, x, y);
+  }
+};
+
+const drawRows = (doc: jsPDF, pageRows: TableRow[]) => {
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(0, 0, 0);
+
+  let rowTop = TABLE_Y + TABLE_HEADER_HEIGHT;
+
+  for (const row of pageRows) {
+    let cellX = TABLE_X;
+
+    row.cells.forEach((lines, index) => {
+      const column = COLUMNS[index];
+      const textY = rowTop + row.height - 10 - (lines.length - 1) * CELL_LINE_HEIGHT;
+
+      doc.text(lines, cellX + CELL_PADDING_X, textY, {
+        lineHeightFactor: CELL_LINE_HEIGHT / 10,
+      });
+
+      cellX += column.width;
+    });
+
+    rowTop += row.height;
+  }
+};
+
+export const downloadCollegeListPdf = async ({
   results,
-  filters,
 }: {
   results: CollegeResult[];
   filters?: CutoffRequest | null;
 }) => {
-  const generatedAt = new Date().toLocaleString("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "pt",
+    format: "letter",
   });
-  const introLines = [
-    "Profile Summary",
-    ...formatFilters(filters),
-    "",
-    "Generated Colleges",
-    "",
-  ];
-  const collegeLines = buildCollegeLines(results);
-  const pages = paginateLines([...introLines, ...collegeLines]);
-  const pageContents = pages.map((lines, index) =>
-    buildPageContent({
-      lines,
-      pageNumber: index + 1,
-      totalPages: pages.length,
-      generatedAt,
-      totalResults: results.length,
-    }),
-  );
-  const pdfContent = createPdf(pageContents);
-  const blob = new Blob([pdfContent], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  const dateTag = new Date().toISOString().slice(0, 10);
 
-  anchor.href = url;
-  anchor.download = `cetrank-college-list-${dateTag}.pdf`;
-  document.body.appendChild(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+
+  const tableRows = results.map((college) => buildTableRow(doc, college));
+  const pages = paginateRows(tableRows);
+
+  let watermarkDataUrl: string | undefined;
+  try {
+    watermarkDataUrl = await loadImageWithOpacity(WATERMARK_PATH, 0.2);
+  } catch (error) {
+    console.warn("Unable to load the PDF background image.", error);
+  }
+
+  pages.forEach((pageRows, pageIndex) => {
+    if (pageIndex > 0) {
+      doc.addPage();
+    }
+
+    doc.setFillColor(255, 255, 255);
+    doc.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, "F");
+
+    drawWatermark(doc, watermarkDataUrl);
+
+    const tableHeight =
+      TABLE_HEADER_HEIGHT + pageRows.reduce((total, row) => total + row.height, 0);
+
+    drawHeader(doc, tableHeight);
+    drawRows(doc, pageRows);
+    drawGrid(doc, pageRows);
+  });
+
+  const dateTag = new Date().toISOString().slice(0, 10);
+  doc.save(`cetrank-college-list-${dateTag}.pdf`);
 };

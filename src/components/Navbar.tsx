@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, ArrowRight, Sparkles, X, LogOut, LogIn } from "lucide-react";
+import { Menu, X, LogOut, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useMagicArea } from "./effects/MagicArea";
@@ -55,36 +55,14 @@ export function Navbar() {
   const navLinks: NavLink[] = isListGenerator
     ? [
         { label: "Home", to: "/", active: location.pathname === "/" && !location.hash },
-        {
-          label: "Features",
-          to: "/#features",
-          active: location.pathname === "/" && location.hash === "#features",
-        },
-        {
-          label: "How It Works",
-          to: "/#how-it-works",
-          active: location.pathname === "/" && location.hash === "#how-it-works",
-        },
       ]
-    : [
-        {
-          label: "Features",
-          to: "/#features",
-          active: location.pathname === "/" && location.hash === "#features",
-        },
-        {
-          label: "How It Works",
-          to: "/#how-it-works",
-          active: location.pathname === "/" && location.hash === "#how-it-works",
-        },
-        { label: "List Generator", to: "/list-generator", active: isListGenerator },
-      ];
+    : [];
 
   const { containerRef: magicContainerRef, magicRef } = useMagicArea({
     tweenBack: true,
   });
 
-  const headerStatus = isListGenerator ? "AI shortlist workspace" : "AI-guided admissions";
+  const headerStatus = isListGenerator;
 
   return (
     <>
@@ -111,15 +89,12 @@ export function Navbar() {
               <Link to="/">
                 <AppLogo imageClassName="h-12 w-12 rounded-[20px]" />
               </Link>
-              <div className="hidden lg:flex items-center gap-2 rounded-full border border-primary/10 bg-white/80 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-primary/90">
-                <Sparkles className="h-3.5 w-3.5" />
-                {headerStatus}
-              </div>
+              
             </div>
 
             <div
               ref={magicContainerRef}
-              className="relative hidden items-center gap-1 rounded-full border border-border/70 bg-white/75 p-1 shadow-inner shadow-slate-200/60 md:flex"
+              className="relative hidden items-center gap-1 md:flex"
             >
               <div
                 ref={magicRef}
@@ -148,9 +123,7 @@ export function Navbar() {
             </div>
 
             <div className="hidden items-center gap-3 md:flex">
-              <div className="rounded-full border border-border/80 bg-white/80 px-3 py-1.5 text-xs font-medium text-muted-foreground">
-                4L+ cutoffs mapped
-              </div>
+              
 
               {!isListGenerator ? (
                 <Button
@@ -159,7 +132,6 @@ export function Navbar() {
                 >
                   <Link to="/list-generator">
                     Open Generator
-                    <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
               ) : null}
@@ -257,7 +229,6 @@ export function Navbar() {
 
               <div className="mt-4 rounded-[24px] border border-border/70 bg-gradient-to-r from-primary/10 to-teal-400/10 p-4">
                 <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
-                  <Sparkles className="h-3.5 w-3.5" />
                   {headerStatus}
                 </div>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -268,7 +239,6 @@ export function Navbar() {
                   <Button asChild className="mt-4 h-12 w-full rounded-2xl">
                     <Link to="/list-generator" onClick={() => setMobileOpen(false)}>
                       Open Generator
-                      <ArrowRight className="h-4 w-4 ml-2" />
                     </Link>
                   </Button>
                 ) : null}

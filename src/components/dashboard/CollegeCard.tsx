@@ -62,28 +62,8 @@ function AllocationTimeline({ data }: { data: CollegeResult }) {
 
   return (
     <div className="mt-4 space-y-3 border-t border-border/50 pt-4">
-      <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-        Allocation Validation
-      </div>
-      {steps.map((step, i) => (
-        <motion.div
-          key={step.label}
-          initial={{ opacity: 0, x: -15 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: i * 0.1, duration: 0.4 }}
-          className="flex items-center gap-3"
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: i * 0.1 + 0.1, type: "spring", stiffness: 300 }}
-          >
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-          </motion.div>
-          <span className="text-xs text-muted-foreground w-20 shrink-0">{step.label}</span>
-          <span className="text-xs font-medium truncate">{step.value}</span>
-        </motion.div>
-      ))}
+      
+      
     </div>
   );
 }
@@ -173,92 +153,9 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
           ) : null}
         </div>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-border/70 bg-white/80 p-3">
-            <div className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              Match quality
-            </div>
-            <div className="mt-1 text-sm font-semibold text-foreground">{fitLabel}</div>
-          </div>
-          <div className="rounded-2xl border border-border/70 bg-white/80 p-3">
-            <div className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              Next move
-            </div>
-            <div className="mt-1 text-sm font-semibold text-foreground">
-              Compare against similar branches
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span>Inspect trend, validation, and quick read</span>
-          </div>
-          <motion.div
-            animate={{ rotate: expanded ? 180 : 0 }}
-            transition={{ duration: 0.3 }}
-            className="flex items-center gap-1 font-medium text-primary"
-          >
-            <span>{expanded ? "Hide" : "Details"}</span>
-            <ChevronDown className="w-4 h-4" />
-          </motion.div>
-        </div>
       </div>
 
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="px-5 pb-5 md:px-6 md:pb-6">
-              <AllocationTimeline data={college} />
-
-              <div className="mt-5 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-                <div className="p-4 rounded-2xl bg-secondary/20 border border-border/30">
-                  <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
-                    Historical Cutoff Trend
-                  </div>
-                  <div className="flex items-end gap-1.5 h-14">
-                    {[65, 70, 68, 72, 75, 73, 78, cutoff].map((v, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ height: 0 }}
-                        animate={{ height: `${(v / 100) * 100}%` }}
-                        transition={{ delay: i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                        className="flex-1 bg-gradient-to-t from-primary/40 to-primary/80 rounded-t-sm hover:from-primary/60 hover:to-primary transition-colors"
-                      />
-                    ))}
-                  </div>
-                  <div className="flex justify-between text-[9px] text-muted-foreground mt-2 font-mono">
-                    <span>2023</span>
-                    <span>2025</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-background/70 border border-border/70">
-                  <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
-                    Quick Read
-                  </div>
-                  <div className="space-y-2 text-sm text-muted-foreground leading-relaxed">
-                    <p>
-                      This card appears strongest when your profile stays close to the shown cutoff and seat category.
-                    </p>
-                    <div className="flex items-center gap-2 text-primary font-medium">
-                      <ArrowUpRight className="w-4 h-4" />
-                      Save this into your shortlist bucket after comparing similar branches.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      
     </motion.div>
   );
 }

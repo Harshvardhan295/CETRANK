@@ -96,31 +96,12 @@ export function FeaturesGrid() {
 
       <div className="max-w-6xl mx-auto relative">
         <div className="features-title text-center mb-16">
-          <motion.div className="section-badge mb-6">
-            <Sparkles className="h-3.5 w-3.5" />
-            Features
-          </motion.div>
           <h2 className="section-title">
             Built for <span className="text-gradient">precision under pressure</span>
           </h2>
           <p className="section-copy max-w-2xl mx-auto mt-4">
             The product is designed to lower noise, increase confidence, and help students reach better shortlist decisions faster.
           </p>
-        </div>
-
-        <div className="mb-8 grid gap-4 md:grid-cols-3">
-          {[
-            { label: "Cutoff intelligence", value: "4L+ mapped records" },
-            { label: "Counselling coverage", value: "3 CAP rounds guided" },
-            { label: "Decision style", value: "Fast, readable, profile-aware" },
-          ].map((item) => (
-            <div key={item.label} className="rounded-[26px] border border-border/70 bg-white/75 p-5">
-              <div className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                {item.label}
-              </div>
-              <div className="mt-2 text-base font-semibold text-foreground">{item.value}</div>
-            </div>
-          ))}
         </div>
 
         <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -171,30 +152,8 @@ export function FeaturesGrid() {
                   </div>
                 ))}
               </div>
-
-              <div className="mt-5 flex items-center gap-1.5 text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                Learn more
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </div>
             </motion.div>
           ))}
-        </div>
-
-        <div className="mt-6 rounded-[32px] border border-border/70 bg-gradient-to-r from-primary/10 to-teal-400/10 p-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
-                <Radar className="h-3.5 w-3.5" />
-                UX outcome
-              </div>
-              <h3 className="mt-2 text-xl font-semibold text-foreground">
-                A calmer, more professional shortlist experience from landing page to results.
-              </h3>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-white/85 px-4 py-3 text-sm text-muted-foreground">
-              Better hierarchy, better motion, better decision support.
-            </div>
-          </div>
         </div>
       </div>
     </section>
