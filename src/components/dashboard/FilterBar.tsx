@@ -57,6 +57,10 @@ const GENDER_API_MAP: Record<string, string> = {
 };
 
 const normalizeCategoryOption = (value: string) => {
+  if (value === "GOBCH" || value === "LOBCH") {
+    return "OBC";
+  }
+
   if (value.length > 1 && ["G", "L"].includes(value[0])) {
     return value.slice(1);
   }
@@ -89,7 +93,9 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const categoryRef = useRef<HTMLDivElement>(null);
   const universityRef = useRef<HTMLDivElement>(null);
 
-  const uniqueCategories = Array.from(new Set(CATEGORIES.map(normalizeCategoryOption)));
+  const uniqueCategories = Array.from(
+    new Set(CATEGORIES.map(normalizeCategoryOption).filter((category) => category !== "TFWS")),
+  );
   const filteredCategories = uniqueCategories.filter((c) =>
     c.toLowerCase().includes(categorySearch.toLowerCase()),
   );

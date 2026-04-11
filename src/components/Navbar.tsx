@@ -129,7 +129,7 @@ export function Navbar() {
                   className="rounded-full px-5 shadow-[0_16px_36px_rgba(59,130,246,0.24)]"
                 >
                   <Link to="/list-generator">
-                    Open Generator
+                    Open List Generator
                   </Link>
                 </Button>
               ) : null}
@@ -236,7 +236,7 @@ export function Navbar() {
                 {!isListGenerator ? (
                   <Button asChild className="mt-4 h-12 w-full rounded-2xl">
                     <Link to="/list-generator" onClick={() => setMobileOpen(false)}>
-                      Open Generator
+                      Open List Generator
                     </Link>
                   </Button>
                 ) : null}

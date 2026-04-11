@@ -32,11 +32,11 @@ export function AppLogo({
         )}
       />
       {showText ? (
-        <span className={cn("flex flex-col leading-none", textClassName)}>
-          <span className="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-primary/70">
+        <span className={cn("flex items-baseline gap-1.5 leading-none", textClassName)}>
+          <span className="text-[0.82rem] font-semibold uppercase tracking-[0.24em] text-primary/70">
             CET
           </span>
-          <span className="text-lg font-black tracking-tight text-foreground">
+          <span className="text-xl font-black tracking-tight text-foreground">
             RANK
           </span>
         </span>
