@@ -37,12 +37,15 @@ const ListGenerator = () => {
     setIsLoading(true);
     setHasSearched(true);
     setLastFilters(filters);
+    console.log("[ListGenerator] handleSearch called with filters:", JSON.stringify(filters, null, 2));
     try {
       // 1. Fetch data from your backend
       const list = await getEligibleCutoffs(filters);
+      console.log("[ListGenerator] getEligibleCutoffs returned", list.length, "results");
       setResults(list);
       
       if (list.length === 0) {
+        console.warn("[ListGenerator] Empty results — showing 'No results' toast");
         toast({
           title: "No results",
           description: "Try adjusting your filters for more options.",
@@ -75,7 +78,7 @@ const ListGenerator = () => {
       }
 
     } catch (err) {
-      console.error(err);
+      console.error("[ListGenerator] Error in handleSearch:", err);
       toast({
         title: "Error",
         description:

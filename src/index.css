@@ -594,3 +594,140 @@ input:checked + .effect-dot {
   background: hsl(var(--primary) / 0.25);
   color: hsl(var(--foreground));
 }
+
+/* -- AI Sidebar markdown prose -- */
+.ai-prose {
+  font-size: 0.8125rem;
+  line-height: 1.65;
+}
+
+.ai-prose p {
+  margin: 0.35em 0;
+}
+
+.ai-prose p:first-child {
+  margin-top: 0;
+}
+
+.ai-prose p:last-child {
+  margin-bottom: 0;
+}
+
+.ai-prose strong {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.ai-prose em {
+  font-style: italic;
+}
+
+.ai-prose h1,
+.ai-prose h2,
+.ai-prose h3,
+.ai-prose h4 {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 700;
+  margin: 0.75em 0 0.35em;
+  line-height: 1.3;
+}
+
+.ai-prose h1 { font-size: 1.15em; }
+.ai-prose h2 { font-size: 1.05em; }
+.ai-prose h3 { font-size: 0.95em; }
+
+.ai-prose ul,
+.ai-prose ol {
+  padding-left: 1.25em;
+  margin: 0.4em 0;
+}
+
+.ai-prose ul {
+  list-style-type: disc;
+}
+
+.ai-prose ol {
+  list-style-type: decimal;
+}
+
+.ai-prose li {
+  margin: 0.15em 0;
+}
+
+.ai-prose li::marker {
+  color: hsl(var(--primary));
+}
+
+.ai-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  margin: 0.6em 0;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ai-prose thead {
+  background: hsl(var(--primary) / 0.08);
+}
+
+.ai-prose th {
+  font-weight: 600;
+  text-align: left;
+  padding: 0.45em 0.6em;
+  white-space: nowrap;
+  border-bottom: 2px solid hsl(var(--primary) / 0.18);
+  color: hsl(var(--primary));
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ai-prose td {
+  padding: 0.4em 0.6em;
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+  white-space: nowrap;
+}
+
+.ai-prose tbody tr:hover {
+  background: hsl(var(--primary) / 0.04);
+}
+
+.ai-prose code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85em;
+  background: hsl(var(--secondary));
+  padding: 0.15em 0.35em;
+  border-radius: 0.3em;
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
+.ai-prose pre {
+  margin: 0.5em 0;
+  padding: 0.65em 0.85em;
+  border-radius: 0.6em;
+  overflow-x: auto;
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
+.ai-prose pre code {
+  background: none;
+  padding: 0;
+  border: none;
+}
+
+.ai-prose blockquote {
+  border-left: 3px solid hsl(var(--primary) / 0.3);
+  padding: 0.25em 0.75em;
+  margin: 0.5em 0;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+.ai-prose hr {
+  border: none;
+  border-top: 1px solid hsl(var(--border) / 0.5);
+  margin: 0.75em 0;
+}

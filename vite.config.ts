@@ -5,7 +5,7 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const backendUrl = env.VITE_API_BASE_URL;
+  const backendUrl = env.VITE_API_BASE_URL || env.BACKEND_URL;
 
   if (!backendUrl && mode === "development") {
     console.warn("Warning: VITE_API_BASE_URL is not defined in your .env file.");
@@ -22,7 +22,6 @@ export default defineConfig(({ mode }) => {
         "/api": {
           target: backendUrl,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ""),
           secure: true,
         },
       },

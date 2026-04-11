@@ -78,7 +78,7 @@ export function CollegeResults({
           </div>
         <h3 className="text-xl font-bold mb-2 font-['Outfit']">Start Building Your List</h3>
         <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-          Set your filters above and click <span className="text-primary font-medium">Find Colleges</span>
+          Set your filters above and click <span className="text-primary font-medium">Generate List</span>
           to generate a cleaner shortlist with realistic options.
         </p>
       </motion.div>

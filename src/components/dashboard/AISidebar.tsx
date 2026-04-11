@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Send, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ApiError, sendChatQuery } from "@/lib/api";
@@ -40,19 +42,9 @@ export function AISidebar() {
 
   const pause = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
+  /** Light cleanup — only normalise excessive whitespace, keep markdown intact. */
   const cleanAssistantText = (value: string) =>
-    value
-      .replace(/```[\s\S]*?```/g, (match) => match.replace(/```/g, "").trim())
-      .replace(/^#{1,6}\s+/gm, "")
-      .replace(/\*\*(.*?)\*\*/g, "$1")
-      .replace(/\*(.*?)\*/g, "$1")
-      .replace(/__(.*?)__/g, "$1")
-      .replace(/_(.*?)_/g, "$1")
-      .replace(/`([^`]+)`/g, "$1")
-      .replace(/^\s*[-*+]\s+/gm, "")
-      .replace(/^\s*\d+\.\s+/gm, "")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
+    value.replace(/\n{3,}/g, "\n\n").trim();
 
   const getChatErrorMessage = (error: unknown) => {
     if (error instanceof ApiError) {
@@ -225,23 +217,7 @@ export function AISidebar() {
                   </Button>
                 </div>
 
-                <div className="mt-4 rounded-[24px] border border-border/70 bg-white/85 p-4">
-                  <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
-                    Suggested prompts
-                  </div>
-                  <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                    {QUICK_PROMPTS.map((prompt) => (
-                      <button
-                        key={prompt}
-                        type="button"
-                        onClick={() => addPrompt(prompt)}
-                        className="rounded-full border border-border/70 bg-slate-50/95 px-3 py-2 text-left text-xs text-slate-700 transition-colors hover:border-primary/20 hover:bg-primary/10"
-                      >
-                        {prompt}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                
               </div>
 
               {/* Messages */}
@@ -258,10 +234,16 @@ export function AISidebar() {
                       className={`max-w-[88%] px-4 py-3 text-sm leading-relaxed sm:max-w-[85%] ${
                         msg.role === "user"
                           ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md shadow-lg shadow-primary/10"
-                          : "bg-secondary/50 text-foreground rounded-2xl rounded-bl-md border border-border/30"
+                          : "bg-secondary/50 text-foreground rounded-2xl rounded-bl-md border border-border/30 ai-prose"
                       }`}
                     >
-                      {msg.content}
+                      {msg.role === "assistant" ? (
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {msg.content}
+                        </ReactMarkdown>
+                      ) : (
+                        msg.content
+                      )}
                     </div>
                   </motion.div>
                 ))}

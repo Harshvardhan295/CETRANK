@@ -1,9 +1,11 @@
 const DEFAULT_API_BASE_URL = "/api";
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL).replace(
-  /\/+$/,
-  "",
-);
+const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+const resolvedBaseUrl = import.meta.env.DEV
+  ? DEFAULT_API_BASE_URL
+  : configuredBaseUrl || DEFAULT_API_BASE_URL;
+
+const BASE_URL = resolvedBaseUrl.replace(/\/+$/, "");
 
 const API_ROOT = BASE_URL.startsWith("http") ? `${BASE_URL}/api` : BASE_URL;
 
@@ -17,6 +19,29 @@ const getStringList = (value: unknown): string[] =>
         .map((item) => item.trim())
         .filter(Boolean)
     : [];
+
+const pickFirstStringList = (...values: unknown[]) => {
+  for (const value of values) {
+    const items = getStringList(value);
+    if (items.length > 0) {
+      return items;
+    }
+  }
+
+  return [];
+};
+
+/** Split comma-separated entries (e.g. "Amravati Division, Nagpur Division") into distinct values. */
+const splitAndDedupe = (items: string[]): string[] => {
+  const unique = new Set<string>();
+  for (const item of items) {
+    for (const part of item.split(",")) {
+      const trimmed = part.trim();
+      if (trimmed) unique.add(trimmed);
+    }
+  }
+  return Array.from(unique).sort();
+};
 
 export interface CutoffRequest {
   user_category: string;
@@ -73,6 +98,7 @@ export interface MetadataResponse {
   cities: string[];
   divisions: string[];
   universities: string[];
+  minorities: string[];
 }
 
 export interface ChatResponse {
@@ -147,26 +173,49 @@ export async function getMetadata(): Promise<MetadataResponse> {
       : rawData;
 
   return {
-    cities: getStringList(data?.cities ?? data?.Cities),
-    divisions: getStringList(data?.divisions ?? data?.Divisions),
-    universities: getStringList(
-      data?.universities ??
-        data?.Universities ??
-        data?.home_universities ??
-        data?.homeUniversities,
+    cities: pickFirstStringList(data?.cities, data?.Cities),
+    divisions: splitAndDedupe(pickFirstStringList(data?.divisions, data?.Divisions)),
+    universities: pickFirstStringList(
+      data?.universities,
+      data?.Universities,
+      data?.home_universities,
+      data?.homeUniversities,
+    ),
+    minorities: pickFirstStringList(
+      data?.minorities,
+      data?.Minorities,
+      data?.minority,
+      data?.Minority,
+      data?.minority_list,
+      data?.minority_lists,
+      data?.minorityList,
+      data?.minorityLists,
+      data?.minority_options,
+      data?.minorityOptions,
+      data?.minority_types,
+      data?.minorityTypes,
+      data?.user_minority_list,
+      data?.userMinorityList,
     ),
   };
 }
 
 export async function getEligibleCutoffs(request: CutoffRequest): Promise<CollegeResult[]> {
-  const res = await fetch(buildApiUrl("/v1/get-cutoffs").toString(), {
+  const url = buildApiUrl("/v1/get-cutoffs").toString();
+  console.log("[getEligibleCutoffs] POST", url);
+  console.log("[getEligibleCutoffs] Request body:", JSON.stringify(request, null, 2));
+
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
   });
 
+  console.log("[getEligibleCutoffs] Response status:", res.status);
+
   if (!res.ok) {
     const detail = await parseErrorDetail(res);
+    console.error("[getEligibleCutoffs] API error:", res.status, detail);
     throw new ApiError(
       res.status,
       `Failed to fetch eligible cutoffs (${res.status})`,
@@ -176,9 +225,16 @@ export async function getEligibleCutoffs(request: CutoffRequest): Promise<Colleg
 
   const data = await res.json();
 
-  if (Array.isArray(data)) return data;
+  console.log("[getEligibleCutoffs] Response keys:", data ? Object.keys(data) : "null/undefined");
+  console.log("[getEligibleCutoffs] count:", data?.count, "| results length:", data?.results?.length);
+
+  if (Array.isArray(data)) {
+    console.log("[getEligibleCutoffs] Response is a direct array, length:", data.length);
+    return data;
+  }
   if (data && typeof data === "object") {
     if (Array.isArray(data.results)) {
+      console.log("[getEligibleCutoffs] Found data.results with", data.results.length, "items");
       const responseCategory =
         typeof data.user_details?.user_category === "string" && data.user_details.user_category
           ? data.user_details.user_category
@@ -196,9 +252,17 @@ export async function getEligibleCutoffs(request: CutoffRequest): Promise<Colleg
           : result,
       );
     }
-    if (Array.isArray(data.colleges)) return data.colleges;
-    if (Array.isArray(data.data)) return data.data;
+    if (Array.isArray(data.colleges)) {
+      console.log("[getEligibleCutoffs] Found data.colleges with", data.colleges.length, "items");
+      return data.colleges;
+    }
+    if (Array.isArray(data.data)) {
+      console.log("[getEligibleCutoffs] Found data.data with", data.data.length, "items");
+      return data.data;
+    }
+    console.warn("[getEligibleCutoffs] No recognized array field in response. Full response:", JSON.stringify(data).substring(0, 500));
   }
+  console.warn("[getEligibleCutoffs] Returning empty array — no results found in response");
   return [];
 }
 
