@@ -96,7 +96,7 @@ export function CollegeResults({
           <Search className="w-8 h-8 text-muted-foreground" />
         </div>
         <p className="text-muted-foreground max-w-md leading-relaxed">
-          No results found for the current profile. Try widening your percentile range or enabling more branches.
+          No results found for the current profile. Try adjusting your percentile or enabling more branches.
         </p>
       </motion.div>
     );
@@ -105,7 +105,7 @@ export function CollegeResults({
   return (
     <div className="space-y-5">
 
-      <div className="flex items-center justify-between mb-1">
+      <div className="mb-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-sm text-muted-foreground font-medium">
@@ -115,7 +115,7 @@ export function CollegeResults({
         <Button
           type="button"
           variant="outline"
-          className="rounded-full border-border/70 bg-white/85"
+          className="h-11 w-full rounded-full border-border/70 bg-white/85 sm:w-auto"
           onClick={onDownloadPdf}
           disabled={isDownloadingPdf}
         >

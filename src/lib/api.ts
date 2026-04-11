@@ -1,23 +1,39 @@
-const BASE_URL = "/api";
+const DEFAULT_API_BASE_URL = "/api";
+
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL).replace(
+  /\/+$/,
+  "",
+);
+
+const API_ROOT = BASE_URL.startsWith("http") ? `${BASE_URL}/api` : BASE_URL;
+
+const buildApiUrl = (path: string) =>
+  new URL(`${API_ROOT}${path.startsWith("/") ? path : `/${path}`}`, window.location.origin);
+
+const getStringList = (value: unknown): string[] =>
+  Array.isArray(value)
+    ? value
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : [];
 
 export interface CutoffRequest {
   user_category: string;
-  user_minority_list?: string[];
+  user_minority_list: string[];
   user_home_university: string;
-  gender?: string;
-  cities?: string[] | null;
-  divisions?: string[] | null;
-  min_percentile_cet?: number;
-  max_percentile_cet?: number;
-  min_percentile_ai?: number;
-  max_percentile_ai?: number;
-  is_tech?: boolean;
-  is_electronic?: boolean;
-  is_other?: boolean;
-  is_civil?: boolean;
-  is_mechanical?: boolean;
-  is_electrical?: boolean;
-  is_ews?: boolean;
+  user_gender: string;
+  city?: string[] | null;
+  division?: string[] | null;
+  percentile_cet: number;
+  percentile_ai: number;
+  is_tech: boolean;
+  is_electronic: boolean;
+  is_other: boolean;
+  is_civil: boolean;
+  is_mechanical: boolean;
+  is_electrical: boolean;
+  is_ews: boolean;
 }
 
 export interface CollegeResult {
@@ -50,16 +66,52 @@ export interface CollegeResult {
   status?: string;
 }
 
+export interface MetadataResponse {
+  cities: string[];
+  divisions: string[];
+  universities: string[];
+}
+
+export interface ChatResponse {
+  answer: string;
+  sql_generated?: string;
+  row_count?: number;
+}
+
+export class ApiError extends Error {
+  status: number;
+  detail?: string;
+
+  constructor(status: number, message: string, detail?: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.detail = detail;
+  }
+}
+
+const parseErrorDetail = async (res: Response) => {
+  const text = await res.text();
+
+  try {
+    const parsed = JSON.parse(text) as { detail?: string };
+    return parsed.detail ?? text;
+  } catch {
+    return text;
+  }
+};
+
 export async function getColleges(params?: {
   city?: string;
   division?: string;
   is_minority?: boolean;
 }) {
-  const url = new URL(`${BASE_URL}/colleges`);
+  const url = buildApiUrl("/colleges");
   if (params?.city) url.searchParams.set("city", params.city);
   if (params?.division) url.searchParams.set("division", params.division);
-  if (params?.is_minority !== undefined)
+  if (params?.is_minority !== undefined) {
     url.searchParams.set("is_minority", String(params.is_minority));
+  }
   const res = await fetch(url.toString());
   if (!res.ok) throw new Error("Failed to fetch colleges");
   return res.json();
@@ -69,7 +121,7 @@ export async function getBranches(params?: {
   college_code?: string;
   branch_name?: string;
 }) {
-  const url = new URL(`${BASE_URL}/branches`);
+  const url = buildApiUrl("/branches");
   if (params?.college_code) url.searchParams.set("college_code", params.college_code);
   if (params?.branch_name) url.searchParams.set("branch_name", params.branch_name);
   const res = await fetch(url.toString());
@@ -77,39 +129,50 @@ export async function getBranches(params?: {
   return res.json();
 }
 
+export async function getMetadata(): Promise<MetadataResponse> {
+  const res = await fetch(buildApiUrl("/v1/metadata").toString());
+
+  if (!res.ok) {
+    const detail = await parseErrorDetail(res);
+    throw new ApiError(res.status, `Failed to fetch metadata (${res.status})`, detail);
+  }
+
+  const rawData = await res.json();
+  const data =
+    rawData && typeof rawData === "object" && rawData.data && typeof rawData.data === "object"
+      ? rawData.data
+      : rawData;
+
+  return {
+    cities: getStringList(data?.cities ?? data?.Cities),
+    divisions: getStringList(data?.divisions ?? data?.Divisions),
+    universities: getStringList(
+      data?.universities ??
+        data?.Universities ??
+        data?.home_universities ??
+        data?.homeUniversities,
+    ),
+  };
+}
+
 export async function getEligibleCutoffs(request: CutoffRequest): Promise<CollegeResult[]> {
-  const res = await fetch(`${BASE_URL}/eligible-cutoffs`, {
+  const res = await fetch(buildApiUrl("/v1/get-cutoffs").toString(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      user_category: request.user_category,
-      user_minority_list: request.user_minority_list ?? [],
-      user_home_university: request.user_home_university,
-      gender: request.gender ?? "Male",
-      cities: request.cities ?? null,
-      divisions: request.divisions ?? null,
-      min_percentile_cet: request.min_percentile_cet ?? 0,
-      max_percentile_cet: request.max_percentile_cet ?? 100,
-      min_percentile_ai: request.min_percentile_ai ?? 0,
-      max_percentile_ai: request.max_percentile_ai ?? 100,
-      is_tech: request.is_tech ?? false,
-      is_electronic: request.is_electronic ?? false,
-      is_other: request.is_other ?? false,
-      is_civil: request.is_civil ?? false,
-      is_mechanical: request.is_mechanical ?? false,
-      is_electrical: request.is_electrical ?? false,
-      is_ews: request.is_ews ?? false,
-    }),
+    body: JSON.stringify(request),
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Failed to fetch eligible cutoffs (${res.status}): ${text}`);
+    const detail = await parseErrorDetail(res);
+    throw new ApiError(
+      res.status,
+      `Failed to fetch eligible cutoffs (${res.status})`,
+      detail,
+    );
   }
 
   const data = await res.json();
 
-  // Normalize response: backend may return an array directly, or wrap it
   if (Array.isArray(data)) return data;
   if (data && typeof data === "object") {
     if (Array.isArray(data.results)) return data.results;
@@ -119,11 +182,45 @@ export async function getEligibleCutoffs(request: CutoffRequest): Promise<Colleg
   return [];
 }
 
+export async function sendChatQuery(query: string): Promise<ChatResponse> {
+  const res = await fetch(buildApiUrl("/v1/chat").toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
+  });
+
+  if (!res.ok) {
+    const detail = await parseErrorDetail(res);
+    throw new ApiError(res.status, `Chat failed (${res.status})`, detail);
+  }
+
+  return res.json();
+}
+
 export const CATEGORIES = [
-  "GOPEN", "LOPEN", "GOBCH", "LOBCH", "GSEBC", "LSEBC",
-  "GSC", "LSC", "GST", "LST", "GVJN", "LVJN",
-  "GNT1", "LNT1", "GNT2", "LNT2", "GNT3", "LNT3",
-  "GOBC", "LOBC", "GEWS", "LEWS", "TFWS",
+  "GOPEN",
+  "LOPEN",
+  "GOBCH",
+  "LOBCH",
+  "GSEBC",
+  "LSEBC",
+  "GSC",
+  "LSC",
+  "GST",
+  "LST",
+  "GVJN",
+  "LVJN",
+  "GNT1",
+  "LNT1",
+  "GNT2",
+  "LNT2",
+  "GNT3",
+  "LNT3",
+  "GOBC",
+  "LOBC",
+  "GEWS",
+  "LEWS",
+  "TFWS",
 ];
 
 export const HOME_UNIVERSITIES = [

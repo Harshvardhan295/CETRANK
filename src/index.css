@@ -96,6 +96,7 @@
       radial-gradient(circle at 85% 18%, rgba(20, 184, 166, 0.12), transparent 24%),
       linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
     color-scheme: light;
+    overflow-x: hidden;
   }
 
   body::before {
@@ -137,7 +138,7 @@ input:checked + .effect-dot {
 
 @layer components {
   .app-shell {
-    @apply relative min-h-screen overflow-hidden bg-background text-foreground;
+    @apply relative min-h-screen overflow-x-hidden bg-background text-foreground;
   }
 
   .panel-surface {

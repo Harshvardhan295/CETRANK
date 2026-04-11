@@ -3,11 +3,10 @@ import { Navbar } from "@/components/Navbar";
 import { FilterBar } from "@/components/dashboard/FilterBar";
 import { CollegeResults } from "@/components/dashboard/CollegeResults";
 import { AISidebar } from "@/components/dashboard/AISidebar";
-import { getEligibleCutoffs } from "@/lib/api";
+import { ApiError, getEligibleCutoffs } from "@/lib/api";
 import type { CollegeResult, CutoffRequest } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { BrainCircuit, ClipboardList, Sparkles, Target } from "lucide-react";
 import gsap from "gsap";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,31 +21,6 @@ const ListGenerator = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [lastFilters, setLastFilters] = useState<CutoffRequest | null>(null);
   const headerRef = useRef<HTMLDivElement>(null);
-  
-  const totalResults = results.length;
-  const topCity =
-    results
-      .map((college) => college.city || college.City)
-      .filter(Boolean)
-      .reduce<Record<string, number>>((acc, city) => {
-        acc[city] = (acc[city] || 0) + 1;
-        return acc;
-      }, {});
-      
-  const leadingCity =
-    Object.entries(topCity).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "Awaiting results";
-    
-  const topBranchMap =
-    results
-      .map((college) => college.branch_name || college.Branch || college.branch)
-      .filter(Boolean)
-      .reduce<Record<string, number>>((acc, branch) => {
-        acc[branch] = (acc[branch] || 0) + 1;
-        return acc;
-      }, {});
-      
-  const leadingBranch =
-    Object.entries(topBranchMap).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "Branch mix updates after search";
 
   useEffect(() => {
     if (!headerRef.current) return;
@@ -105,7 +79,9 @@ const ListGenerator = () => {
       toast({
         title: "Error",
         description:
-          "Failed to fetch results. The server might be starting up - try again in a moment.",
+          err instanceof ApiError && err.detail
+            ? err.detail
+            : "Failed to fetch results. The server might be starting up - try again in a moment.",
         variant: "destructive",
       });
       setResults([]);
@@ -144,7 +120,7 @@ const ListGenerator = () => {
       <SiteBackdrop particleCount={12} variant="focused" />
 
       <Navbar />
-      <div className="relative z-10 pt-28 pb-12 px-4 max-w-7xl mx-auto">
+      <div className="relative z-10 mx-auto max-w-7xl px-3 pb-24 pt-24 sm:px-4 sm:pb-12 sm:pt-28">
         <div ref={headerRef} className="mb-8">
           
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
@@ -167,8 +143,7 @@ const ListGenerator = () => {
           </motion.div>
         </div>
       </div>
-
-      
+      <AISidebar />
     </div>
   );
 };

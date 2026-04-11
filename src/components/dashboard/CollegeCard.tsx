@@ -31,7 +31,7 @@ function ProbabilityGauge({ value }: { value: number }) {
 
   return (
     <div className="flex items-center gap-2.5">
-      <div className="relative w-24 h-2.5 bg-secondary/50 rounded-full overflow-hidden shadow-inner">
+      <div className="relative h-2.5 w-20 overflow-hidden rounded-full bg-secondary/50 shadow-inner sm:w-24">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${value}%` }}
@@ -110,10 +110,10 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
       className="glass rounded-[30px] overflow-hidden cursor-pointer group card-beam transition-shadow hover:shadow-lg hover:shadow-primary/5 border border-border/70"
       onClick={() => setExpanded(!expanded)}
     >
-      <div className="p-5 md:p-6">
-        <div className="flex items-start justify-between gap-4 mb-4">
+      <div className="p-4 sm:p-5 md:p-6">
+        <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
-            <div className="mb-3 flex items-center gap-2">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="rounded-full px-2.5 py-1 text-[10px]">
                 #{index + 1}
               </Badge>
@@ -128,7 +128,9 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
               <p className="text-sm text-muted-foreground mt-1.5">{branchName}</p>
             )}
           </div>
-          <ProbabilityGauge value={probability} />
+          <div className="flex justify-start sm:justify-end">
+            <ProbabilityGauge value={probability} />
+          </div>
         </div>
 
         <div className="flex items-center gap-1.5 flex-wrap">

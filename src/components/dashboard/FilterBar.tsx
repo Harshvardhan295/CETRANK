@@ -4,20 +4,15 @@ import {
   ChevronDown,
   RotateCcw,
   SlidersHorizontal,
-  Sparkles,
-  University,
-  UserRound,
   Gauge,
-  WandSparkles,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { useEffect, useRef, useState } from "react";
-import { CATEGORIES, HOME_UNIVERSITIES, BRANCH_FILTERS } from "@/lib/api";
+import { BRANCH_FILTERS, CATEGORIES, HOME_UNIVERSITIES, getMetadata } from "@/lib/api";
 import type { CutoffRequest } from "@/lib/api";
 
 interface FilterBarProps {
@@ -25,8 +20,44 @@ interface FilterBarProps {
   isLoading: boolean;
 }
 
+type BranchFilters = Pick<
+  CutoffRequest,
+  "is_tech" | "is_electronic" | "is_other" | "is_civil" | "is_mechanical" | "is_electrical"
+>;
+
+const CATEGORY_API_MAP: Record<string, string> = {
+  GOPEN: "OPEN",
+  LOPEN: "OPEN",
+  GOBCH: "OBC",
+  LOBCH: "OBC",
+  GOBC: "OBC",
+  LOBC: "OBC",
+  GSEBC: "SEBC",
+  LSEBC: "SEBC",
+  GSC: "SC",
+  LSC: "SC",
+  GST: "ST",
+  LST: "ST",
+  GVJN: "VJNT",
+  LVJN: "VJNT",
+  GNT1: "NT1",
+  LNT1: "NT1",
+  GNT2: "NT2",
+  LNT2: "NT2",
+  GNT3: "NT3",
+  LNT3: "NT3",
+  GEWS: "EWS",
+  LEWS: "EWS",
+  TFWS: "TFWS",
+};
+
+const GENDER_API_MAP: Record<string, string> = {
+  Male: "M",
+  Female: "F",
+};
+
 export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
-  const emptyBranches = {
+  const emptyBranches: BranchFilters = {
     is_tech: false,
     is_electronic: false,
     is_other: false,
@@ -38,13 +69,14 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const [category, setCategory] = useState("");
   const [university, setUniversity] = useState("");
   const [gender, setGender] = useState("");
-  const [percentileRange, setPercentileRange] = useState([50, 100]);
-  const [branches, setBranches] = useState<Record<string, boolean>>(emptyBranches);
+  const [percentile, setPercentile] = useState(75);
+  const [branches, setBranches] = useState<BranchFilters>(emptyBranches);
   const [isEws, setIsEws] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
   const [uniSearch, setUniSearch] = useState("");
   const [showCatDropdown, setShowCatDropdown] = useState(false);
   const [showUniDropdown, setShowUniDropdown] = useState(false);
+  const [universities, setUniversities] = useState(HOME_UNIVERSITIES);
   const [pulseKey, setPulseKey] = useState(0);
   const categoryRef = useRef<HTMLDivElement>(null);
   const universityRef = useRef<HTMLDivElement>(null);
@@ -52,7 +84,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const filteredCategories = CATEGORIES.filter((c) =>
     c.toLowerCase().includes(categorySearch.toLowerCase()),
   );
-  const filteredUniversities = HOME_UNIVERSITIES.filter((u) =>
+  const filteredUniversities = universities.filter((u) =>
     u.toLowerCase().includes(uniSearch.toLowerCase()),
   );
 
@@ -73,24 +105,52 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadMetadata = async () => {
+      try {
+        const metadata = await getMetadata();
+        if (!isMounted || metadata.universities.length === 0) {
+          return;
+        }
+
+        setUniversities(metadata.universities);
+      } catch (error) {
+        console.warn("Unable to load live university metadata. Using fallback options.", error);
+      }
+    };
+
+    void loadMetadata();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleSearch = () => {
     setPulseKey((k) => k + 1);
-    onSearch({
-      user_category: category,
+    const filters: CutoffRequest = {
+      user_category: CATEGORY_API_MAP[category] ?? category,
+      user_minority_list: [],
       user_home_university: university,
-      gender: gender || undefined,
-      min_percentile_cet: percentileRange[0],
-      max_percentile_cet: percentileRange[1],
+      user_gender: GENDER_API_MAP[gender] ?? gender,
+      city: null,
+      division: null,
+      percentile_cet: percentile,
+      percentile_ai: percentile,
       ...branches,
       is_ews: isEws,
-    });
+    };
+
+    onSearch(filters);
   };
 
   const resetFilters = () => {
     setCategory("");
     setUniversity("");
     setGender("");
-    setPercentileRange([50, 100]);
+    setPercentile(75);
     setBranches(emptyBranches);
     setIsEws(false);
     setCategorySearch("");
@@ -99,10 +159,6 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setShowUniDropdown(false);
   };
 
-  const activeBranchCount = Object.values(branches).filter(Boolean).length;
-  const selectedBranchLabels = BRANCH_FILTERS.filter((branch) => branches[branch.key]).map(
-    (branch) => branch.label,
-  );
   const canSearch = Boolean(category && university && gender);
 
   return (
@@ -290,18 +346,21 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3">
                   <Label className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     <Gauge className="h-3.5 w-3.5" />
-                    CET Percentile Range
+                    CET Percentile
                   </Label>
                   <span className="text-sm font-mono font-bold text-primary tabular-nums">
-                    {percentileRange[0]} - {percentileRange[1]}
+                    {percentile}
                   </span>
                 </div>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  The backend applies a +/-10 percentile buffer automatically for shortlist matching.
+                </p>
                 <Slider
                   min={0}
                   max={100}
                   step={1}
-                  value={percentileRange}
-                  onValueChange={setPercentileRange}
+                  value={[percentile]}
+                  onValueChange={(value) => setPercentile(value[0] ?? 75)}
                   className="py-2"
                 />
               </div>

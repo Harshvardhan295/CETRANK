@@ -70,10 +70,10 @@ export function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 200, damping: 30 }}
-        className="fixed inset-x-0 top-0 z-50 px-3 pt-3 transition-all duration-500 sm:px-4"
+        className="fixed inset-x-0 top-0 z-50 px-2 pt-2 transition-all duration-500 sm:px-4 sm:pt-3"
       >
         <div
-          className={`mx-auto max-w-7xl overflow-hidden rounded-[30px] border transition-all duration-500 ${
+          className={`mx-auto max-w-7xl overflow-hidden rounded-[24px] border transition-all duration-500 sm:rounded-[30px] ${
             scrolled
               ? "glass-strong border-border/80 shadow-[0_24px_72px_rgba(148,163,184,0.22)]"
               : "border-border/70 bg-white/75 shadow-[0_16px_48px_rgba(148,163,184,0.18)] backdrop-blur-xl"
@@ -86,9 +86,7 @@ export function Navbar() {
 
           <div className="flex items-center justify-between gap-3 px-3 py-3 sm:px-5">
             <div className="flex items-center gap-3">
-              <Link to="/">
-                <AppLogo imageClassName="h-12 w-12 rounded-[20px]" />
-              </Link>
+              <AppLogo imageClassName="h-12 w-12 rounded-[20px]" />
               
             </div>
 
@@ -190,7 +188,7 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -18, scale: 0.98 }}
               transition={{ duration: 0.22 }}
-              className="fixed left-3 right-3 top-24 z-50 overflow-hidden rounded-[30px] border border-border/80 bg-white/95 p-4 shadow-[0_30px_80px_rgba(148,163,184,0.28)] backdrop-blur-2xl md:hidden"
+              className="fixed left-2 right-2 top-[5.5rem] z-50 overflow-hidden rounded-[28px] border border-border/80 bg-white/95 p-4 shadow-[0_30px_80px_rgba(148,163,184,0.28)] backdrop-blur-2xl md:hidden"
             >
               <div className="mb-4 rounded-[26px] border border-border/70 bg-slate-50/90 p-4">
                 <div className="flex items-center justify-between gap-3">
