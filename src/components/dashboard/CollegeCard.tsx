@@ -90,10 +90,16 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
     college.Name ||
     college.name ||
     "Unknown College";
-  const branchName = college.branch_name || college.Branch || college.branch || "";
+  const branchName = college.branch_name || college.Branch || college.branch || college.course_name || "";
   const city = college.city || college.City || "";
   const category =
-    college.category || college.Category || college.seat_type || college.SeatType || "";
+    college.category ||
+    college.Category ||
+    college.seat_type ||
+    college.SeatType ||
+    college.reservation_category ||
+    college.user_category ||
+    "";
   const year = college.year || college.Year || "";
   const round = college.round || college.Round || college.round_no || "";
   const fitLabel =

@@ -50,12 +50,15 @@ export interface CollegeResult {
   branch_name?: string;
   Branch?: string;
   branch?: string;
+  course_name?: string;
   city?: string;
   City?: string;
   category?: string;
   Category?: string;
   seat_type?: string;
   SeatType?: string;
+  reservation_category?: string;
+  user_category?: string;
   year?: string | number;
   Year?: string | number;
   round?: string | number;
@@ -175,7 +178,24 @@ export async function getEligibleCutoffs(request: CutoffRequest): Promise<Colleg
 
   if (Array.isArray(data)) return data;
   if (data && typeof data === "object") {
-    if (Array.isArray(data.results)) return data.results;
+    if (Array.isArray(data.results)) {
+      const responseCategory =
+        typeof data.user_details?.user_category === "string" && data.user_details.user_category
+          ? data.user_details.user_category
+          : request.user_category;
+
+      return data.results.map((result) =>
+        result && typeof result === "object"
+          ? {
+              ...result,
+              user_category:
+                typeof result.user_category === "string" && result.user_category
+                  ? result.user_category
+                  : responseCategory,
+            }
+          : result,
+      );
+    }
     if (Array.isArray(data.colleges)) return data.colleges;
     if (Array.isArray(data.data)) return data.data;
   }

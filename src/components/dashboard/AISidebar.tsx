@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, Send, Sparkles, X } from "lucide-react";
+import { Bot, Send, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,20 @@ export function AISidebar() {
   };
 
   const pause = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+  const cleanAssistantText = (value: string) =>
+    value
+      .replace(/```[\s\S]*?```/g, (match) => match.replace(/```/g, "").trim())
+      .replace(/^#{1,6}\s+/gm, "")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/__(.*?)__/g, "$1")
+      .replace(/_(.*?)_/g, "$1")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/^\s*[-*+]\s+/gm, "")
+      .replace(/^\s*\d+\.\s+/gm, "")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
 
   const getChatErrorMessage = (error: unknown) => {
     if (error instanceof ApiError) {
@@ -90,7 +104,7 @@ export function AISidebar() {
           role: "assistant",
           content:
             typeof data.answer === "string" && data.answer.trim()
-              ? data.answer
+              ? cleanAssistantText(data.answer)
               : "I found a result, but the response was empty. Please try asking in a different way.",
         },
       ]);

@@ -56,6 +56,14 @@ const GENDER_API_MAP: Record<string, string> = {
   Female: "F",
 };
 
+const normalizeCategoryOption = (value: string) => {
+  if (value.length > 1 && ["G", "L"].includes(value[0])) {
+    return value.slice(1);
+  }
+
+  return value;
+};
+
 export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const emptyBranches: BranchFilters = {
     is_tech: false,
@@ -81,7 +89,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const categoryRef = useRef<HTMLDivElement>(null);
   const universityRef = useRef<HTMLDivElement>(null);
 
-  const filteredCategories = CATEGORIES.filter((c) =>
+  const uniqueCategories = Array.from(new Set(CATEGORIES.map(normalizeCategoryOption)));
+  const filteredCategories = uniqueCategories.filter((c) =>
     c.toLowerCase().includes(categorySearch.toLowerCase()),
   );
   const filteredUniversities = universities.filter((u) =>

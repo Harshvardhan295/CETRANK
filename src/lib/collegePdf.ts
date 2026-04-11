@@ -28,7 +28,7 @@ const COLUMNS = [
   {
     header: "Branch",
     width: 90,
-    keys: ["branch_name", "Branch", "branch"],
+    keys: ["branch_name", "Branch", "branch", "course_name"],
   },
   {
     header: "Branch Code",
@@ -38,7 +38,7 @@ const COLUMNS = [
   {
     header: "Category",
     width: 55,
-    keys: ["category", "Category", "seat_type", "SeatType"],
+    keys: ["category", "Category", "seat_type", "SeatType", "reservation_category", "user_category"],
   },
   {
     header: "Rank",
