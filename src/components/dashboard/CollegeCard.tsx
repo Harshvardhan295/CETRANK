@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, TrendingUp, ChevronDown, CheckCircle2, Sparkles, ArrowUpRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { MapPin, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { CollegeResult } from "@/lib/api";
@@ -7,49 +7,6 @@ import type { CollegeResult } from "@/lib/api";
 interface CollegeCardProps {
   college: CollegeResult;
   index: number;
-}
-
-function ProbabilityGauge({ value }: { value: number }) {
-  const color =
-    value >= 80
-      ? "text-emerald-600"
-      : value >= 50
-        ? "text-amber-500"
-        : "text-rose-500";
-  const bg =
-    value >= 80
-      ? "from-emerald-500 to-emerald-400"
-      : value >= 50
-        ? "from-amber-500 to-amber-400"
-        : "from-rose-500 to-rose-400";
-  const glowColor =
-    value >= 80
-      ? "shadow-emerald-500/18"
-      : value >= 50
-        ? "shadow-amber-500/18"
-        : "shadow-rose-500/18";
-
-  return (
-    <div className="flex items-center gap-2.5">
-      <div className="relative h-2.5 w-20 overflow-hidden rounded-full bg-secondary/50 shadow-inner sm:w-24">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${value}%` }}
-          transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className={`h-full rounded-full bg-gradient-to-r ${bg} ${glowColor} shadow-lg`}
-        />
-        <motion.div
-          initial={{ x: "-100%" }}
-          animate={{ x: "200%" }}
-          transition={{ duration: 1.5, delay: 1, repeat: Infinity, repeatDelay: 3 }}
-          className="absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-        />
-      </div>
-      <span className={`text-xs font-mono font-bold ${color} tabular-nums`}>
-        {value}%
-      </span>
-    </div>
-  );
 }
 
 function AllocationTimeline({ data }: { data: CollegeResult }) {
@@ -133,9 +90,6 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
             {branchName && (
               <p className="text-sm text-muted-foreground mt-1.5">{branchName}</p>
             )}
-          </div>
-          <div className="flex justify-start sm:justify-end">
-            <ProbabilityGauge value={probability} />
           </div>
         </div>
 

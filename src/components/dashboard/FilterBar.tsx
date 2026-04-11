@@ -764,10 +764,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                     </span>
                   </div>
                   <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    step={0.01}
+                    type="text"
+                    inputMode="decimal"
                     value={percentile}
                     onChange={(e) => handlePercentileChange(setPercentile, e.target.value)}
                     className="rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
@@ -785,10 +783,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                     </span>
                   </div>
                   <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    step={0.01}
+                    type="text"
+                    inputMode="decimal"
                     value={jeePercentile}
                     onChange={(e) => handlePercentileChange(setJeePercentile, e.target.value)}
                     className="rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
