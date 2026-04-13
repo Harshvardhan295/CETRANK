@@ -177,48 +177,47 @@ export function AISidebar() {
               onClick={() => setOpen(false)}
             />
 
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 30 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 30 }}
-              transition={{ type: "spring", damping: 25, stiffness: 350 }}
-              className="fixed inset-x-4 bottom-4 top-24 z-[70] flex flex-col overflow-hidden rounded-[32px] border border-white/20 shadow-[0_32px_128px_rgba(15,23,42,0.24)] md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:h-[85vh] md:w-[90vw] md:max-w-5xl"
-              style={{
-                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.92))",
-                backdropFilter: "blur(40px) saturate(120%)",
-              }}
-            >
-              <div className="shrink-0 border-b border-border/50 p-4 sm:p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                      style={{
-                        background: "linear-gradient(135deg, hsl(217 91% 53% / 0.15), hsl(173 80% 40% / 0.15))",
-                      }}
+            <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 pointer-events-none">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 350 }}
+                className="pointer-events-auto flex flex-col w-full max-w-5xl h-full max-h-[85vh] overflow-hidden rounded-[32px] border border-white/20 shadow-[0_32px_128px_rgba(15,23,42,0.24)]"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.92))",
+                  backdropFilter: "blur(40px) saturate(120%)",
+                }}
+              >
+                <div className="shrink-0 border-b border-border/50 p-4 sm:p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                        style={{
+                          background: "linear-gradient(135deg, hsl(217 91% 53% / 0.15), hsl(173 80% 40% / 0.15))",
+                        }}
+                      >
+                        <Bot className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold font-['Outfit']">AI Counselor</h3>
+                        <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                          Ask strategy questions
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-xl border border-border/60 bg-white/70"
+                      onClick={() => setOpen(false)}
+                      aria-label="Minimize AI counselor"
                     >
-                      <Bot className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold font-['Outfit']">AI Counselor</h3>
-                      <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                        Ask strategy questions
-                      </p>
-                    </div>
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 rounded-xl border border-border/60 bg-white/70"
-                    onClick={() => setOpen(false)}
-                    aria-label="Minimize AI counselor"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
                 </div>
-
-                
-              </div>
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 sm:px-5">
@@ -318,7 +317,8 @@ export function AISidebar() {
                 </form>
               </div>
             </motion.div>
-          </>
+          </div>
+        </>
         )}
       </AnimatePresence>
     </>
