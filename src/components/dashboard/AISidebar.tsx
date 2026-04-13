@@ -168,24 +168,24 @@ export function AISidebar() {
       <AnimatePresence>
         {open && (
           <>
-            {/* Backdrop */}
+            {/* Full-screen Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[60] bg-black/20 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-[60] bg-slate-950/30 backdrop-blur-md"
               onClick={() => setOpen(false)}
             />
 
             <motion.div
-              initial={{ x: "110%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "110%", opacity: 0 }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed inset-x-2 bottom-2 top-[5.75rem] z-[70] flex flex-col overflow-hidden rounded-[28px] border border-border/70 shadow-[0_24px_80px_rgba(15,23,42,0.16)] sm:left-auto sm:right-4 sm:top-24 sm:w-[24rem] md:w-[25rem]"
+              initial={{ scale: 0.95, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 30 }}
+              transition={{ type: "spring", damping: 25, stiffness: 350 }}
+              className="fixed inset-x-4 bottom-4 top-24 z-[70] flex flex-col overflow-hidden rounded-[32px] border border-white/20 shadow-[0_32px_128px_rgba(15,23,42,0.24)] md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:h-[85vh] md:w-[90vw] md:max-w-5xl"
               style={{
-                background: "hsl(var(--card) / 0.95)",
-                backdropFilter: "blur(40px)",
+                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.92))",
+                backdropFilter: "blur(40px) saturate(120%)",
               }}
             >
               <div className="shrink-0 border-b border-border/50 p-4 sm:p-5">
@@ -231,16 +231,27 @@ export function AISidebar() {
                     className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[88%] px-4 py-3 text-sm leading-relaxed sm:max-w-[85%] ${
+                      className={`max-w-[92%] px-5 py-4 text-sm leading-relaxed sm:max-w-[85%] ${
                         msg.role === "user"
-                          ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md shadow-lg shadow-primary/10"
-                          : "bg-secondary/50 text-foreground rounded-2xl rounded-bl-md border border-border/30 ai-prose"
+                          ? "bg-primary text-primary-foreground rounded-[24px] rounded-br-lg shadow-xl shadow-primary/10"
+                          : "bg-white/70 dark:bg-slate-900/60 text-foreground rounded-[24px] rounded-bl-lg border border-white/40 shadow-sm ai-prose backdrop-blur-md"
                       }`}
                     >
                       {msg.role === "assistant" ? (
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {msg.content}
-                        </ReactMarkdown>
+                        <div className="w-full overflow-hidden">
+                          <ReactMarkdown 
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              table: ({ children }) => (
+                                <div className="table-wrapper">
+                                  <table>{children}</table>
+                                </div>
+                              )
+                            }}
+                          >
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
                       ) : (
                         msg.content
                       )}
