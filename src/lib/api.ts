@@ -98,6 +98,7 @@ export interface CollegeResult {
   cutoff_percentile?: number;
   Percentile?: number;
   percentile?: number;
+  merit_rank?: number | string;
   college_name?: string;
   College?: string;
   Name?: string;

@@ -45,7 +45,7 @@ const COLUMNS = [
   {
     header: "Rank",
     width: 55,
-    keys: ["rank", "Rank", "merit_no", "Merit_No", "merit", "Merit", "cap_rank", "CAP_Rank"],
+    keys: ["rank", "Rank", "merit_no", "Merit_No", "merit", "Merit", "merit_rank", "cap_rank", "CAP_Rank"],
   },
   {
     header: "Percentile",

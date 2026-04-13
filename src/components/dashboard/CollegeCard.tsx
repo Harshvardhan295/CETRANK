@@ -59,6 +59,7 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
     "";
   const year = college.year || college.Year || "";
   const round = college.round || college.Round || college.round_no || "";
+  const rank = college.rank || college.Rank || college.merit_no || college.merit_rank || college.cap_rank || "";
   const fitLabel =
     probability >= 80 ? "Strong fit" : probability >= 60 ? "Worth comparing" : "Stretch option";
 
@@ -113,6 +114,11 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
               <TrendingUp className="w-3 h-3" /> {cutoff}
             </Badge>
           ) : null}
+          {rank && (
+            <Badge variant="outline" className="text-[10px] rounded-full px-2.5 py-1 border-primary/20 bg-primary/5 text-primary">
+              Rank {rank}
+            </Badge>
+          )}
         </div>
 
       </div>
