@@ -184,11 +184,12 @@ const drawWatermark = (doc: jsPDF, watermarkDataUrl?: string) => {
 };
 
 const drawUserDetails = (doc: jsPDF, user: UserDetails) => {
-  // Title / Subheader Box
+  // Increased box height for better spacing
+  const boxHeight = 140;
   doc.setFillColor(249, 250, 251); // Gray-50
-  doc.rect(TABLE_X, 20, TABLE_WIDTH, 120, "F");
+  doc.rect(TABLE_X, 20, TABLE_WIDTH, boxHeight, "F");
   doc.setDrawColor(229, 231, 235); // Gray-200
-  doc.rect(TABLE_X, 20, TABLE_WIDTH, 120, "S");
+  doc.rect(TABLE_X, 20, TABLE_WIDTH, boxHeight, "S");
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
@@ -197,43 +198,72 @@ const drawUserDetails = (doc: jsPDF, user: UserDetails) => {
 
   doc.setFontSize(9);
   doc.setTextColor(75, 85, 99); // Gray-600
-  doc.setFont("helvetica", "normal");
 
   const leftX = TABLE_X + 15;
   const midX = TABLE_X + 210;
   const rightX = TABLE_X + 410;
-  let y = 65;
+  const startY = 65;
+  const lineGap = 16; // Increased gap between rows
 
-  // Row 1
+  // --- COLUMN 1: Profile Info ---
   doc.setFont("helvetica", "bold");
-  doc.text("Personal Details", leftX, y);
-  doc.text("Academic Scores", midX, y);
-  doc.text("Location Filters", rightX, y);
-  
-  y += 15;
+  doc.text("Profile Details", leftX, startY);
   doc.setFont("helvetica", "normal");
-  doc.text(`Gender: ${user.user_gender}`, leftX, y);
-  doc.text(`CET Percentile: ${user.percentile_cet}`, midX, y);
-  doc.text(`Cities: ${user.city?.length ? user.city.join(", ") : "All"}`, rightX, y, { maxWidth: 170 });
-
-  y += 12;
-  doc.text(`Category: ${user.user_category}`, leftX, y);
-  doc.text(`AI Percentile: ${user.percentile_ai}`, midX, y);
-  doc.text(`Divisions: ${user.division?.length ? user.division.join(", ") : "All"}`, rightX, y, { maxWidth: 170 });
-
-  y += 12;
-  doc.text(`University: ${user.user_home_university}`, leftX, y, { maxWidth: 180 });
-  if (user.calculated_bounds) {
-    doc.text(`CET Range: ${user.calculated_bounds.min_percentile_cet} - ${user.calculated_bounds.max_percentile_cet}`, midX, y);
-  }
+  
+  let leftY = startY + 15;
+  doc.text(`Gender: ${user.user_gender}`, leftX, leftY);
+  
+  leftY += 12;
+  doc.text(`Category: ${user.user_category}`, leftX, leftY);
+  
+  leftY += 12;
+  const uniText = `University: ${user.user_home_university}`;
+  const wrappedUni = doc.splitTextToSize(uniText, 180);
+  doc.text(wrappedUni, leftX, leftY);
+  
+  // Calculate how many lines university took (usually 10pt font height + 2pt extra padding)
+  const uniLines = wrappedUni.length;
+  leftY += (uniLines * 11); 
 
   const minority = user.user_minority_list?.filter(m => m.trim()).join(", ");
   if (minority) {
-    y += 12;
-    doc.text(`Minority: ${minority}`, leftX, y, { maxWidth: 180 });
+    const minorityText = `Minority: ${minority}`;
+    const wrappedMin = doc.splitTextToSize(minorityText, 180);
+    doc.text(wrappedMin, leftX, leftY);
   }
 
-  y += 15;
+  // --- COLUMN 2: Academic scores ---
+  doc.setFont("helvetica", "bold");
+  doc.text("Academic Scores", midX, startY);
+  doc.setFont("helvetica", "normal");
+  
+  let midY = startY + 15;
+  doc.text(`CET Percentile: ${user.percentile_cet}`, midX, midY);
+  
+  midY += 12;
+  doc.text(`AI Percentile: ${user.percentile_ai}`, midX, midY);
+  
+  if (user.calculated_bounds) {
+    midY += 12;
+    doc.text(`CET Range: ${user.calculated_bounds.min_percentile_cet} - ${user.calculated_bounds.max_percentile_cet}`, midX, midY);
+  }
+
+  // --- COLUMN 3: Location Filters ---
+  doc.setFont("helvetica", "bold");
+  doc.text("Location Filters", rightX, startY);
+  doc.setFont("helvetica", "normal");
+  
+  let rightY = startY + 15;
+  const cities = user.city?.length ? user.city.join(", ") : "All";
+  const wrappedCities = doc.splitTextToSize(`Cities: ${cities}`, 170);
+  doc.text(wrappedCities, rightX, rightY);
+  
+  rightY += (wrappedCities.length * 11) + 4;
+  const divisions = user.division?.length ? user.division.join(", ") : "All";
+  const wrappedDivs = doc.splitTextToSize(`Divisions: ${divisions}`, 170);
+  doc.text(wrappedDivs, rightX, rightY);
+
+  // --- BOTTOM ROW: Branches ---
   const branches = [];
   if (user.is_tech) branches.push("CS/IT");
   if (user.is_electronic) branches.push("EnTC");
@@ -242,10 +272,13 @@ const drawUserDetails = (doc: jsPDF, user: UserDetails) => {
   if (user.is_civil) branches.push("Civil");
   if (user.is_other) branches.push("Other");
   
+  const finalBranchY = 20 + boxHeight - 15; // Positioned near sample bottom
   doc.setFont("helvetica", "bold");
-  doc.text("Interested Branches: ", leftX, y);
+  doc.setTextColor(31, 41, 55);
+  doc.text("Interested Branches: ", leftX, finalBranchY);
   doc.setFont("helvetica", "normal");
-  doc.text(branches.join(", ") || "None selected", leftX + 95, y);
+  doc.setTextColor(75, 85, 99);
+  doc.text(branches.join(", ") || "None selected", leftX + 95, finalBranchY);
 };
 
 const drawHeader = (doc: jsPDF, tableY: number, tableHeight: number) => {
