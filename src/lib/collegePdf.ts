@@ -1,13 +1,15 @@
 import { jsPDF } from "jspdf";
-import type { CollegeResult, CutoffRequest } from "@/lib/api";
+import type { CollegeResult, CutoffRequest, UserDetails } from "@/lib/api";
 
 const PAGE_WIDTH = 612;
 const PAGE_HEIGHT = 792;
 const TABLE_X = 8.5;
-const TABLE_Y = 26;
+const FIRST_PAGE_TABLE_Y = 160;
+const OTHER_PAGES_TABLE_Y = 40;
 const TABLE_WIDTH = 595;
 const TABLE_HEADER_HEIGHT = 18;
-const TABLE_BODY_HEIGHT = 696;
+const FIRST_PAGE_BODY_HEIGHT = 580;
+const OTHER_PAGES_BODY_HEIGHT = 700;
 const CELL_PADDING_X = 6;
 const CELL_LINE_HEIGHT = 12;
 const MIN_ROW_HEIGHT = 30;
@@ -145,18 +147,20 @@ const buildTableRow = (doc: jsPDF, college: CollegeResult): TableRow => {
   return { cells, height };
 };
 
-const paginateRows = (rows: TableRow[]) => {
+const paginateRows = (rows: TableRow[], firstPageLimit: number, otherPageLimit: number) => {
   const pages: TableRow[][] = [];
   let currentPage: TableRow[] = [];
   let usedHeight = 0;
+  let currentLimit = firstPageLimit;
 
   for (const row of rows) {
     const nextHeight = usedHeight + row.height;
 
-    if (currentPage.length > 0 && nextHeight > TABLE_BODY_HEIGHT) {
+    if (currentPage.length > 0 && nextHeight > currentLimit) {
       pages.push(currentPage);
       currentPage = [row];
       usedHeight = row.height;
+      currentLimit = otherPageLimit;
       continue;
     }
 
@@ -179,9 +183,74 @@ const drawWatermark = (doc: jsPDF, watermarkDataUrl?: string) => {
   doc.addImage(watermarkDataUrl, "PNG", 56, 146, 500, 500, undefined, "FAST");
 };
 
-const drawHeader = (doc: jsPDF, tableHeight: number) => {
-  doc.setFillColor(128, 128, 128);
-  doc.rect(TABLE_X, TABLE_Y, TABLE_WIDTH, TABLE_HEADER_HEIGHT, "F");
+const drawUserDetails = (doc: jsPDF, user: UserDetails) => {
+  // Title / Subheader Box
+  doc.setFillColor(249, 250, 251); // Gray-50
+  doc.rect(TABLE_X, 20, TABLE_WIDTH, 120, "F");
+  doc.setDrawColor(229, 231, 235); // Gray-200
+  doc.rect(TABLE_X, 20, TABLE_WIDTH, 120, "S");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.setTextColor(31, 41, 55); // Gray-800
+  doc.text("Candidate Preference Summary", TABLE_X + 15, 45);
+
+  doc.setFontSize(9);
+  doc.setTextColor(75, 85, 99); // Gray-600
+  doc.setFont("helvetica", "normal");
+
+  const leftX = TABLE_X + 15;
+  const midX = TABLE_X + 210;
+  const rightX = TABLE_X + 410;
+  let y = 65;
+
+  // Row 1
+  doc.setFont("helvetica", "bold");
+  doc.text("Personal Details", leftX, y);
+  doc.text("Academic Scores", midX, y);
+  doc.text("Location Filters", rightX, y);
+  
+  y += 15;
+  doc.setFont("helvetica", "normal");
+  doc.text(`Gender: ${user.user_gender}`, leftX, y);
+  doc.text(`CET Percentile: ${user.percentile_cet}`, midX, y);
+  doc.text(`Cities: ${user.city?.length ? user.city.join(", ") : "All"}`, rightX, y, { maxWidth: 170 });
+
+  y += 12;
+  doc.text(`Category: ${user.user_category}`, leftX, y);
+  doc.text(`AI Percentile: ${user.percentile_ai}`, midX, y);
+  doc.text(`Divisions: ${user.division?.length ? user.division.join(", ") : "All"}`, rightX, y, { maxWidth: 170 });
+
+  y += 12;
+  doc.text(`University: ${user.user_home_university}`, leftX, y, { maxWidth: 180 });
+  if (user.calculated_bounds) {
+    doc.text(`CET Range: ${user.calculated_bounds.min_percentile_cet} - ${user.calculated_bounds.max_percentile_cet}`, midX, y);
+  }
+
+  const minority = user.user_minority_list?.filter(m => m.trim()).join(", ");
+  if (minority) {
+    y += 12;
+    doc.text(`Minority: ${minority}`, leftX, y, { maxWidth: 180 });
+  }
+
+  y += 15;
+  const branches = [];
+  if (user.is_tech) branches.push("CS/IT");
+  if (user.is_electronic) branches.push("EnTC");
+  if (user.is_electrical) branches.push("Elec");
+  if (user.is_mechanical) branches.push("Mech");
+  if (user.is_civil) branches.push("Civil");
+  if (user.is_other) branches.push("Other");
+  
+  doc.setFont("helvetica", "bold");
+  doc.text("Interested Branches: ", leftX, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(branches.join(", ") || "None selected", leftX + 95, y);
+};
+
+const drawHeader = (doc: jsPDF, tableY: number, tableHeight: number) => {
+  doc.setFillColor(75, 85, 99); // Gray-600
+  doc.rect(TABLE_X, tableY, TABLE_WIDTH, TABLE_HEADER_HEIGHT, "F");
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
@@ -189,17 +258,17 @@ const drawHeader = (doc: jsPDF, tableHeight: number) => {
 
   let cursorX = TABLE_X;
   for (const column of COLUMNS) {
-    doc.text(column.header, cursorX + CELL_PADDING_X, TABLE_Y + 12);
+    doc.text(column.header, cursorX + CELL_PADDING_X, tableY + 12);
     cursorX += column.width;
   }
 
   doc.setLineWidth(0.5);
   doc.setDrawColor(0, 0, 0);
-  doc.rect(TABLE_X, TABLE_Y, TABLE_WIDTH, tableHeight);
+  doc.rect(TABLE_X, tableY, TABLE_WIDTH, tableHeight);
 };
 
-const drawGrid = (doc: jsPDF, pageRows: TableRow[]) => {
-  let y = TABLE_Y + TABLE_HEADER_HEIGHT;
+const drawGrid = (doc: jsPDF, tableY: number, pageRows: TableRow[]) => {
+  let y = tableY + TABLE_HEADER_HEIGHT;
 
   for (const row of pageRows) {
     y += row.height;
@@ -209,16 +278,16 @@ const drawGrid = (doc: jsPDF, pageRows: TableRow[]) => {
   let x = TABLE_X;
   for (const column of COLUMNS.slice(0, -1)) {
     x += column.width;
-    doc.line(x, TABLE_Y, x, y);
+    doc.line(x, tableY, x, y);
   }
 };
 
-const drawRows = (doc: jsPDF, pageRows: TableRow[]) => {
+const drawRows = (doc: jsPDF, tableY: number, pageRows: TableRow[]) => {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(0, 0, 0);
 
-  let rowTop = TABLE_Y + TABLE_HEADER_HEIGHT;
+  let rowTop = tableY + TABLE_HEADER_HEIGHT;
 
   for (const row of pageRows) {
     let cellX = TABLE_X;
@@ -240,9 +309,11 @@ const drawRows = (doc: jsPDF, pageRows: TableRow[]) => {
 
 export const downloadCollegeListPdf = async ({
   results,
+  userDetails,
 }: {
   results: CollegeResult[];
   filters?: CutoffRequest | null;
+  userDetails?: UserDetails | null;
 }) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -254,7 +325,11 @@ export const downloadCollegeListPdf = async ({
   doc.setFontSize(10);
 
   const tableRows = results.map((college) => buildTableRow(doc, college));
-  const pages = paginateRows(tableRows);
+  
+  // Custom pagination based on userDetails presence
+  const hasUserDetails = !!userDetails;
+  const firstPageLimit = hasUserDetails ? FIRST_PAGE_BODY_HEIGHT : OTHER_PAGES_BODY_HEIGHT;
+  const pages = paginateRows(tableRows, firstPageLimit, OTHER_PAGES_BODY_HEIGHT);
 
   let watermarkDataUrl: string | undefined;
   try {
@@ -273,12 +348,21 @@ export const downloadCollegeListPdf = async ({
 
     drawWatermark(doc, watermarkDataUrl);
 
-    const tableHeight =
-      TABLE_HEADER_HEIGHT + pageRows.reduce((total, row) => total + row.height, 0);
+    if (pageIndex === 0 && userDetails) {
+      drawUserDetails(doc, userDetails);
+    }
 
-    drawHeader(doc, tableHeight);
-    drawRows(doc, pageRows);
-    drawGrid(doc, pageRows);
+    const currentTableY = (pageIndex === 0 && hasUserDetails) ? FIRST_PAGE_TABLE_Y : OTHER_PAGES_TABLE_Y;
+    const tableHeight = TABLE_HEADER_HEIGHT + pageRows.reduce((total, row) => total + row.height, 0);
+
+    drawHeader(doc, currentTableY, tableHeight);
+    drawRows(doc, currentTableY, pageRows);
+    drawGrid(doc, currentTableY, pageRows);
+    
+    // Page Number
+    doc.setFontSize(8);
+    doc.setTextColor(156, 163, 175);
+    doc.text(`Page ${pageIndex + 1} of ${pages.length}`, PAGE_WIDTH / 2, PAGE_HEIGHT - 20, { align: "center" });
   });
 
   const dateTag = new Date().toISOString().slice(0, 10);

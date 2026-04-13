@@ -43,6 +43,36 @@ const splitAndDedupe = (items: string[]): string[] => {
   return Array.from(unique).sort();
 };
 
+export interface UserDetails {
+  user_gender: string;
+  user_category: string;
+  user_minority_list: string[];
+  user_home_university: string;
+  division?: string[];
+  city?: string[];
+  percentile_cet: number;
+  percentile_ai: number;
+  is_tech: boolean;
+  is_civil: boolean;
+  is_mechanical: boolean;
+  is_electrical: boolean;
+  is_electronic: boolean;
+  is_other: boolean;
+  is_ews: boolean;
+  calculated_bounds?: {
+    min_percentile_cet: number;
+    max_percentile_cet: number;
+    min_percentile_ai: number;
+    max_percentile_ai: number;
+  };
+}
+
+export interface CutoffResponse {
+  user_details: UserDetails;
+  count: number;
+  results: CollegeResult[];
+}
+
 export interface CutoffRequest {
   user_category: string;
   user_minority_list: string[];
@@ -200,7 +230,7 @@ export async function getMetadata(): Promise<MetadataResponse> {
   };
 }
 
-export async function getEligibleCutoffs(request: CutoffRequest): Promise<CollegeResult[]> {
+export async function getEligibleCutoffs(request: CutoffRequest): Promise<CutoffResponse> {
   const url = buildApiUrl("/v1/get-cutoffs").toString();
   console.log("[getEligibleCutoffs] POST", url);
   console.log("[getEligibleCutoffs] Request body:", JSON.stringify(request, null, 2));
@@ -230,40 +260,71 @@ export async function getEligibleCutoffs(request: CutoffRequest): Promise<Colleg
 
   if (Array.isArray(data)) {
     console.log("[getEligibleCutoffs] Response is a direct array, length:", data.length);
-    return data;
+    // If it's just an array, we synthesize a response object
+    return {
+      results: data,
+      count: data.length,
+      user_details: {
+        ...request,
+        is_electronic: request.is_electronic,
+        is_other: request.is_other,
+        is_civil: request.is_civil,
+        is_mechanical: request.is_mechanical,
+        is_electrical: request.is_electrical,
+        is_tech: request.is_tech,
+        is_ews: request.is_ews,
+        percentile_cet: request.percentile_cet,
+        percentile_ai: request.percentile_ai,
+      } as UserDetails
+    };
   }
-  if (data && typeof data === "object") {
-    if (Array.isArray(data.results)) {
-      console.log("[getEligibleCutoffs] Found data.results with", data.results.length, "items");
-      const responseCategory =
-        typeof data.user_details?.user_category === "string" && data.user_details.user_category
-          ? data.user_details.user_category
-          : request.user_category;
 
-      return data.results.map((result) =>
-        result && typeof result === "object"
-          ? {
-              ...result,
-              user_category:
-                typeof result.user_category === "string" && result.user_category
-                  ? result.user_category
-                  : responseCategory,
-            }
-          : result,
-      );
-    }
-    if (Array.isArray(data.colleges)) {
-      console.log("[getEligibleCutoffs] Found data.colleges with", data.colleges.length, "items");
-      return data.colleges;
-    }
-    if (Array.isArray(data.data)) {
-      console.log("[getEligibleCutoffs] Found data.data with", data.data.length, "items");
-      return data.data;
-    }
-    console.warn("[getEligibleCutoffs] No recognized array field in response. Full response:", JSON.stringify(data).substring(0, 500));
+  if (data && typeof data === "object") {
+    const results = Array.isArray(data.results) ? data.results : 
+                    Array.isArray(data.colleges) ? data.colleges :
+                    Array.isArray(data.data) ? data.data : [];
+
+    const responseCategory =
+      typeof data.user_details?.user_category === "string" && data.user_details.user_category
+        ? data.user_details.user_category
+        : request.user_category;
+
+    const mappedResults = results.map((result: any) =>
+      result && typeof result === "object"
+        ? {
+            ...result,
+            user_category:
+              typeof result.user_category === "string" && result.user_category
+                ? result.user_category
+                : responseCategory,
+          }
+        : result,
+    );
+
+    return {
+      results: mappedResults,
+      count: data.count ?? mappedResults.length,
+      user_details: data.user_details || {
+        ...request,
+        is_electronic: request.is_electronic,
+        is_other: request.is_other,
+        is_civil: request.is_civil,
+        is_mechanical: request.is_mechanical,
+        is_electrical: request.is_electrical,
+        is_tech: request.is_tech,
+        is_ews: request.is_ews,
+        percentile_cet: request.percentile_cet,
+        percentile_ai: request.percentile_ai,
+      }
+    };
   }
-  console.warn("[getEligibleCutoffs] Returning empty array — no results found in response");
-  return [];
+
+  console.warn("[getEligibleCutoffs] Returning empty response — no results found");
+  return {
+    results: [],
+    count: 0,
+    user_details: request as unknown as UserDetails
+  };
 }
 
 export async function sendChatQuery(query: string): Promise<ChatResponse> {

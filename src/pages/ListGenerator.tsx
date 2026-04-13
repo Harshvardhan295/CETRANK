@@ -12,10 +12,12 @@ import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { downloadCollegeListPdf } from "@/lib/collegePdf";
+import type { UserDetails } from "@/lib/api";
 
 const ListGenerator = () => {
   const { user } = useAuth(); // Access the authenticated user
   const [results, setResults] = useState<CollegeResult[]>([]);
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -40,9 +42,10 @@ const ListGenerator = () => {
     console.log("[ListGenerator] handleSearch called with filters:", JSON.stringify(filters, null, 2));
     try {
       // 1. Fetch data from your backend
-      const list = await getEligibleCutoffs(filters);
+      const { results: list, user_details } = await getEligibleCutoffs(filters);
       console.log("[ListGenerator] getEligibleCutoffs returned", list.length, "results");
       setResults(list);
+      setUserDetails(user_details);
       
       if (list.length === 0) {
         console.warn("[ListGenerator] Empty results — showing 'No results' toast");
@@ -101,7 +104,7 @@ const ListGenerator = () => {
     setIsDownloadingPdf(true);
 
     try {
-      await downloadCollegeListPdf({ results, filters: lastFilters });
+      await downloadCollegeListPdf({ results, filters: lastFilters, userDetails });
       toast({
         title: "PDF downloaded",
         description: `Saved ${results.length} college${results.length !== 1 ? "s" : ""} as a PDF.`,
