@@ -53,8 +53,8 @@ const CATEGORY_API_MAP: Record<string, string> = {
 };
 
 const GENDER_API_MAP: Record<string, string> = {
-  Male: "M",
-  Female: "F",
+  Male: "Male",
+  Female: "Female",
 };
 
 const MINORITY_FALLBACK_OPTIONS = [
