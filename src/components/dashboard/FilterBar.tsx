@@ -624,7 +624,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <div ref={religionRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      Religion
+                      Minority Religion
                       {selectedReligions.length > 0 && (
                         <span className="ml-auto text-primary font-bold">
                           {selectedReligions.length}
@@ -693,7 +693,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <div ref={languageRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-wrap">
-                      Language / Ethnicity
+                      Minority Language / Ethnicity
                       {selectedLanguages.length > 0 && (
                         <span className="ml-auto text-primary font-bold">
                           {selectedLanguages.length}
