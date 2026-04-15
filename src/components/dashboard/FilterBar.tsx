@@ -57,9 +57,10 @@ const GENDER_API_MAP: Record<string, string> = {
   Female: "Female",
 };
 
-const RELIGION_OPTIONS = ["Muslim", "Jain", "Christian"] as const;
+const RELIGION_OPTIONS = ["Not Applicable", "Muslim", "Jain", "Christian"] as const;
 
 const LANGUAGE_OPTIONS = [
+  "Not Applicable",
   "Gujarathi",
   "Gujar",
   "Hindi",
@@ -164,8 +165,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const [category, setCategory] = useState("");
   const [university, setUniversity] = useState("");
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
-  const [selectedReligions, setSelectedReligions] = useState<string[]>([]);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedReligions, setSelectedReligions] = useState<string[]>(["Not Applicable"]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["Not Applicable"]);
   const [selectedDivisions, setSelectedDivisions] = useState<string[]>([]);
   const [gender, setGender] = useState("");
   const [percentile, setPercentile] = useState(75);
@@ -289,13 +290,33 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setter(arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]);
   };
 
+    const toggleMinorityItem = (
+      arr: string[],
+      setter: React.Dispatch<React.SetStateAction<string[]>>,
+      item: string,
+    ) => {
+      if (item === "Not Applicable") {
+        setter(arr.includes(item) ? [] : ["Not Applicable"]);
+      } else {
+        const filtered = arr.filter((x) => x !== "Not Applicable");
+        setter(
+          filtered.includes(item)
+            ? filtered.filter((x) => x !== item)
+            : [...filtered, item],
+        );
+      }
+    };
+
   /* ── Search handler ── */
   const handleSearch = () => {
     setPulseKey((k) => k + 1);
 
     const filters: CutoffRequest = {
       user_category: CATEGORY_API_MAP[category] ?? category,
-      user_minority_list: [...selectedReligions, ...selectedLanguages],
+      user_minority_list: [
+        ...selectedReligions.filter((r) => r !== "Not Applicable"),
+        ...selectedLanguages.filter((l) => l !== "Not Applicable"),
+      ],
       user_home_university: university,
       user_gender: GENDER_API_MAP[gender] ?? gender,
       city: selectedCities.length > 0 ? selectedCities : null,
@@ -315,8 +336,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setCategory("");
     setUniversity("");
     setSelectedCities([]);
-    setSelectedReligions([]);
-    setSelectedLanguages([]);
+    setSelectedReligions(["Not Applicable"]);
+    setSelectedLanguages(["Not Applicable"]);
     setSelectedDivisions([]);
     setGender("");
     setPercentile(75);
@@ -680,7 +701,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                               key={r}
                               label={r}
                               selected={selectedReligions.includes(r)}
-                              onClick={() => toggleArrayItem(selectedReligions, setSelectedReligions, r)}
+                              onClick={() => toggleMinorityItem(selectedReligions, setSelectedReligions, r)}
                             />
                           ))}
                         </motion.div>
@@ -749,7 +770,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                               key={l}
                               label={l}
                               selected={selectedLanguages.includes(l)}
-                              onClick={() => toggleArrayItem(selectedLanguages, setSelectedLanguages, l)}
+                              onClick={() => toggleMinorityItem(selectedLanguages, setSelectedLanguages, l)}
                             />
                           ))}
                         </motion.div>
