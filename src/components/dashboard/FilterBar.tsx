@@ -57,14 +57,17 @@ const GENDER_API_MAP: Record<string, string> = {
   Female: "Female",
 };
 
-const MINORITY_FALLBACK_OPTIONS = [
-  "Muslim",
-  "Sikh",
-  "Christian",
-  "Jain",
-  "Buddhist",
-  "Parsi",
-  "Linguistic",
+const RELIGION_OPTIONS = ["Muslim", "Jain", "Christian"] as const;
+
+const LANGUAGE_OPTIONS = [
+  "Gujarathi",
+  "Gujar",
+  "Hindi",
+  "Sindhi",
+  "Punjabi",
+  "Tamil",
+  "Malyalam",
+  "Roman",
 ] as const;
 
 const normalizeCategoryOption = (value: string) => {
@@ -161,7 +164,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const [category, setCategory] = useState("");
   const [university, setUniversity] = useState("");
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
-  const [selectedMinorities, setSelectedMinorities] = useState<string[]>([]);
+  const [selectedReligions, setSelectedReligions] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [selectedDivisions, setSelectedDivisions] = useState<string[]>([]);
   const [gender, setGender] = useState("");
   const [percentile, setPercentile] = useState(75);
@@ -173,20 +177,21 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const [categorySearch, setCategorySearch] = useState("");
   const [uniSearch, setUniSearch] = useState("");
   const [citySearch, setCitySearch] = useState("");
-  const [minoritySearch, setMinoritySearch] = useState("");
+  const [religionSearch, setReligionSearch] = useState("");
+  const [languageSearch, setLanguageSearch] = useState("");
   const [divisionSearch, setDivisionSearch] = useState("");
 
   /* dropdown visibility */
   const [showCatDropdown, setShowCatDropdown] = useState(false);
   const [showUniDropdown, setShowUniDropdown] = useState(false);
   const [showCityDropdown, setShowCityDropdown] = useState(false);
-  const [showMinorityDropdown, setShowMinorityDropdown] = useState(false);
+  const [showReligionDropdown, setShowReligionDropdown] = useState(false);
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [showDivisionDropdown, setShowDivisionDropdown] = useState(false);
 
   /* data lists */
   const [universities, setUniversities] = useState(HOME_UNIVERSITIES);
   const [cities, setCities] = useState<string[]>([]);
-  const [minorities, setMinorities] = useState<string[]>([...MINORITY_FALLBACK_OPTIONS]);
   const [divisions, setDivisions] = useState<string[]>([]);
 
   const [pulseKey, setPulseKey] = useState(0);
@@ -195,7 +200,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const categoryRef = useRef<HTMLDivElement>(null);
   const universityRef = useRef<HTMLDivElement>(null);
   const cityRef = useRef<HTMLDivElement>(null);
-  const minorityRef = useRef<HTMLDivElement>(null);
+  const religionRef = useRef<HTMLDivElement>(null);
+  const languageRef = useRef<HTMLDivElement>(null);
   const divisionRef = useRef<HTMLDivElement>(null);
 
   /* derived filtered lists */
@@ -211,8 +217,11 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const filteredCities = cities.filter((c) =>
     c.toLowerCase().includes(citySearch.toLowerCase()),
   );
-  const filteredMinorities = minorities.filter((m) =>
-    m.toLowerCase().includes(minoritySearch.toLowerCase()),
+  const filteredReligions = RELIGION_OPTIONS.filter((r) =>
+    r.toLowerCase().includes(religionSearch.toLowerCase()),
+  );
+  const filteredLanguages = LANGUAGE_OPTIONS.filter((l) =>
+    l.toLowerCase().includes(languageSearch.toLowerCase()),
   );
   const filteredDivisions = divisions.filter((d) =>
     d.toLowerCase().includes(divisionSearch.toLowerCase()),
@@ -228,8 +237,10 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
         setShowUniDropdown(false);
       if (cityRef.current && !cityRef.current.contains(target))
         setShowCityDropdown(false);
-      if (minorityRef.current && !minorityRef.current.contains(target))
-        setShowMinorityDropdown(false);
+      if (religionRef.current && !religionRef.current.contains(target))
+        setShowReligionDropdown(false);
+      if (languageRef.current && !languageRef.current.contains(target))
+        setShowLanguageDropdown(false);
       if (divisionRef.current && !divisionRef.current.contains(target))
         setShowDivisionDropdown(false);
     };
@@ -248,7 +259,6 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
         if (!isMounted) return;
         if (metadata.universities.length > 0) setUniversities(metadata.universities);
         if (metadata.cities.length > 0) setCities(metadata.cities);
-        if (metadata.minorities.length > 0) setMinorities(metadata.minorities);
         if (metadata.divisions.length > 0) setDivisions(metadata.divisions);
       } catch (error) {
         console.warn("Unable to load live filter metadata. Using fallback options.", error);
@@ -266,7 +276,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     if (keep !== "cat") setShowCatDropdown(false);
     if (keep !== "uni") setShowUniDropdown(false);
     if (keep !== "city") setShowCityDropdown(false);
-    if (keep !== "minority") setShowMinorityDropdown(false);
+    if (keep !== "religion") setShowReligionDropdown(false);
+    if (keep !== "language") setShowLanguageDropdown(false);
     if (keep !== "division") setShowDivisionDropdown(false);
   };
 
@@ -284,7 +295,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
 
     const filters: CutoffRequest = {
       user_category: CATEGORY_API_MAP[category] ?? category,
-      user_minority_list: selectedMinorities,
+      user_minority_list: [...selectedReligions, ...selectedLanguages],
       user_home_university: university,
       user_gender: GENDER_API_MAP[gender] ?? gender,
       city: selectedCities.length > 0 ? selectedCities : null,
@@ -304,7 +315,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setCategory("");
     setUniversity("");
     setSelectedCities([]);
-    setSelectedMinorities([]);
+    setSelectedReligions([]);
+    setSelectedLanguages([]);
     setSelectedDivisions([]);
     setGender("");
     setPercentile(75);
@@ -314,12 +326,14 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setCategorySearch("");
     setUniSearch("");
     setCitySearch("");
-    setMinoritySearch("");
+    setReligionSearch("");
+    setLanguageSearch("");
     setDivisionSearch("");
-    setShowCatDropdown(false);
+    setShowReligionDropdown(false);
+    setShowLanguageDropdown(false);
     setShowUniDropdown(false);
     setShowCityDropdown(false);
-    setShowMinorityDropdown(false);
+    setShowCatDropdown(false);
     setShowDivisionDropdown(false);
   };
 
@@ -606,24 +620,26 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </FilterCard>
                 </div>
 
-                {/* Minority — multi-select */}
-                <div ref={minorityRef} className="relative">
+                {/* Religion — multi-select */}
+                <div ref={religionRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      Minority
-                      {selectedMinorities.length > 0 && (
-                        <span className="ml-auto text-primary font-bold">{selectedMinorities.length}</span>
+                      Religion
+                      {selectedReligions.length > 0 && (
+                        <span className="ml-auto text-primary font-bold">
+                          {selectedReligions.length}
+                        </span>
                       )}
                     </Label>
 
-                    {selectedMinorities.length > 0 && (
+                    {selectedReligions.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-2">
-                        {selectedMinorities.map((m) => (
+                        {selectedReligions.map((r) => (
                           <SelectedChip
-                            key={m}
-                            label={m}
+                            key={r}
+                            label={r}
                             onRemove={() =>
-                              setSelectedMinorities((prev) => prev.filter((x) => x !== m))
+                              setSelectedReligions((prev) => prev.filter((x) => x !== r))
                             }
                           />
                         ))}
@@ -633,16 +649,16 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                     <div
                       className="relative cursor-pointer"
                       onClick={() => {
-                        closeOtherDropdowns("minority");
-                        setShowMinorityDropdown(!showMinorityDropdown);
+                        closeOtherDropdowns("religion");
+                        setShowReligionDropdown(!showReligionDropdown);
                       }}
                     >
                       <Input
-                        placeholder="Search minorities…"
-                        value={minoritySearch}
+                        placeholder="Select religion"
+                        value={religionSearch}
                         onChange={(e) => {
-                          setMinoritySearch(e.target.value);
-                          if (!showMinorityDropdown) setShowMinorityDropdown(true);
+                          setReligionSearch(e.target.value);
+                          if (!showReligionDropdown) setShowReligionDropdown(true);
                         }}
                         onClick={(e) => e.stopPropagation()}
                         className="pr-8 rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
@@ -651,7 +667,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                     </div>
 
                     <AnimatePresence>
-                      {showMinorityDropdown && (
+                      {showReligionDropdown && (
                         <motion.div
                           initial={{ opacity: 0, y: -5, scale: 0.98 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -659,14 +675,12 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                           transition={{ duration: 0.2 }}
                           className="absolute z-30 top-full mt-2 left-0 right-0 max-h-48 overflow-y-auto rounded-2xl glass-strong shadow-2xl border border-border/50"
                         >
-                          {filteredMinorities.map((m) => (
+                          {filteredReligions.map((r) => (
                             <MultiSelectItem
-                              key={m}
-                              label={m}
-                              selected={selectedMinorities.includes(m)}
-                              onClick={() =>
-                                toggleArrayItem(selectedMinorities, setSelectedMinorities, m)
-                              }
+                              key={r}
+                              label={r}
+                              selected={selectedReligions.includes(r)}
+                              onClick={() => toggleArrayItem(selectedReligions, setSelectedReligions, r)}
                             />
                           ))}
                         </motion.div>
@@ -675,7 +689,79 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </FilterCard>
                 </div>
 
-                {/* Division — multi-select (NEW) */}
+                {/* Language — multi-select */}
+                <div ref={languageRef} className="relative">
+                  <FilterCard>
+                    <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-wrap">
+                      Language / Ethnicity
+                      {selectedLanguages.length > 0 && (
+                        <span className="ml-auto text-primary font-bold">
+                          {selectedLanguages.length}
+                        </span>
+                      )}
+                    </Label>
+
+                    {selectedLanguages.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {selectedLanguages.map((l) => (
+                          <SelectedChip
+                            key={l}
+                            label={l}
+                            onRemove={() =>
+                              setSelectedLanguages((prev) => prev.filter((x) => x !== l))
+                            }
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    <div
+                      className="relative cursor-pointer"
+                      onClick={() => {
+                        closeOtherDropdowns("language");
+                        setShowLanguageDropdown(!showLanguageDropdown);
+                      }}
+                    >
+                      <Input
+                        placeholder="Select language"
+                        value={languageSearch}
+                        onChange={(e) => {
+                          setLanguageSearch(e.target.value);
+                          if (!showLanguageDropdown) setShowLanguageDropdown(true);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="pr-8 rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
+                      />
+                      <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    </div>
+
+                    <AnimatePresence>
+                      {showLanguageDropdown && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -5, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -5, scale: 0.98 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute z-30 top-full mt-2 left-0 right-0 max-h-48 overflow-y-auto rounded-2xl glass-strong shadow-2xl border border-border/50"
+                        >
+                          {filteredLanguages.map((l) => (
+                            <MultiSelectItem
+                              key={l}
+                              label={l}
+                              selected={selectedLanguages.includes(l)}
+                              onClick={() => toggleArrayItem(selectedLanguages, setSelectedLanguages, l)}
+                            />
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </FilterCard>
+                </div>
+              </div>
+
+              {/* ── Row 3: Division · CET Percentile · JEE Percentile ── */}
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                {/* Division — multi-select */}
                 <div ref={divisionRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
@@ -749,10 +835,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                     </AnimatePresence>
                   </FilterCard>
                 </div>
-              </div>
 
-              {/* ── Row 3: CET Percentile · JEE Percentile ── */}
-              <div className="grid gap-4 lg:grid-cols-2">
                 <FilterCard className="md:p-5">
                   <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3">
                     <Label className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
