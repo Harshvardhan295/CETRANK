@@ -127,7 +127,7 @@ export interface CollegeResult {
 
 export interface MetadataResponse {
   cities: string[];
-  divisions: string[];
+  divisions: Record<string, string[]>;
   universities: string[];
   minorities: string[];
 }
@@ -203,9 +203,21 @@ export async function getMetadata(): Promise<MetadataResponse> {
       ? rawData.data
       : rawData;
 
+  const rawDivisions = data?.divisions || data?.Divisions || {};
+  let divisions: Record<string, string[]> = {};
+
+  if (Array.isArray(rawDivisions)) {
+    // Fallback for old array format (though unlikely based on user feedback)
+    rawDivisions.forEach((d: string) => {
+      divisions[d] = [];
+    });
+  } else if (typeof rawDivisions === "object") {
+    divisions = rawDivisions;
+  }
+
   return {
     cities: pickFirstStringList(data?.cities, data?.Cities),
-    divisions: splitAndDedupe(pickFirstStringList(data?.divisions, data?.Divisions)),
+    divisions,
     universities: pickFirstStringList(
       data?.universities,
       data?.Universities,

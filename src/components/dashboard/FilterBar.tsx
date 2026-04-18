@@ -192,8 +192,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
 
   /* data lists */
   const [universities, setUniversities] = useState(HOME_UNIVERSITIES);
-  const [cities, setCities] = useState<string[]>([]);
-  const [divisions, setDivisions] = useState<string[]>([]);
+  const [metadataDivisions, setMetadataDivisions] = useState<Record<string, string[]>>({});
 
   const [pulseKey, setPulseKey] = useState(0);
 
@@ -206,6 +205,13 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const divisionRef = useRef<HTMLDivElement>(null);
 
   /* derived filtered lists */
+  const divisions = Object.keys(metadataDivisions).sort();
+  
+  // Cities available based on selected divisions (or all cities if none selected)
+  const availableCities = selectedDivisions.length > 0
+    ? Array.from(new Set(selectedDivisions.flatMap(d => metadataDivisions[d] || []))).sort()
+    : Array.from(new Set(Object.values(metadataDivisions).flat())).sort();
+
   const uniqueCategories = Array.from(
     new Set(CATEGORIES.map(normalizeCategoryOption).filter((c) => c !== "TFWS")),
   );
@@ -215,7 +221,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const filteredUniversities = universities.filter((u) =>
     u.toLowerCase().includes(uniSearch.toLowerCase()),
   );
-  const filteredCities = cities.filter((c) =>
+  const filteredCities = availableCities.filter((c) =>
     c.toLowerCase().includes(citySearch.toLowerCase()),
   );
   const filteredReligions = RELIGION_OPTIONS.filter((r) =>
@@ -227,6 +233,16 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const filteredDivisions = divisions.filter((d) =>
     d.toLowerCase().includes(divisionSearch.toLowerCase()),
   );
+
+  /* ── Cleanup selected cities when they become unavailable ── */
+  useEffect(() => {
+    if (selectedDivisions.length > 0 && selectedCities.length > 0) {
+      const validCities = selectedCities.filter(city => availableCities.includes(city));
+      if (validCities.length !== selectedCities.length) {
+        setSelectedCities(validCities);
+      }
+    }
+  }, [selectedDivisions, availableCities, selectedCities]);
 
   /* ── Close dropdowns on outside click ── */
   useEffect(() => {
@@ -259,8 +275,9 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
         const metadata = await getMetadata();
         if (!isMounted) return;
         if (metadata.universities.length > 0) setUniversities(metadata.universities);
-        if (metadata.cities.length > 0) setCities(metadata.cities);
-        if (metadata.divisions.length > 0) setDivisions(metadata.divisions);
+        if (Object.keys(metadata.divisions).length > 0) {
+          setMetadataDivisions(metadata.divisions);
+        }
       } catch (error) {
         console.warn("Unable to load live filter metadata. Using fallback options.", error);
       }
@@ -598,7 +615,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                       }}
                     >
                       <Input
-                        placeholder={cities.length > 0 ? "Search cities…" : "Type city name"}
+                        placeholder={availableCities.length > 0 ? "Search cities…" : "Type city name"}
                         value={citySearch}
                         onChange={(e) => {
                           setCitySearch(e.target.value);
