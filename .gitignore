@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 .env
+
+CETRANK google auth credentials.json
