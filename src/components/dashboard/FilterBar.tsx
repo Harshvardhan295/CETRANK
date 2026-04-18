@@ -192,6 +192,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
 
   /* data lists */
   const [universities, setUniversities] = useState(HOME_UNIVERSITIES);
+  const [allCities, setAllCities] = useState<string[]>([]);
   const [metadataDivisions, setMetadataDivisions] = useState<Record<string, string[]>>({});
 
   const [pulseKey, setPulseKey] = useState(0);
@@ -210,7 +211,10 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   // Cities available based on selected divisions (or all cities if none selected)
   const availableCities = selectedDivisions.length > 0
     ? Array.from(new Set(selectedDivisions.flatMap(d => metadataDivisions[d] || []))).sort()
-    : Array.from(new Set(Object.values(metadataDivisions).flat())).sort();
+    : (allCities.length > 0 
+        ? allCities 
+        : Array.from(new Set(Object.values(metadataDivisions).flat())).sort()
+      );
 
   const uniqueCategories = Array.from(
     new Set(CATEGORIES.map(normalizeCategoryOption).filter((c) => c !== "TFWS")),
@@ -275,6 +279,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
         const metadata = await getMetadata();
         if (!isMounted) return;
         if (metadata.universities.length > 0) setUniversities(metadata.universities);
+        if (metadata.cities.length > 0) setAllCities(metadata.cities);
         if (Object.keys(metadata.divisions).length > 0) {
           setMetadataDivisions(metadata.divisions);
         }
