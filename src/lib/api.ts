@@ -216,14 +216,14 @@ export async function getMetadata(): Promise<MetadataResponse> {
   }
 
   return {
-    cities: pickFirstStringList(data?.cities, data?.Cities),
+    cities: pickFirstStringList(data?.cities, data?.Cities).sort(),
     divisions,
     universities: pickFirstStringList(
       data?.universities,
       data?.Universities,
       data?.home_universities,
       data?.homeUniversities,
-    ),
+    ).sort(),
     minorities: pickFirstStringList(
       data?.minorities,
       data?.Minorities,
@@ -382,15 +382,21 @@ export const CATEGORIES = [
 ];
 
 export const HOME_UNIVERSITIES = [
-  "Savitribai Phule Pune University",
-  "Mumbai University",
-  "Rashtrasant Tukadoji Maharaj Nagpur University",
+  "Autonomous",
+  "Autonomous Institute",
+  "Deemed to be University",
   "Dr. Babasaheb Ambedkar Marathwada University",
-  "Shivaji University",
-  "North Maharashtra University",
-  "Solapur University",
-  "Kavayitri Bahinabai Chaudhari North Maharashtra University",
+  "Dr. Babasaheb Ambedkar Technological University,Lonere",
+  "Gondwana University",
+  "Kavayitri Bahinabai Chaudhari North Maharashtra University, Jalgaon",
+  "Mumbai University",
+  "Punyashlok Ahilyadevi Holkar Solapur University",
+  "Rashtrasant Tukadoji Maharaj Nagpur University",
+  "SNDT Women's University",
   "Sant Gadge Baba Amravati University",
+  "Savitribai Phule Pune University",
+  "Shivaji University",
+  "Swami Ramanand Teerth Marathwada University, Nanded",
 ];
 
 export const BRANCH_FILTERS = [
