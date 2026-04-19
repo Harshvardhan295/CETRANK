@@ -97,6 +97,13 @@ const ListGenerator = () => {
       setResults(list);
       setUserDetails(user_details);
       
+      if (list.length > 0 && list.length < 40) {
+        toast({
+          title: "Pro Tip: Small List",
+          description: "Your list has less than 40 options. Try adding more cities or branches to see more possibilities.",
+        });
+      }
+
       if (list.length === 0) {
         toast({
           title: "No results",
