@@ -44,6 +44,7 @@ const splitAndDedupe = (items: string[]): string[] => {
 };
 
 export interface UserDetails {
+  student_name?: string;
   user_gender: string;
   user_category: string;
   user_minority_list: string[];
@@ -74,6 +75,7 @@ export interface CutoffResponse {
 }
 
 export interface CutoffRequest {
+  student_name?: string;
   user_category: string;
   user_minority_list: string[];
   user_home_university: string;
@@ -288,6 +290,7 @@ export async function getEligibleCutoffs(request: CutoffRequest): Promise<Cutoff
         is_ews: request.is_ews,
         percentile_cet: request.percentile_cet,
         percentile_ai: request.percentile_ai,
+        student_name: request.student_name,
       } as UserDetails
     };
   }
@@ -328,6 +331,7 @@ export async function getEligibleCutoffs(request: CutoffRequest): Promise<Cutoff
         is_ews: request.is_ews,
         percentile_cet: request.percentile_cet,
         percentile_ai: request.percentile_ai,
+        student_name: request.student_name,
       }
     };
   }

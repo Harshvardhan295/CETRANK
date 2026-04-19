@@ -211,6 +211,14 @@ const drawUserDetails = (doc: jsPDF, user: UserDetails) => {
   doc.setFont("helvetica", "normal");
   
   let leftY = startY + 15;
+
+  if (user.student_name) {
+    doc.setFont("helvetica", "bold");
+    doc.text(`Student: ${user.student_name}`, leftX, leftY);
+    doc.setFont("helvetica", "normal");
+    leftY += 12;
+  }
+
   doc.text(`Gender: ${user.user_gender}`, leftX, leftY);
   
   leftY += 12;
@@ -398,6 +406,9 @@ export const downloadCollegeListPdf = async ({
     doc.text(`Page ${pageIndex + 1} of ${pages.length}`, PAGE_WIDTH / 2, PAGE_HEIGHT - 20, { align: "center" });
   });
 
+  const nameSlug = userDetails?.student_name 
+    ? userDetails.student_name.toLowerCase().replace(/\s+/g, "-").slice(0, 20) 
+    : "college-list";
   const dateTag = new Date().toISOString().slice(0, 10);
-  doc.save(`cetrank-college-list-${dateTag}.pdf`);
+  doc.save(`cetrank-${nameSlug}-${dateTag}.pdf`);
 };

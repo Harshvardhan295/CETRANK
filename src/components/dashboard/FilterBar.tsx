@@ -162,6 +162,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   };
 
   const [expanded, setExpanded] = useState(true);
+  const [studentName, setStudentName] = useState("");
   const [category, setCategory] = useState("");
   const [university, setUniversity] = useState("");
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
@@ -335,6 +336,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
 
     const filters: CutoffRequest = {
       user_category: CATEGORY_API_MAP[category] ?? category,
+      student_name: studentName,
       user_minority_list: [
         ...selectedReligions.filter((r) => r !== "Not Applicable"),
         ...selectedLanguages.filter((l) => l !== "Not Applicable"),
@@ -355,6 +357,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
 
   /* ── Reset ── */
   const resetFilters = () => {
+    setStudentName("");
     setCategory("");
     setUniversity("");
     setSelectedCities([]);
@@ -450,6 +453,21 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
             className="overflow-hidden"
           >
             <div className="px-5 pb-6 pt-5 md:px-6 space-y-6">
+
+              {/* ── Row 0: Student Name ── */}
+              <div className="grid grid-cols-1">
+                <FilterCard>
+                  <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    Student Full Name
+                  </Label>
+                  <Input
+                    placeholder="Enter student's full name"
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                    className="rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
+                  />
+                </FilterCard>
+              </div>
 
               {/* ── Row 1: Category · University · Gender ── */}
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
