@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CollegeCard } from "./CollegeCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight, Download, GraduationCap, Search } from "lucide-react";
+import { AlertCircle, ChevronLeft, ChevronRight, Download, GraduationCap, Search } from "lucide-react";
 import type { CollegeResult } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -106,11 +106,24 @@ export function CollegeResults({
     <div className="space-y-5">
 
       <div className="mb-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-sm text-muted-foreground font-medium">
-            {results.length} college{results.length !== 1 ? "s" : ""} found
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-sm text-muted-foreground font-medium">
+              {results.length} college{results.length !== 1 ? "s" : ""} found
+            </span>
+          </div>
+
+          {results.length > 0 && results.length < 40 && (
+            <motion.div 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-[11px] font-medium"
+            >
+              <AlertCircle className="w-3.5 h-3.5" />
+              <span>Pro Tip: Try adding more cities or branches for more options</span>
+            </motion.div>
+          )}
         </div>
         <Button
           type="button"
