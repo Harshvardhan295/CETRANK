@@ -7,11 +7,14 @@ import {
   Gauge,
   X,
   Check,
+  Info,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BRANCH_FILTERS, CATEGORIES, HOME_UNIVERSITIES, getMetadata } from "@/lib/api";
 import type { CutoffRequest } from "@/lib/api";
@@ -826,7 +829,52 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <div ref={divisionRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      Division
+                      <span>Division</span>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className="inline-flex items-center justify-center p-0.5 rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                            title="View cities in divisions"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Info className="w-3.5 h-3.5" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-72 sm:w-80 p-0 rounded-2xl glass-strong shadow-2xl border border-border/40 overflow-hidden z-[100]">
+                          <div className="p-3 border-b border-border/50 bg-primary/5">
+                            <h4 className="text-xs font-bold text-primary uppercase tracking-wider">
+                              Divisions & Cities
+                            </h4>
+                          </div>
+                          <ScrollArea className="max-h-[350px]">
+                            <div className="p-3 space-y-4">
+                              {Object.entries(metadataDivisions)
+                                .sort(([a], [b]) => a.localeCompare(b))
+                                .map(([div, cities]) => (
+                                  <div key={div} className="space-y-1.5">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                      <span className="text-[11px] font-bold text-foreground uppercase tracking-tight">
+                                        {div}
+                                      </span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-1.5 pl-3.5">
+                                      {cities.sort().map((city) => (
+                                        <span
+                                          key={city}
+                                          className="text-[10px] px-2 py-0.5 rounded-md bg-secondary/50 text-muted-foreground border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-colors"
+                                        >
+                                          {city}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </ScrollArea>
+                        </PopoverContent>
+                      </Popover>
                       {selectedDivisions.length > 0 && (
                         <span className="ml-auto text-primary font-bold">{selectedDivisions.length}</span>
                       )}
