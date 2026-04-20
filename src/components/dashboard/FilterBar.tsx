@@ -847,32 +847,30 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                               Divisions & Cities
                             </h4>
                           </div>
-                          <ScrollArea className="max-h-[350px]">
-                            <div className="p-3 space-y-4">
-                              {Object.entries(metadataDivisions)
-                                .sort(([a], [b]) => a.localeCompare(b))
-                                .map(([div, cities]) => (
-                                  <div key={div} className="space-y-1.5">
-                                    <div className="flex items-center gap-2">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                      <span className="text-[11px] font-bold text-foreground uppercase tracking-tight">
-                                        {div}
-                                      </span>
-                                    </div>
-                                    <div className="flex flex-wrap gap-1.5 pl-3.5">
-                                      {cities.sort().map((city) => (
-                                        <span
-                                          key={city}
-                                          className="text-[10px] px-2 py-0.5 rounded-md bg-secondary/50 text-muted-foreground border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-colors"
-                                        >
-                                          {city}
-                                        </span>
-                                      ))}
-                                    </div>
+                          <div className="p-4 space-y-5 overflow-y-auto max-h-[320px] scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent">
+                            {Object.entries(metadataDivisions)
+                              .sort(([a], [b]) => a.localeCompare(b))
+                              .map(([div, cities]) => (
+                                <div key={div} className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(37,99,235,0.4)]" />
+                                    <span className="text-[11px] font-bold text-foreground uppercase tracking-tight">
+                                      {div}
+                                    </span>
                                   </div>
-                                ))}
-                            </div>
-                          </ScrollArea>
+                                  <div className="flex flex-wrap gap-1.5 pl-3.5">
+                                    {cities.sort().map((city) => (
+                                      <span
+                                        key={city}
+                                        className="text-[10px] px-2.5 py-1 rounded-lg bg-secondary/40 text-muted-foreground border border-border/40 hover:border-primary/30 hover:bg-primary/5 hover:text-primary transition-all duration-200"
+                                      >
+                                        {city}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
                         </PopoverContent>
                       </Popover>
                       {selectedDivisions.length > 0 && (
