@@ -193,8 +193,9 @@ export async function getBranches(params?: {
   return res.json();
 }
 
-export async function getMetadata(): Promise<MetadataResponse> {
-  const res = await fetch(buildApiUrl("/v1/metadata").toString());
+export async function getMetadata(courseType: "engineering" | "pharmacy" = "engineering"): Promise<MetadataResponse> {
+  const endpoint = courseType === "pharmacy" ? "/v1/pharmacy-metadata" : "/v1/metadata";
+  const res = await fetch(buildApiUrl(endpoint).toString());
 
   if (!res.ok) {
     const detail = await parseErrorDetail(res);

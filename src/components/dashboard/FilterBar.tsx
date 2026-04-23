@@ -281,13 +281,12 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
 
     const loadMetadata = async () => {
       try {
-        const metadata = await getMetadata();
+        const metadata = await getMetadata(courseType);
         if (!isMounted) return;
-        if (metadata.universities.length > 0) setUniversities(metadata.universities);
-        if (metadata.cities.length > 0) setAllCities(metadata.cities);
-        if (Object.keys(metadata.divisions).length > 0) {
-          setMetadataDivisions(metadata.divisions);
-        }
+        
+        setUniversities(metadata.universities.length > 0 ? metadata.universities : HOME_UNIVERSITIES);
+        setAllCities(metadata.cities || []);
+        setMetadataDivisions(metadata.divisions || {});
       } catch (error) {
         console.warn("Unable to load live filter metadata. Using fallback options.", error);
       }
@@ -297,7 +296,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [courseType]);
 
   /* ── Helpers ── */
   const closeOtherDropdowns = (keep: string) => {
