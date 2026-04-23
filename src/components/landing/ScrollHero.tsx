@@ -1,9 +1,10 @@
 import { useRef, useEffect, useCallback, useState } from "react";
-import { ArrowRight, Database, FileText, Radar, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
 import { LottieAsset } from "@/components/effects/LottieAsset";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const SECTIONS = [
   {
@@ -64,6 +65,9 @@ function computeStyles(raw: number) {
   };
 }
 
+/* ────────────────────────────────────────────
+   Desktop HeroPanel — original fixed-panel parallax
+   ──────────────────────────────────────────── */
 function HeroPanel({
   section,
 }: {
@@ -195,7 +199,119 @@ function HeroPanel({
   );
 }
 
+/* ────────────────────────────────────────────
+   Mobile HeroCard — lightweight stacked card
+   Uses CSS transitions + IntersectionObserver
+   ──────────────────────────────────────────── */
+function MobileHeroCard({
+  section,
+}: {
+  section: (typeof SECTIONS)[number];
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const isCTASection = "isCTA" in section && section.isCTA;
+
+  return (
+    <div
+      ref={cardRef}
+      className="mobile-hero-card px-4 py-12"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0)" : "translateY(32px)",
+        transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+      }}
+    >
+      <div className="text-center">
+        <h2 className="font-['Outfit'] text-4xl font-black tracking-[-0.04em] sm:text-5xl">
+          <span className="block text-foreground">{section.title}</span>
+          <span className="block text-gradient">{section.subtitle}</span>
+        </h2>
+
+        {section.description && (
+          <p className="mt-4 text-base leading-7 text-muted-foreground mx-auto max-w-lg">
+            {section.description}
+          </p>
+        )}
+
+        <div className="mt-6 flex justify-center">
+          {isCTASection ? (
+            <Link to="/list-generator">
+              <Button
+                size="lg"
+                className="group h-14 rounded-2xl px-8 text-base glow-primary"
+              >
+                Launch List Generator
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="mt-8 rounded-[28px] border border-border/70 bg-white/80 p-4 shadow-[0_12px_36px_rgba(148,163,184,0.14)]">
+        <LottieAsset
+          src={section.animationPath}
+          className="mx-auto aspect-square w-full max-w-[320px]"
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────
+   Desktop scroll navigation dots + snap logic
+   ──────────────────────────────────────────── */
+function DesktopScrollNav({
+  activeIndex,
+  heroVisible,
+  snapTo,
+}: {
+  activeIndex: number;
+  heroVisible: boolean;
+  snapTo: (index: number) => void;
+}) {
+  return (
+    <>
+      <div
+        className="fixed left-8 top-1/2 z-50 hidden -translate-y-1/2 flex-col gap-3 transition-opacity duration-500 lg:flex"
+        style={{ opacity: heroVisible ? 1 : 0 }}
+      >
+        {SECTIONS.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => snapTo(i)}
+            className={`w-2 rounded-full transition-all duration-500 cursor-pointer hover:bg-primary/70 ${
+              i === activeIndex ? "h-8 bg-primary" : "h-2 bg-muted-foreground/30"
+            }`}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
+
 export function ScrollHero() {
+  const isMobile = useIsMobile();
   const [activeIndex, setActiveIndex] = useState(0);
   const [heroVisible, setHeroVisible] = useState(true);
   const snapIndexRef = useRef(0);
@@ -217,7 +333,10 @@ export function ScrollHero() {
     }, 800);
   }, []);
 
+  // Desktop-only: wheel + touch snap handlers
   useEffect(() => {
+    if (isMobile) return; // Skip all scroll hijacking on mobile
+
     const getHeroBounds = () => {
       const els = document.querySelectorAll<HTMLElement>("[data-hero-section]");
       if (!els.length) return { top: 0, bottom: 0 };
@@ -286,9 +405,12 @@ export function ScrollHero() {
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", onTouchEnd);
     };
-  }, [snapTo]);
+  }, [snapTo, isMobile]);
 
+  // Desktop-only: track active section index
   useEffect(() => {
+    if (isMobile) return;
+
     const onScroll = () => {
       const vh = window.innerHeight;
       const els = document.querySelectorAll("[data-hero-section]");
@@ -315,41 +437,27 @@ export function ScrollHero() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isMobile]);
 
-  return (
-    <div ref={wrapperRef}>
-      <div
-        className="fixed left-8 top-1/2 z-50 hidden -translate-y-1/2 flex-col gap-3 transition-opacity duration-500 lg:flex"
-        style={{ opacity: heroVisible ? 1 : 0 }}
-      >
-        {SECTIONS.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => snapTo(i)}
-            className={`w-2 rounded-full transition-all duration-500 cursor-pointer hover:bg-primary/70 ${
-              i === activeIndex ? "h-8 bg-primary" : "h-2 bg-muted-foreground/30"
-            }`}
-          />
+  /* ── Mobile: simple stacked layout ── */
+  if (isMobile) {
+    return (
+      <div ref={wrapperRef} className="mobile-hero-stack">
+        {SECTIONS.map((section) => (
+          <MobileHeroCard key={section.id} section={section} />
         ))}
       </div>
+    );
+  }
 
-      <div
-        className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-4 transition-opacity duration-500 lg:hidden"
-        style={{ opacity: heroVisible ? 1 : 0 }}
-      >
-        <div className="flex items-center gap-2 rounded-full border border-border/80 bg-white/90 px-3 py-2 backdrop-blur-xl">
-          {SECTIONS.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => snapTo(i)}
-              className={`rounded-full transition-all duration-500 ${
-                i === activeIndex ? "h-2 w-8 bg-primary" : "h-2 w-2 bg-slate-300"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
+  /* ── Desktop: original parallax panels ── */
+  return (
+    <div ref={wrapperRef}>
+      <DesktopScrollNav
+        activeIndex={activeIndex}
+        heroVisible={heroVisible}
+        snapTo={snapTo}
+      />
 
       {SECTIONS.map((section) => (
         <HeroPanel key={section.id} section={section} />

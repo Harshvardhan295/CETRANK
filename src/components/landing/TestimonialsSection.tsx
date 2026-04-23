@@ -1,10 +1,7 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Quote, Sparkles, Star } from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const testimonials = [
   {
@@ -36,29 +33,68 @@ const testimonials = [
   },
 ];
 
-export function TestimonialsSection() {
-  const sectionRef = useRef<HTMLDivElement>(null);
+function useReveal(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setRevealed(true);
+          observer.unobserve(el);
+        }
+      },
+      { threshold }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return { ref, revealed };
+}
+
+export function TestimonialsSection() {
+  const isMobile = useIsMobile();
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  // Desktop: GSAP scroll animations (lazy-loaded)
+  useEffect(() => {
+    if (isMobile) return;
     if (!sectionRef.current) return;
 
-    const ctx = gsap.context(() => {
-      gsap.from(".testimonial-card", {
-        y: 60,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
-          toggleActions: "play none none reverse",
-        },
-      });
-    }, sectionRef);
+    let ctx: any;
 
-    return () => ctx.revert();
-  }, []);
+    const loadGsap = async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      gsap.registerPlugin(ScrollTrigger);
+
+      ctx = gsap.context(() => {
+        gsap.from(".testimonial-card", {
+          y: 60,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 75%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      }, sectionRef);
+    };
+
+    loadGsap();
+    return () => ctx?.revert();
+  }, [isMobile]);
 
   return (
     <section ref={sectionRef} className="py-28 px-4 relative overflow-hidden">
@@ -94,50 +130,75 @@ export function TestimonialsSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((t) => (
-            <motion.div
-              key={t.name}
-              whileHover={{ y: -6 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="testimonial-card glass rounded-[30px] p-6 relative group card-beam"
-            >
-              <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Quote className="w-10 h-10" />
-              </div>
-
-              <div className="flex gap-1 mb-4">
-                {Array.from({ length: t.rating }).map((_, j) => (
-                  <Star
-                    key={j}
-                    className="w-4 h-4 fill-amber-400 text-amber-400"
-                  />
-                ))}
-              </div>
-
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                "{t.text}"
-              </p>
-
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white text-xs font-bold`}
-                >
-                  {t.avatar}
-                </div>
-                <div>
-                  <div className="text-sm font-semibold">{t.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {t.college} / {t.branch}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-5 rounded-2xl border border-border/70 bg-white/80 px-3 py-3 text-xs text-slate-700">
-                Student takeaway: clearer decisions with less uncertainty.
-              </div>
-            </motion.div>
+          {testimonials.map((t, index) => (
+            <TestimonialCard key={t.name} t={t} index={index} isMobile={isMobile} />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function TestimonialCard({
+  t,
+  index,
+  isMobile,
+}: {
+  t: (typeof testimonials)[number];
+  index: number;
+  isMobile: boolean;
+}) {
+  const { ref, revealed } = useReveal(0.12);
+
+  const mobileStyle: React.CSSProperties | undefined = isMobile
+    ? {
+        opacity: revealed ? 1 : 0,
+        transform: revealed ? "none" : "translateY(24px)",
+        transition: `opacity 0.5s ease-out ${index * 0.1}s, transform 0.5s ease-out ${index * 0.1}s`,
+      }
+    : undefined;
+
+  return (
+    <div ref={ref} style={mobileStyle}>
+      <motion.div
+        whileHover={isMobile ? undefined : { y: -6 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="testimonial-card glass rounded-[30px] p-6 relative group card-beam"
+      >
+        <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+          <Quote className="w-10 h-10" />
+        </div>
+
+        <div className="flex gap-1 mb-4">
+          {Array.from({ length: t.rating }).map((_, j) => (
+            <Star
+              key={j}
+              className="w-4 h-4 fill-amber-400 text-amber-400"
+            />
+          ))}
+        </div>
+
+        <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+          "{t.text}"
+        </p>
+
+        <div className="flex items-center gap-3">
+          <div
+            className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white text-xs font-bold`}
+          >
+            {t.avatar}
+          </div>
+          <div>
+            <div className="text-sm font-semibold">{t.name}</div>
+            <div className="text-xs text-muted-foreground">
+              {t.college} / {t.branch}
+            </div>
+          </div>
+        </div>
+        <div className="mt-5 rounded-2xl border border-border/70 bg-white/80 px-3 py-3 text-xs text-slate-700">
+          Student takeaway: clearer decisions with less uncertainty.
+        </div>
+      </motion.div>
+    </div>
   );
 }

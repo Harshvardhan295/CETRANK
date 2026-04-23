@@ -12,6 +12,7 @@ import { AppLogo } from "@/components/AppLogo";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
 import { useLocation } from "react-router-dom";
 import { LottieAsset } from "@/components/effects/LottieAsset";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function CTASection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -109,6 +110,7 @@ function Footer() {
 
 const Index = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!location.hash) {
@@ -129,7 +131,7 @@ const Index = () => {
 
   return (
     <div className="app-shell">
-      <SiteBackdrop particleCount={14} />
+      <SiteBackdrop particleCount={isMobile ? 0 : 14} />
       <div className="relative z-10">
         <Navbar />
         <ScrollHero />

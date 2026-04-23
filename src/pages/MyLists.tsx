@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { CollegeCard } from "@/components/dashboard/CollegeCard";
@@ -50,6 +51,7 @@ const relativeTime = (iso: string) => {
 };
 
 const MyLists = () => {
+  const isMobile = useIsMobile();
   const { user } = useAuth();
   const [lists, setLists] = useState<SavedList[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -131,7 +133,7 @@ const MyLists = () => {
   if (isLoading) {
     return (
       <div className="app-shell">
-        <SiteBackdrop particleCount={10} variant="focused" />
+        <SiteBackdrop particleCount={isMobile ? 0 : 10} variant="focused" />
         <Navbar />
         <div className="relative z-10 mx-auto flex max-w-5xl items-center justify-center px-4 pt-36 pb-24">
           <motion.div
@@ -149,7 +151,7 @@ const MyLists = () => {
 
   return (
     <div className="app-shell">
-      <SiteBackdrop particleCount={10} variant="focused" />
+      <SiteBackdrop particleCount={isMobile ? 0 : 10} variant="focused" />
       <Navbar />
 
       <div className="relative z-10 mx-auto max-w-5xl px-3 pb-24 pt-24 sm:px-4 sm:pb-12 sm:pt-28">

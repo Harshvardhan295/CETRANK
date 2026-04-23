@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Compass } from "lucide-react";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const NotFound = () => {
+  const isMobile = useIsMobile();
   return (
     <div className="app-shell flex items-center justify-center px-4">
-      <SiteBackdrop particleCount={10} />
+      <SiteBackdrop particleCount={isMobile ? 0 : 10} />
 
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }}

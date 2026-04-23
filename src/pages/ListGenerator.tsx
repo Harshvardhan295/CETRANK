@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { downloadCollegeListPdf } from "@/lib/collegePdf";
@@ -16,6 +17,7 @@ import type { UserDetails } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
 const ListGenerator = () => {
+  const isMobile = useIsMobile();
   const { user } = useAuth();
   const [results, setResults] = useState<CollegeResult[]>([]);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
@@ -174,7 +176,7 @@ const ListGenerator = () => {
 
   return (
     <div className="app-shell">
-      <SiteBackdrop particleCount={12} variant="focused" />
+      <SiteBackdrop particleCount={isMobile ? 0 : 12} variant="focused" />
       <Navbar />
       
       <div className="relative z-10 mx-auto max-w-7xl px-3 pb-24 pt-24 sm:px-4 sm:pb-12 sm:pt-28">
