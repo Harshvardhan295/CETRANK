@@ -9,7 +9,6 @@
         "Amravati",
         "Ashti",
         "Aurangabad",
-        "Autonomous",
         "Badlapur",
         "Badnera",
         "Ballarpur",
@@ -115,9 +114,6 @@
         "Chhatrapati Sambhajinagar Division": ["Ambejogai", "Ashti", "Aurangabad", "Beed", "Chhatrapati Sambhajinagar", "Jalna", "Kada", "Latur", "Nanded", "Ohar", "Osmanabad", "Parbhani", "Phulepimpalgaon", "Tuljapur"]
     },
     "universities": [
-        "Autonomous",
-        "Autonomous Institute",
-        "Deemed to be University",
         "Dr. Babasaheb Ambedkar Marathwada University",
         "Dr. Babasaheb Ambedkar Technological University,Lonere",
         "Gondwana University",

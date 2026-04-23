@@ -169,8 +169,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const [category, setCategory] = useState("");
   const [university, setUniversity] = useState("");
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
-  const [selectedReligions, setSelectedReligions] = useState<string[]>(["Not Applicable"]);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["Not Applicable"]);
+  const [religion, setReligion] = useState<string>("Not Applicable");
+  const [language, setLanguage] = useState<string>("Not Applicable");
   const [selectedDivisions, setSelectedDivisions] = useState<string[]>([]);
   const [gender, setGender] = useState("");
   const [percentile, setPercentile] = useState(75);
@@ -316,23 +316,6 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setter(arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]);
   };
 
-    const toggleMinorityItem = (
-      arr: string[],
-      setter: React.Dispatch<React.SetStateAction<string[]>>,
-      item: string,
-    ) => {
-      if (item === "Not Applicable") {
-        setter(arr.includes(item) ? [] : ["Not Applicable"]);
-      } else {
-        const filtered = arr.filter((x) => x !== "Not Applicable");
-        setter(
-          filtered.includes(item)
-            ? filtered.filter((x) => x !== item)
-            : [...filtered, item],
-        );
-      }
-    };
-
   /* ── Search handler ── */
   const handleSearch = () => {
     setPulseKey((k) => k + 1);
@@ -341,8 +324,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
       user_category: CATEGORY_API_MAP[category] ?? category,
       student_name: studentName,
       user_minority_list: [
-        ...selectedReligions.filter((r) => r !== "Not Applicable"),
-        ...selectedLanguages.filter((l) => l !== "Not Applicable"),
+        ...(religion !== "Not Applicable" ? [religion] : []),
+        ...(language !== "Not Applicable" ? [language] : []),
       ],
       user_home_university: university,
       user_gender: GENDER_API_MAP[gender] ?? gender,
@@ -364,8 +347,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setCategory("");
     setUniversity("");
     setSelectedCities([]);
-    setSelectedReligions(["Not Applicable"]);
-    setSelectedLanguages(["Not Applicable"]);
+    setReligion("Not Applicable");
+    setLanguage("Not Applicable");
     setSelectedDivisions([]);
     setGender("");
     setPercentile(75);
@@ -684,32 +667,12 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </FilterCard>
                 </div>
 
-                {/* Religion — multi-select */}
+                {/* Religion — single select */}
                 <div ref={religionRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                       Minority Religion
-                      {selectedReligions.length > 0 && (
-                        <span className="ml-auto text-primary font-bold">
-                          {selectedReligions.length}
-                        </span>
-                      )}
                     </Label>
-
-                    {selectedReligions.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {selectedReligions.map((r) => (
-                          <SelectedChip
-                            key={r}
-                            label={r}
-                            onRemove={() =>
-                              setSelectedReligions((prev) => prev.filter((x) => x !== r))
-                            }
-                          />
-                        ))}
-                      </div>
-                    )}
-
                     <div
                       className="relative cursor-pointer"
                       onClick={() => {
@@ -719,12 +682,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                     >
                       <Input
                         placeholder="Select religion"
-                        value={religionSearch}
-                        onChange={(e) => {
-                          setReligionSearch(e.target.value);
-                          if (!showReligionDropdown) setShowReligionDropdown(true);
-                        }}
-                        onClick={(e) => e.stopPropagation()}
+                        value={showReligionDropdown ? religionSearch : religion}
+                        onChange={(e) => setReligionSearch(e.target.value)}
                         className="pr-8 rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
                       />
                       <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -740,12 +699,20 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                           className="absolute z-30 top-full mt-2 left-0 right-0 max-h-48 overflow-y-auto rounded-2xl glass-strong shadow-2xl border border-border/50"
                         >
                           {filteredReligions.map((r) => (
-                            <MultiSelectItem
+                            <button
                               key={r}
-                              label={r}
-                              selected={selectedReligions.includes(r)}
-                              onClick={() => toggleMinorityItem(selectedReligions, setSelectedReligions, r)}
-                            />
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setReligion(r);
+                                setReligionSearch("");
+                                setShowReligionDropdown(false);
+                              }}
+                              className={`w-full text-left px-3 py-2.5 text-sm hover:bg-primary/10 transition-colors flex items-center gap-2 ${
+                                r === religion ? "text-primary font-medium bg-primary/5" : ""
+                              }`}
+                            >
+                              <span className="truncate">{r}</span>
+                            </button>
                           ))}
                         </motion.div>
                       )}
@@ -753,32 +720,12 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   </FilterCard>
                 </div>
 
-                {/* Language — multi-select */}
+                {/* Language — single select */}
                 <div ref={languageRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-wrap">
                       Minority Language / Ethnicity
-                      {selectedLanguages.length > 0 && (
-                        <span className="ml-auto text-primary font-bold">
-                          {selectedLanguages.length}
-                        </span>
-                      )}
                     </Label>
-
-                    {selectedLanguages.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {selectedLanguages.map((l) => (
-                          <SelectedChip
-                            key={l}
-                            label={l}
-                            onRemove={() =>
-                              setSelectedLanguages((prev) => prev.filter((x) => x !== l))
-                            }
-                          />
-                        ))}
-                      </div>
-                    )}
-
                     <div
                       className="relative cursor-pointer"
                       onClick={() => {
@@ -788,12 +735,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                     >
                       <Input
                         placeholder="Select language"
-                        value={languageSearch}
-                        onChange={(e) => {
-                          setLanguageSearch(e.target.value);
-                          if (!showLanguageDropdown) setShowLanguageDropdown(true);
-                        }}
-                        onClick={(e) => e.stopPropagation()}
+                        value={showLanguageDropdown ? languageSearch : language}
+                        onChange={(e) => setLanguageSearch(e.target.value)}
                         className="pr-8 rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
                       />
                       <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -809,12 +752,20 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                           className="absolute z-30 top-full mt-2 left-0 right-0 max-h-48 overflow-y-auto rounded-2xl glass-strong shadow-2xl border border-border/50"
                         >
                           {filteredLanguages.map((l) => (
-                            <MultiSelectItem
+                            <button
                               key={l}
-                              label={l}
-                              selected={selectedLanguages.includes(l)}
-                              onClick={() => toggleMinorityItem(selectedLanguages, setSelectedLanguages, l)}
-                            />
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLanguage(l);
+                                setLanguageSearch("");
+                                setShowLanguageDropdown(false);
+                              }}
+                              className={`w-full text-left px-3 py-2.5 text-sm hover:bg-primary/10 transition-colors flex items-center gap-2 ${
+                                l === language ? "text-primary font-medium bg-primary/5" : ""
+                              }`}
+                            >
+                              <span className="truncate">{l}</span>
+                            </button>
                           ))}
                         </motion.div>
                       )}

@@ -386,9 +386,6 @@ export const CATEGORIES = [
 ];
 
 export const HOME_UNIVERSITIES = [
-  "Autonomous",
-  "Autonomous Institute",
-  "Deemed to be University",
   "Dr. Babasaheb Ambedkar Marathwada University",
   "Dr. Babasaheb Ambedkar Technological University,Lonere",
   "Gondwana University",

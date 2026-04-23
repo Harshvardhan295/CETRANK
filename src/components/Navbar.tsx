@@ -159,9 +159,6 @@ export function Navbar() {
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
-              <div className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-primary">
-                Live
-              </div>
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="rounded-2xl border border-border/80 bg-white/85 p-2.5 shadow-sm transition-colors hover:bg-primary/5"
@@ -197,9 +194,6 @@ export function Navbar() {
               <div className="mb-4 rounded-[26px] border border-border/70 bg-slate-50/90 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <AppLogo imageClassName="h-11 w-11" textClassName="text-left" />
-                  <div className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-primary">
-                    Menu
-                  </div>
                 </div>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
                   Move through the platform faster with direct jumps to the main decision points.

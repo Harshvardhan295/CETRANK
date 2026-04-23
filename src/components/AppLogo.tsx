@@ -16,7 +16,7 @@ export function AppLogo({
 }: AppLogoProps) {
   return (
     <Link
-      to="/"
+      to="/list-generator"
       className={cn(
         "flex items-center gap-3 rounded-2xl transition-transform duration-300 hover:scale-[1.01]",
         className,
