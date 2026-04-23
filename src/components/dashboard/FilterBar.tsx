@@ -177,6 +177,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const [jeePercentile, setJeePercentile] = useState(0);
   const [branches, setBranches] = useState<BranchFilters>(emptyBranches);
   const [isEws, setIsEws] = useState(false);
+  const [courseType, setCourseType] = useState<"engineering" | "pharmacy">("engineering");
 
   /* search terms */
   const [categorySearch, setCategorySearch] = useState("");
@@ -321,6 +322,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setPulseKey((k) => k + 1);
 
     const filters: CutoffRequest = {
+      course_type: courseType,
       user_category: CATEGORY_API_MAP[category] ?? category,
       student_name: studentName,
       user_minority_list: [
@@ -355,6 +357,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setJeePercentile(0);
     setBranches(emptyBranches);
     setIsEws(false);
+    setCourseType("engineering");
     setCategorySearch("");
     setUniSearch("");
     setCitySearch("");
@@ -369,7 +372,14 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setShowDivisionDropdown(false);
   };
 
-  const canSearch = Boolean(category && university && gender);
+  const canSearch = Boolean(
+    studentName.trim() &&
+    category &&
+    university &&
+    gender &&
+    religion &&
+    language
+  );
 
   /* ── Percentile change handler (clamped 0–100) ── */
   const handlePercentileChange = (
@@ -440,11 +450,35 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
           >
             <div className="px-5 pb-6 pt-5 md:px-6 space-y-6">
 
-              {/* ── Row 0: Student Name ── */}
-              <div className="grid grid-cols-1">
+              {/* ── Row 0: Course Type & Student Name ── */}
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <FilterCard>
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    Student Full Name
+                    Course Type <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="flex gap-2">
+                    {[
+                      { label: "Engineering", value: "engineering" },
+                      { label: "Pharmacy", value: "pharmacy" },
+                    ].map((c) => (
+                      <Button
+                        key={c.value}
+                        variant={courseType === c.value ? "default" : "outline"}
+                        size="sm"
+                        className={`flex-1 rounded-xl transition-all ${
+                          courseType === c.value ? "glow-subtle" : ""
+                        }`}
+                        onClick={() => setCourseType(c.value as "engineering" | "pharmacy")}
+                      >
+                        {c.label}
+                      </Button>
+                    ))}
+                  </div>
+                </FilterCard>
+
+                <FilterCard>
+                  <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    Student Full Name <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     placeholder="Enter student's full name"
@@ -462,7 +496,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <div ref={categoryRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      Category
+                      Category <span className="text-red-500">*</span>
                     </Label>
                     <div
                       className="relative cursor-pointer"
@@ -514,7 +548,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <div ref={universityRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      Home University
+                      Home University <span className="text-red-500">*</span>
                     </Label>
                     <div
                       className="relative cursor-pointer"
@@ -565,7 +599,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 {/* Gender (single select buttons) */}
                 <FilterCard>
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    Gender
+                    Gender <span className="text-red-500">*</span>
                   </Label>
                   <div className="flex gap-2">
                     {[
@@ -645,6 +679,23 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                           transition={{ duration: 0.2 }}
                           className="absolute z-30 top-full mt-2 left-0 right-0 max-h-48 overflow-y-auto rounded-2xl glass-strong shadow-2xl border border-border/50"
                         >
+                          {!citySearch && availableCities.length > 0 && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (selectedCities.length === availableCities.length) {
+                                  setSelectedCities([]);
+                                } else {
+                                  setSelectedCities(availableCities);
+                                }
+                              }}
+                              className="w-full text-left px-3 py-2.5 text-sm hover:bg-primary/10 transition-colors flex items-center gap-2 border-b border-border/50 text-primary font-medium bg-primary/5 sticky top-0 z-10"
+                            >
+                              <span className="truncate">
+                                {selectedCities.length === availableCities.length ? "Deselect All" : "Select All"}
+                              </span>
+                            </button>
+                          )}
                           {filteredCities.length > 0 ? (
                             filteredCities.map((c) => (
                               <MultiSelectItem
@@ -671,7 +722,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <div ref={religionRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      Minority Religion
+                      Minority Religion <span className="text-red-500">*</span>
                     </Label>
                     <div
                       className="relative cursor-pointer"
@@ -724,7 +775,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <div ref={languageRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-wrap">
-                      Minority Language / Ethnicity
+                      Minority Language / Ethnicity <span className="text-red-500">*</span>
                     </Label>
                     <div
                       className="relative cursor-pointer"
@@ -872,6 +923,23 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                           transition={{ duration: 0.2 }}
                           className="absolute z-30 top-full mt-2 left-0 right-0 max-h-48 overflow-y-auto rounded-2xl glass-strong shadow-2xl border border-border/50"
                         >
+                          {!divisionSearch && divisions.length > 0 && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (selectedDivisions.length === divisions.length) {
+                                  setSelectedDivisions([]);
+                                } else {
+                                  setSelectedDivisions(divisions);
+                                }
+                              }}
+                              className="w-full text-left px-3 py-2.5 text-sm hover:bg-primary/10 transition-colors flex items-center gap-2 border-b border-border/50 text-primary font-medium bg-primary/5 sticky top-0 z-10"
+                            >
+                              <span className="truncate">
+                                {selectedDivisions.length === divisions.length ? "Deselect All" : "Select All"}
+                              </span>
+                            </button>
+                          )}
                           {filteredDivisions.length > 0 ? (
                             filteredDivisions.map((d) => (
                               <MultiSelectItem
@@ -934,30 +1002,32 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
               </div>
 
               {/* ── Row 4: Branch Filters ── */}
-              <FilterCard className="md:p-5">
-                <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
-                  Branch Filters
-                </Label>
-                <div className="flex flex-wrap gap-2">
-                  {BRANCH_FILTERS.map((b) => (
-                    <motion.button
-                      key={b.key}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() =>
-                        setBranches((prev) => ({ ...prev, [b.key]: !prev[b.key] }))
-                      }
-                      className={`px-3.5 py-2 rounded-xl text-xs font-medium border transition-all ${
-                        branches[b.key]
-                          ? "bg-primary text-primary-foreground border-primary glow-subtle"
-                          : "bg-secondary/30 text-muted-foreground border-border hover:border-primary/40 hover:bg-primary/5"
-                      }`}
-                    >
-                      {b.label}
-                    </motion.button>
-                  ))}
-                </div>
-              </FilterCard>
+              {courseType === "engineering" && (
+                <FilterCard className="md:p-5">
+                  <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
+                    Branch Filters
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {BRANCH_FILTERS.map((b) => (
+                      <motion.button
+                        key={b.key}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() =>
+                          setBranches((prev) => ({ ...prev, [b.key]: !prev[b.key] }))
+                        }
+                        className={`px-3.5 py-2 rounded-xl text-xs font-medium border transition-all ${
+                          branches[b.key]
+                            ? "bg-primary text-primary-foreground border-primary glow-subtle"
+                            : "bg-secondary/30 text-muted-foreground border-border hover:border-primary/40 hover:bg-primary/5"
+                        }`}
+                      >
+                        {b.label}
+                      </motion.button>
+                    ))}
+                  </div>
+                </FilterCard>
+              )}
 
               {/* ── Row 5: EWS + Generate ── */}
               <div className="flex flex-col gap-4 rounded-[26px] border border-border/70 bg-slate-50/95 p-4 md:flex-row md:items-center md:justify-between">

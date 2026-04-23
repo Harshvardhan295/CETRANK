@@ -84,13 +84,15 @@ export interface CutoffRequest {
   division?: string[] | null;
   percentile_cet: number;
   percentile_ai: number;
-  is_tech: boolean;
-  is_electronic: boolean;
-  is_other: boolean;
-  is_civil: boolean;
-  is_mechanical: boolean;
-  is_electrical: boolean;
+  is_tech?: boolean;
+  is_electronic?: boolean;
+  is_other?: boolean;
+  is_civil?: boolean;
+  is_mechanical?: boolean;
+  is_electrical?: boolean;
   is_ews: boolean;
+  course_type?: "engineering" | "pharmacy";
+  course_names?: string[];
 }
 
 export interface CollegeResult {
@@ -246,14 +248,23 @@ export async function getMetadata(): Promise<MetadataResponse> {
 }
 
 export async function getEligibleCutoffs(request: CutoffRequest): Promise<CutoffResponse> {
-  const url = buildApiUrl("/v1/get-cutoffs").toString();
+  const isPharmacy = request.course_type === "pharmacy";
+  const endpoint = isPharmacy ? "/v1/get-pharmacy-cutoffs" : "/v1/get-cutoffs";
+  const url = buildApiUrl(endpoint).toString();
   console.log("[getEligibleCutoffs] POST", url);
-  console.log("[getEligibleCutoffs] Request body:", JSON.stringify(request, null, 2));
+
+  const payload = { ...request };
+  delete payload.course_type; // the backend might not expect it
+  if (isPharmacy) {
+    payload.course_names = request.course_names || ["Pharmacy", "Pharm D ( Doctor of Pharmacy)"];
+  }
+
+  console.log("[getEligibleCutoffs] Request body:", JSON.stringify(payload, null, 2));
 
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
+    body: JSON.stringify(payload),
   });
 
   console.log("[getEligibleCutoffs] Response status:", res.status);
