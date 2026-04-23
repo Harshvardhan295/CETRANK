@@ -981,24 +981,26 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   />
                 </FilterCard>
 
-                <FilterCard className="md:p-5">
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <Label className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      <Gauge className="h-3.5 w-3.5" />
-                      JEE Percentile
-                    </Label>
-                    <span className="text-sm font-mono font-bold text-primary tabular-nums">
-                      {formatPercentile(jeePercentile)}
-                    </span>
-                  </div>
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    value={jeePercentile}
-                    onChange={(e) => handlePercentileChange(setJeePercentile, e.target.value)}
-                    className="rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
-                  />
-                </FilterCard>
+                {courseType === "engineering" && (
+                  <FilterCard className="md:p-5">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <Label className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                        <Gauge className="h-3.5 w-3.5" />
+                        JEE Percentile
+                      </Label>
+                      <span className="text-sm font-mono font-bold text-primary tabular-nums">
+                        {formatPercentile(jeePercentile)}
+                      </span>
+                    </div>
+                    <Input
+                      type="text"
+                      inputMode="decimal"
+                      value={jeePercentile}
+                      onChange={(e) => handlePercentileChange(setJeePercentile, e.target.value)}
+                      className="rounded-2xl border-border/80 bg-white/90 focus-visible:ring-primary/40"
+                    />
+                  </FilterCard>
+                )}
               </div>
 
               {/* ── Row 4: Branch Filters ── */}
