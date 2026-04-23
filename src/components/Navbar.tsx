@@ -19,6 +19,8 @@ export function Navbar() {
   const { user, signOut } = useAuth(); // Destructured auth state and actions
   
   const isListGenerator = location.pathname === "/list-generator";
+  const isMyLists = location.pathname === "/my-lists";
+  const isInternalPage = isListGenerator || isMyLists;
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -52,9 +54,11 @@ export function Navbar() {
     navigate("/");
   };
 
-  const navLinks: NavLink[] = isListGenerator
+  const navLinks: NavLink[] = isInternalPage
     ? [
         { label: "Home", to: "/", active: location.pathname === "/" && !location.hash },
+        { label: "List Generator", to: "/list-generator", active: isListGenerator },
+        ...(user ? [{ label: "My Lists", to: "/my-lists", active: isMyLists }] : []),
       ]
     : [];
 
@@ -62,7 +66,7 @@ export function Navbar() {
     tweenBack: true,
   });
 
-  const headerStatus = isListGenerator;
+  const headerStatus = isInternalPage;
 
   return (
     <>
@@ -123,7 +127,7 @@ export function Navbar() {
             <div className="hidden items-center gap-3 md:flex">
               
 
-              {!isListGenerator ? (
+              {!isInternalPage ? (
                 <Button
                   asChild
                   className="rounded-full px-5 shadow-[0_16px_36px_rgba(59,130,246,0.24)]"
@@ -233,7 +237,7 @@ export function Navbar() {
                   A focused experience for analysing colleges, shortlisting options, and refining CAP-round choices.
                 </p>
                 
-                {!isListGenerator ? (
+                {!isInternalPage ? (
                   <Button asChild className="mt-4 h-12 w-full rounded-2xl">
                     <Link to="/list-generator" onClick={() => setMobileOpen(false)}>
                       Open List Generator

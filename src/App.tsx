@@ -11,6 +11,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import AuthPage from "./pages/AuthPage.tsx";
 import Index from "./pages/Index.tsx";
 import ListGenerator from "./pages/ListGenerator.tsx";
+import MyLists from "./pages/MyLists.tsx";
 import NotFound from "./pages/NotFound.tsx";
 // Create this page to handle Supabase Login/Signup
 // import Login from "./pages/Login.tsx"; 
@@ -38,6 +39,7 @@ const App = () => (
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/list-generator" element={<ListGenerator />} />
+                <Route path="/my-lists" element={<MyLists />} />
               </Route>
 
               {/* Auth Route */}
