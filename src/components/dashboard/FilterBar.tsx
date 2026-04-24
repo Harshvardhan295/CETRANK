@@ -178,6 +178,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const [branches, setBranches] = useState<BranchFilters>(emptyBranches);
   const [isEws, setIsEws] = useState(false);
   const [courseType, setCourseType] = useState<"engineering" | "pharmacy">("engineering");
+  const [selectedPharmacyCourses, setSelectedPharmacyCourses] = useState<string[]>(["Pharmacy", "Pharm D ( Doctor of Pharmacy)"]);
 
   /* search terms */
   const [categorySearch, setCategorySearch] = useState("");
@@ -322,6 +323,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
 
     const filters: CutoffRequest = {
       course_type: courseType,
+      course_names: courseType === "pharmacy" ? selectedPharmacyCourses : undefined,
       user_category: CATEGORY_API_MAP[category] ?? category,
       student_name: studentName,
       user_minority_list: [
@@ -357,6 +359,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     setBranches(emptyBranches);
     setIsEws(false);
     setCourseType("engineering");
+    setSelectedPharmacyCourses(["Pharmacy", "Pharm D ( Doctor of Pharmacy)"]);
     setCategorySearch("");
     setUniSearch("");
     setCitySearch("");
@@ -377,7 +380,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     university &&
     gender &&
     religion &&
-    language
+    language &&
+    (courseType === "engineering" || (courseType === "pharmacy" && selectedPharmacyCourses.length > 0))
   );
 
   /* ── Percentile change handler (clamped 0–100) ── */
@@ -1002,7 +1006,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 )}
               </div>
 
-              {/* ── Row 4: Branch Filters ── */}
+              {/* ── Row 4: Branch Filters (Engineering) ── */}
               {courseType === "engineering" && (
                 <FilterCard className="md:p-5">
                   <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
@@ -1024,6 +1028,41 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                         }`}
                       >
                         {b.label}
+                      </motion.button>
+                    ))}
+                  </div>
+                </FilterCard>
+              )}
+
+              {/* ── Row 4: Course Selection (Pharmacy) ── */}
+              {courseType === "pharmacy" && (
+                <FilterCard className="md:p-5">
+                  <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
+                    Pharmacy Course Selection
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      "Pharmacy",
+                      "Pharm D ( Doctor of Pharmacy)"
+                    ].map((course) => (
+                      <motion.button
+                        key={course}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() =>
+                          setSelectedPharmacyCourses((prev) =>
+                            prev.includes(course)
+                              ? prev.filter((c) => c !== course)
+                              : [...prev, course]
+                          )
+                        }
+                        className={`px-3.5 py-2 rounded-xl text-xs font-medium border transition-all ${
+                          selectedPharmacyCourses.includes(course)
+                            ? "bg-primary text-primary-foreground border-primary glow-subtle"
+                            : "bg-secondary/30 text-muted-foreground border-border hover:border-primary/40 hover:bg-primary/5"
+                        }`}
+                      >
+                        {course}
                       </motion.button>
                     ))}
                   </div>
