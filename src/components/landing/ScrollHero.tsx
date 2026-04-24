@@ -234,7 +234,7 @@ function MobileHeroCard({
   return (
     <div
       ref={cardRef}
-      className="mobile-hero-card px-4 py-12"
+      className="mobile-hero-card px-4 py-10 sm:py-12"
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? "translateY(0)" : "translateY(32px)",
@@ -242,7 +242,7 @@ function MobileHeroCard({
       }}
     >
       <div className="text-center">
-        <h2 className="font-['Outfit'] text-4xl font-black tracking-[-0.04em] sm:text-5xl">
+        <h2 className="font-['Outfit'] text-[2.35rem] font-black tracking-[-0.04em] sm:text-5xl">
           <span className="block text-foreground">{section.title}</span>
           <span className="block text-gradient">{section.subtitle}</span>
         </h2>
@@ -255,10 +255,10 @@ function MobileHeroCard({
 
         <div className="mt-6 flex justify-center">
           {isCTASection ? (
-            <Link to="/list-generator">
+            <Link to="/list-generator" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="group h-14 rounded-2xl px-8 text-base glow-primary"
+                className="group h-14 w-full rounded-2xl px-8 text-base glow-primary sm:w-auto"
               >
                 Launch List Generator
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -268,7 +268,7 @@ function MobileHeroCard({
         </div>
       </div>
 
-      <div className="mt-8 rounded-[28px] border border-border/70 bg-white/80 p-4 shadow-[0_12px_36px_rgba(148,163,184,0.14)]">
+      <div className="mt-8 rounded-[24px] border border-border/70 bg-white/80 p-4 shadow-[0_12px_36px_rgba(148,163,184,0.14)] sm:rounded-[28px]">
         <LottieAsset
           src={section.animationPath}
           className="mx-auto aspect-square w-full max-w-[320px]"

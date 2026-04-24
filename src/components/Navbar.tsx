@@ -209,9 +209,7 @@ export function Navbar() {
                 <div className="flex items-center justify-between gap-3">
                   <AppLogo imageClassName="h-11 w-11" textClassName="text-left" />
                 </div>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Move through the platform faster with direct jumps to the main decision points.
-                </p>
+                
               </div>
 
               <div className="flex flex-col gap-2">
@@ -241,9 +239,7 @@ export function Navbar() {
                 <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">
                   {headerStatus}
                 </div>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  A focused experience for analysing colleges, shortlisting options, and refining CAP-round choices.
-                </p>
+                
                 
                 {!isInternalPage ? (
                   <Button asChild className="mt-4 h-12 w-full rounded-2xl">

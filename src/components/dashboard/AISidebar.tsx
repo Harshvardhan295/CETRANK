@@ -177,13 +177,13 @@ export function AISidebar() {
               onClick={() => setOpen(false)}
             />
 
-            <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 pointer-events-none">
+            <div className="fixed inset-0 z-[70] flex items-end justify-center p-0 sm:items-center sm:p-6 pointer-events-none">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 350 }}
-                className="pointer-events-auto flex flex-col w-full max-w-5xl h-full max-h-[85vh] overflow-hidden rounded-[32px] border border-white/20 shadow-[0_32px_128px_rgba(15,23,42,0.24)]"
+                className="pointer-events-auto flex h-[88dvh] w-full max-w-5xl flex-col overflow-hidden rounded-t-[28px] border border-white/20 shadow-[0_32px_128px_rgba(15,23,42,0.24)] sm:h-full sm:max-h-[85vh] sm:rounded-[32px]"
                 style={{
                   background: "linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.92))",
                   backdropFilter: "blur(40px) saturate(120%)",
@@ -220,7 +220,7 @@ export function AISidebar() {
                 </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 sm:px-5">
+              <div className="flex-1 space-y-4 overflow-y-auto px-3 py-4 sm:px-5">
                 {messages.map((msg, i) => (
                   <motion.div
                     key={i}
@@ -230,7 +230,7 @@ export function AISidebar() {
                     className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[92%] px-5 py-4 text-sm leading-relaxed sm:max-w-[85%] ${
+                      className={`max-w-[95%] px-4 py-3.5 text-sm leading-relaxed sm:max-w-[85%] sm:px-5 sm:py-4 ${
                         msg.role === "user"
                           ? "bg-primary text-primary-foreground rounded-[24px] rounded-br-lg shadow-xl shadow-primary/10"
                           : "bg-white/70 dark:bg-slate-900/60 text-foreground rounded-[24px] rounded-bl-lg border border-white/40 shadow-sm ai-prose backdrop-blur-md"
@@ -289,7 +289,7 @@ export function AISidebar() {
               </div>
 
               {/* Input */}
-              <div className="sticky bottom-0 shrink-0 border-t border-border/50 bg-[hsl(var(--card)/0.96)] p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:p-4">
+              <div className="sticky bottom-0 shrink-0 border-t border-border/50 bg-[hsl(var(--card)/0.96)] p-3 pb-[calc(0.85rem+env(safe-area-inset-bottom))] sm:p-4">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();

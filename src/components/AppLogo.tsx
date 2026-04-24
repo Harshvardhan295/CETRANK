@@ -32,8 +32,8 @@ export function AppLogo({
         )}
       />
       {showText ? (
-        <span className={cn("flex items-baseline gap-1.5 text-xl leading-none", textClassName)}>
-          <span className="text-inherit font-semibold uppercase tracking-[0.18em] text-primary/70">
+        <span className={cn("flex items-baseline text-xl leading-none", textClassName)}>
+          <span className="text-inherit font-semibold uppercase text-primary/70">
             CET
           </span>
           <span className="text-inherit font-black tracking-tight text-foreground">

@@ -100,12 +100,12 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-background">
-      <div className="w-full max-w-md rounded-lg border bg-card p-8 shadow-sm">
-        <h2 className="mb-6 text-2xl font-bold text-center">
+    <div className="flex min-h-screen w-full items-center justify-center bg-background px-4 py-8 sm:px-6">
+      <div className="w-full max-w-md rounded-[28px] border bg-card p-5 shadow-sm sm:p-8">
+        <h2 className="mb-6 text-center text-2xl font-bold">
           {isLogin ? "Welcome Back" : "Create an Account"}
         </h2>
-        <div className="mb-6 grid grid-cols-2 gap-2 rounded-lg bg-muted p-1">
+        <div className="mb-6 grid grid-cols-2 gap-2 rounded-2xl bg-muted p-1">
           <Button
             type="button"
             variant={isLogin ? "default" : "ghost"}
@@ -158,7 +158,7 @@ const AuthPage = () => {
               </span>
             </div>
           </div>
-          <Button variant="outline" type="button" onClick={handleGoogleSignIn}>
+          <Button variant="outline" type="button" onClick={handleGoogleSignIn} className="h-11">
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -169,7 +169,7 @@ const AuthPage = () => {
           </Button>
         </div>
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className="mt-4 text-center text-sm leading-6 text-muted-foreground">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <button
             type="button"

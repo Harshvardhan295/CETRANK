@@ -162,7 +162,7 @@ const MyLists = () => {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="mb-8"
         >
-          <div className="flex items-center gap-3 mb-2">
+          <div className="mb-2 flex items-start gap-3 sm:items-center">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-teal-400/15 shadow-sm">
               <History className="h-5 w-5 text-primary" />
             </div>
@@ -236,7 +236,7 @@ const MyLists = () => {
                   <button
                     type="button"
                     onClick={() => toggleExpand(list.id)}
-                    className="w-full text-left px-5 py-4 sm:px-6 sm:py-5 flex items-center justify-between gap-4 group"
+                    className="group flex w-full flex-col gap-4 px-4 py-4 text-left sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5"
                   >
                     <div className="flex items-center gap-4 min-w-0">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-cyan-400/10 text-primary font-bold text-sm shadow-sm">
@@ -263,7 +263,7 @@ const MyLists = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2 self-end sm:shrink-0 sm:self-auto">
                       {/* Action buttons — stop propagation so they don't toggle expand */}
                       <Button
                         type="button"
@@ -321,8 +321,8 @@ const MyLists = () => {
                         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="border-t border-border/50 px-5 py-4 sm:px-6 sm:py-5 space-y-3">
-                          <div className="flex items-center justify-between mb-2">
+                        <div className="space-y-3 border-t border-border/50 px-4 py-4 sm:px-6 sm:py-5">
+                          <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <p className="text-xs text-muted-foreground font-medium">
                               Showing all {colleges.length} college
                               {colleges.length !== 1 ? "s" : ""} in this list
@@ -354,7 +354,7 @@ const MyLists = () => {
 
                   {/* Collapsed preview — show first 3 college names */}
                   {!isExpanded && previewColleges.length > 0 && (
-                    <div className="border-t border-border/40 px-5 py-3 sm:px-6">
+                    <div className="border-t border-border/40 px-4 py-3 sm:px-6">
                       <div className="flex flex-wrap gap-1.5">
                         {previewColleges.map((c, i) => {
                           const name =

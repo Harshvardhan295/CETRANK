@@ -148,7 +148,7 @@ function FilterCard({
   className = "",
 }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-[26px] border border-border/70 bg-white/80 p-4 ${className}`}>
+    <div className={`rounded-[22px] border border-border/70 bg-white/80 p-4 sm:rounded-[26px] sm:p-5 ${className}`}>
       {children}
     </div>
   );
@@ -413,7 +413,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
       </AnimatePresence>
 
       {/* ── Header ── */}
-      <div className="p-5 md:p-6 flex flex-col gap-4 border-b border-border/70 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 border-b border-border/70 p-4 sm:p-5 md:flex-row md:items-center md:justify-between md:p-6">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/10">
             <SlidersHorizontal className="w-5 h-5 text-primary" />
@@ -423,8 +423,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={resetFilters} className="rounded-full">
+        <div className="grid grid-cols-[1fr_auto] items-center gap-2 sm:flex sm:flex-wrap">
+          <Button variant="ghost" size="sm" onClick={resetFilters} className="h-10 rounded-full px-4 sm:h-9">
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset
           </Button>
@@ -451,15 +451,15 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-6 pt-5 md:px-6 space-y-6">
+            <div className="space-y-5 px-4 pb-5 pt-4 sm:px-5 sm:pb-6 sm:pt-5 md:px-6 md:space-y-6">
 
               {/* ── Row 0: Course Type & Student Name ── */}
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <FilterCard>
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     Course Type <span className="text-red-500">*</span>
                   </Label>
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     {[
                       { label: "Engineering", value: "engineering" },
                       { label: "Pharmacy", value: "pharmacy" },
@@ -493,7 +493,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
               </div>
 
               {/* ── Row 1: Category · University · Gender ── */}
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
 
                 {/* Category (single select) */}
                 <div ref={categoryRef} className="relative">
@@ -604,7 +604,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                   <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     Gender <span className="text-red-500">*</span>
                   </Label>
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {[
                       { label: "Male", value: "Male" },
                       { label: "Female", value: "Female" },
@@ -626,7 +626,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
               </div>
 
               {/* ── Row 2: City (multi) · Minority (multi) · Division (multi) ── */}
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
 
                 {/* City — multi-select */}
                 <div ref={cityRef} className="relative">
@@ -829,7 +829,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
               </div>
 
               {/* ── Row 3: Division · CET Percentile · JEE Percentile ── */}
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {/* Division — multi-select */}
                 <div ref={divisionRef} className="relative">
                   <FilterCard>
@@ -846,7 +846,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                             <Info className="w-3.5 h-3.5" />
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-72 sm:w-80 p-0 rounded-2xl glass-strong shadow-2xl border border-border/40 overflow-hidden z-[100]">
+                        <PopoverContent className="z-[100] w-[calc(100vw-2.5rem)] max-w-80 overflow-hidden rounded-2xl border border-border/40 p-0 glass-strong shadow-2xl">
                           <div className="p-3 border-b border-border/50 bg-primary/5">
                             <h4 className="text-xs font-bold text-primary uppercase tracking-wider">
                               Divisions & Cities
@@ -1070,8 +1070,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
               )}
 
               {/* ── Row 5: EWS + Generate ── */}
-              <div className="flex flex-col gap-4 rounded-[26px] border border-border/70 bg-slate-50/95 p-4 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-4 rounded-[22px] border border-border/70 bg-slate-50/95 p-4 sm:rounded-[26px] sm:p-5 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-start gap-3 sm:items-center">
                   <Switch checked={isEws} onCheckedChange={setIsEws} />
                   <div>
                     <Label className="text-xs text-foreground font-medium">EWS Quota</Label>
@@ -1083,12 +1083,12 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="md:text-right"
+                  className="w-full md:w-auto md:text-right"
                 >
                   <Button
                     onClick={handleSearch}
                     disabled={isLoading || !canSearch}
-                    className="rounded-2xl px-8 glow-primary relative overflow-hidden group min-w-[200px] h-12"
+                    className="relative h-12 w-full min-w-0 overflow-hidden rounded-2xl px-6 glow-primary group sm:min-w-[220px] sm:w-auto sm:px-8"
                   >
                     {isLoading ? (
                       <motion.div

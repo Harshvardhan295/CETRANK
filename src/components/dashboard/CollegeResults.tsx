@@ -106,7 +106,7 @@ export function CollegeResults({
     <div className="space-y-5">
 
       <div className="mb-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-sm text-muted-foreground font-medium">
@@ -118,7 +118,7 @@ export function CollegeResults({
             <motion.div 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-[11px] font-medium"
+              className="flex items-start gap-1.5 rounded-2xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-[11px] font-medium text-amber-700 dark:text-amber-400 sm:items-center sm:rounded-full sm:py-1"
             >
               <AlertCircle className="w-3.5 h-3.5" />
               <span>Pro Tip: Try adding more cities or branches for more options</span>
@@ -150,7 +150,7 @@ export function CollegeResults({
           <p className="text-xs text-muted-foreground text-center font-medium">
             Showing {pageStart + 1} - {Math.min(pageStart + pageSize, results.length)} of {results.length} results.
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <Button
               type="button"
               variant="outline"

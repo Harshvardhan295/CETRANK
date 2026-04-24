@@ -182,11 +182,11 @@ input:checked + .effect-dot {
   }
 
   .section-title {
-    @apply font-['Outfit'] text-3xl font-bold leading-tight tracking-tight md:text-5xl;
+    @apply font-['Outfit'] text-[2rem] font-bold leading-tight tracking-tight md:text-5xl;
   }
 
   .section-copy {
-    @apply text-base leading-7 text-muted-foreground md:text-lg;
+    @apply text-[0.98rem] leading-7 text-muted-foreground md:text-lg;
   }
 
   .hero-chip {
@@ -779,7 +779,7 @@ input:checked + .effect-dot {
 
 /* ── Mobile hero stack ── */
 .mobile-hero-stack {
-  padding-top: 5rem;
+  padding-top: 5.5rem;
 }
 
 .mobile-hero-card {
@@ -788,6 +788,9 @@ input:checked + .effect-dot {
 
 /* ── Mobile performance: reduce backdrop-blur and disable heavy effects ── */
 @media (max-width: 768px) {
+  .panel-surface {
+    border-radius: 24px;
+  }
   .glass {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -819,6 +822,10 @@ input:checked + .effect-dot {
     box-shadow:
       0 0 0 1px hsl(var(--primary) / 0.12),
       0 10px 28px hsl(var(--primary) / 0.2);
+  }
+  .ai-prose {
+    font-size: 0.875rem;
+    line-height: 1.65;
   }
 }
 
