@@ -1,30 +1,31 @@
 import { Navbar } from "@/components/Navbar";
 import { ScrollHero } from "@/components/landing/ScrollHero";
-import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
 import { HowItWorks } from "@/components/landing/HowItWorks";
-import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, useInView } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { AppLogo } from "@/components/AppLogo";
 import { SiteBackdrop } from "@/components/effects/SiteBackdrop";
-import { useLocation } from "react-router-dom";
 import { LottieAsset } from "@/components/effects/LottieAsset";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 function CTASection() {
+  const isMobile = useIsMobile();
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  // On mobile: skip framer-motion scroll-linked animation entirely
+  const shouldAnimate = !isMobile && isInView;
 
   return (
     <motion.section ref={ref} className="px-4 py-28 relative overflow-hidden">
       <div className="mx-auto max-w-5xl relative">
         <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.95 }}
-          animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          initial={isMobile ? false : { opacity: 0, y: 40, scale: 0.95 }}
+          animate={isMobile ? { opacity: 1, y: 0, scale: 1 } : (shouldAnimate ? { opacity: 1, y: 0, scale: 1 } : {})}
+          transition={isMobile ? { duration: 0 } : { duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="panel-surface relative overflow-hidden rounded-[36px] noise"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.12),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.55),transparent)]" />

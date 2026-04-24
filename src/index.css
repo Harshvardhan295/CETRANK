@@ -88,6 +88,11 @@
   html {
     scroll-behavior: smooth;
   }
+  @media (max-width: 768px) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: "Outfit", "Inter", system-ui, sans-serif;
@@ -798,7 +803,8 @@ input:checked + .effect-dot {
   .animate-aurora,
   .animate-float,
   .animate-float-reverse,
-  .animate-spin-slow {
+  .animate-spin-slow,
+  .animate-glow-pulse {
     animation: none !important;
   }
   .card-beam::before {

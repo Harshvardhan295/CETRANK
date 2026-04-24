@@ -1,11 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMagicArea } from "./effects/MagicArea";
 import { Button } from "./ui/button";
 import { AppLogo } from "./AppLogo";
 import { useAuth } from "@/contexts/AuthContext"; // Imported Auth Context
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type NavLink = {
   label: string;
@@ -17,6 +18,7 @@ export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth(); // Destructured auth state and actions
+  const isMobile = useIsMobile();
   
   const isListGenerator = location.pathname === "/list-generator";
   const isMyLists = location.pathname === "/my-lists";
@@ -24,25 +26,35 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const rafRef = useRef(0);
 
   useEffect(() => {
-    const handler = () => {
+    const update = () => {
       setScrolled(window.scrollY > 20);
 
-      const doc = document.documentElement;
-      const maxScroll = doc.scrollHeight - window.innerHeight;
-      setScrollProgress(maxScroll > 0 ? window.scrollY / maxScroll : 0);
+      // Skip progress calculation on mobile — avoids extra setState per frame
+      if (!isMobile) {
+        const doc = document.documentElement;
+        const maxScroll = doc.scrollHeight - window.innerHeight;
+        setScrollProgress(maxScroll > 0 ? window.scrollY / maxScroll : 0);
+      }
     };
 
-    handler();
+    const handler = () => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(update);
+    };
+
+    update();
     window.addEventListener("scroll", handler, { passive: true });
     window.addEventListener("resize", handler);
 
     return () => {
       window.removeEventListener("scroll", handler);
       window.removeEventListener("resize", handler);
+      cancelAnimationFrame(rafRef.current);
     };
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -71,9 +83,9 @@ export function Navbar() {
   return (
     <>
       <motion.nav
-        initial={{ y: -100 }}
+        initial={isMobile ? false : { y: -100 }}
         animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 200, damping: 30 }}
+        transition={isMobile ? { duration: 0 } : { type: "spring", stiffness: 200, damping: 30 }}
         className="fixed inset-x-0 top-0 z-50 px-2 pt-2 transition-all duration-500 sm:px-4 sm:pt-3"
       >
         <div
@@ -83,10 +95,12 @@ export function Navbar() {
               : "border-border/70 bg-white/75 shadow-[0_16px_48px_rgba(148,163,184,0.18)] backdrop-blur-xl"
           }`}
         >
-          <div
-            className="h-px origin-left bg-gradient-to-r from-primary via-cyan-300 to-teal-300 transition-transform duration-300"
-            style={{ transform: `scaleX(${Math.max(scrollProgress, 0.08)})` }}
-          />
+          {!isMobile && (
+            <div
+              className="h-px origin-left bg-gradient-to-r from-primary via-cyan-300 to-teal-300 transition-transform duration-300"
+              style={{ transform: `scaleX(${Math.max(scrollProgress, 0.08)})` }}
+            />
+          )}
 
           <div className="flex items-center justify-between gap-3 px-3 py-3 sm:px-5">
             <div className="flex items-center gap-3">
