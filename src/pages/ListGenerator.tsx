@@ -93,7 +93,9 @@ const ListGenerator = () => {
     setLastFilters(filters);
 
     try {
-      const { results: list, user_details } = await getEligibleCutoffs(filters);
+      const apiResponse = await getEligibleCutoffs(filters);
+      const { results: list, user_details } = apiResponse;
+      
       setResults(list);
       setUserDetails(user_details);
 
@@ -113,9 +115,17 @@ const ListGenerator = () => {
           .eq("user_id", user.id);
         setAvailableCredits(newCreditBalance);
 
+        // BULLETPROOF FIX: Explicitly constructing the JSON object to guarantee
+        // that Supabase receives an object and not just the array.
+        const listDataPayload = {
+          results: list,
+          user_details: user_details || filters,
+          count: list.length
+        };
+
         const { error } = await supabase.from("college_lists").insert({
           user_id: user.id,
-          list_data: list,
+          list_data: listDataPayload,
         });
 
         if (error) {

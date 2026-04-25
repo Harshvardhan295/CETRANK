@@ -19,12 +19,18 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { CollegeResult } from "@/lib/api";
+import type { CollegeResult, UserDetails } from "@/lib/api";
+
+interface SavedListPayload {
+  results: CollegeResult[];
+  user_details?: UserDetails | null;
+  count?: number;
+}
 
 interface SavedList {
   id: string;
   created_at: string;
-  list_data: CollegeResult[];
+  list_data: CollegeResult[] | SavedListPayload;
 }
 
 const formatDate = (iso: string) => {
@@ -49,6 +55,12 @@ const relativeTime = (iso: string) => {
   if (days < 30) return `${days}d ago`;
   return formatDate(iso);
 };
+
+const getSavedColleges = (listData: SavedList["list_data"]) =>
+  Array.isArray(listData) ? listData : listData.results ?? [];
+
+const getSavedFilters = (listData: SavedList["list_data"]) =>
+  Array.isArray(listData) ? null : listData.user_details ?? null;
 
 const MyLists = () => {
   const isMobile = useIsMobile();
@@ -205,14 +217,14 @@ const MyLists = () => {
           <AnimatePresence mode="popLayout">
             {lists.map((list, idx) => {
               const isExpanded = expandedId === list.id;
-              const colleges = Array.isArray(list.list_data)
-                ? list.list_data
-                : [];
+              const colleges = getSavedColleges(list.list_data);
+              const savedFilters = getSavedFilters(list.list_data);
               const previewColleges = colleges.slice(0, 3);
 
               // Try to extract a meaningful summary from the first result
               const firstCollege = colleges[0];
               const category =
+                savedFilters?.user_category ||
                 firstCollege?.user_category ||
                 firstCollege?.category ||
                 firstCollege?.Category ||
