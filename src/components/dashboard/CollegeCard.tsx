@@ -28,7 +28,7 @@ function AllocationTimeline({ data }: { data: CollegeResult }) {
 export function CollegeCard({ college, index }: CollegeCardProps) {
   const [expanded, setExpanded] = useState(false);
 
-  const cutoff =
+  const cutoffValue =
     college.CET_Percentile ??
     college.cet_percentile ??
     college.cutoff_percentile ??
@@ -36,9 +36,11 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
     college.percentile ??
     0;
 
+  const cutoff = Number.isInteger(Number(cutoffValue)) ? String(cutoffValue) : Number(cutoffValue).toFixed(2);
+
   const probability =
-    cutoff > 0
-      ? Math.min(95, Math.max(20, Math.round(100 - Math.abs(cutoff - 85) * 2)))
+    Number(cutoffValue) > 0
+      ? Math.min(95, Math.max(20, Math.round(100 - Math.abs(Number(cutoffValue) - 85) * 2)))
       : 50;
 
   const collegeName =
@@ -47,6 +49,7 @@ export function CollegeCard({ college, index }: CollegeCardProps) {
     college.Name ||
     college.name ||
     "Unknown College";
+
   const branchName = college.branch_name || college.Branch || college.branch || college.course_name || "";
   const city = college.city || college.City || "";
   const category =

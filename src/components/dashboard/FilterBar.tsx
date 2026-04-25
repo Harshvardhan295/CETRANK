@@ -86,12 +86,13 @@ const normalizeCategoryOption = (value: string) => {
   return value;
 };
 
-const formatPercentile = (value: number) => {
-  if (!Number.isFinite(value)) {
+const formatPercentile = (value: number | string) => {
+  const num = Number.parseFloat(String(value));
+  if (!Number.isFinite(num)) {
     return "0";
   }
 
-  return Number.isInteger(value) ? String(value) : value.toFixed(2);
+  return Number.isInteger(num) ? String(num) : num.toFixed(2);
 };
 
 /* ── Reusable chip for selected multi-select items ── */
@@ -173,8 +174,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const [language, setLanguage] = useState<string>("Not Applicable");
   const [selectedDivisions, setSelectedDivisions] = useState<string[]>([]);
   const [gender, setGender] = useState("");
-  const [percentile, setPercentile] = useState(75);
-  const [jeePercentile, setJeePercentile] = useState(0);
+  const [percentile, setPercentile] = useState<string | number>(75);
+  const [jeePercentile, setJeePercentile] = useState<string | number>(0);
   const [branches, setBranches] = useState<BranchFilters>(emptyBranches);
   const [isEws, setIsEws] = useState(false);
   const [courseType, setCourseType] = useState<"engineering" | "pharmacy">("engineering");
@@ -321,6 +322,9 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
   const handleSearch = () => {
     setPulseKey((k) => k + 1);
 
+    const pCet = Number.parseFloat(String(percentile));
+    const pAi = Number.parseFloat(String(jeePercentile));
+
     const filters: CutoffRequest = {
       course_type: courseType,
       course_names: courseType === "pharmacy" ? selectedPharmacyCourses : undefined,
@@ -334,8 +338,8 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
       user_gender: GENDER_API_MAP[gender] ?? gender,
       city: selectedCities.length > 0 ? selectedCities : null,
       division: selectedDivisions.length > 0 ? selectedDivisions : null,
-      percentile_cet: percentile,
-      percentile_ai: jeePercentile,
+      percentile_cet: Number.isNaN(pCet) ? 0 : Math.min(100, Math.max(0, pCet)),
+      percentile_ai: Number.isNaN(pAi) ? 0 : Math.min(100, Math.max(0, pAi)),
       ...branches,
       is_ews: isEws,
     };
@@ -379,22 +383,27 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
     category &&
     university &&
     gender &&
-    religion &&
-    language &&
     (courseType === "engineering" || (courseType === "pharmacy" && selectedPharmacyCourses.length > 0))
   );
 
   /* ── Percentile change handler (clamped 0–100) ── */
   const handlePercentileChange = (
-    setter: React.Dispatch<React.SetStateAction<number>>,
+    setter: React.Dispatch<React.SetStateAction<string | number>>,
     raw: string,
   ) => {
-    const parsed = Number.parseFloat(raw);
-    if (Number.isNaN(parsed)) {
-      setter(0);
+    if (raw === "") {
+      setter("");
       return;
     }
-    setter(Math.min(100, Math.max(0, parsed)));
+    // Only allow digits and at most one decimal point
+    if (/^\d*\.?\d*$/.test(raw)) {
+      const parsed = parseFloat(raw);
+      if (!isNaN(parsed) && parsed > 100) {
+        setter("100");
+      } else {
+        setter(raw);
+      }
+    }
   };
 
   return (
@@ -725,7 +734,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <div ref={religionRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      Minority Religion <span className="text-red-500">*</span>
+                      Minority Religion
                     </Label>
                     <div
                       className="relative cursor-pointer"
@@ -778,7 +787,7 @@ export function FilterBar({ onSearch, isLoading }: FilterBarProps) {
                 <div ref={languageRef} className="relative">
                   <FilterCard>
                     <Label className="mb-2 flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-wrap">
-                      Minority Language / Ethnicity <span className="text-red-500">*</span>
+                      Minority Language / Ethnicity
                     </Label>
                     <div
                       className="relative cursor-pointer"

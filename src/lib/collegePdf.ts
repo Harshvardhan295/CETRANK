@@ -95,7 +95,11 @@ const formatCutoff = (college: CollegeResult) => {
     return "-";
   }
 
-  return normalizeText(String(cutoffValue));
+  const num = Number(cutoffValue);
+  if (isNaN(num)) return normalizeText(String(cutoffValue));
+
+  const formatted = Number.isInteger(num) ? String(num) : num.toFixed(2);
+  return normalizeText(formatted);
 };
 
 const loadImageWithOpacity = (src: string, opacity: number) =>
@@ -246,14 +250,21 @@ const drawUserDetails = (doc: jsPDF, user: UserDetails) => {
   doc.setFont("helvetica", "normal");
   
   let midY = startY + 15;
-  doc.text(`CET Percentile: ${user.percentile_cet}`, midX, midY);
+  const formatUserNum = (n: any) => {
+    const num = Number(n);
+    return isNaN(num) ? "0" : (Number.isInteger(num) ? String(num) : num.toFixed(2));
+  };
+
+  doc.text(`CET Percentile: ${formatUserNum(user.percentile_cet)}`, midX, midY);
   
   midY += 12;
-  doc.text(`AI Percentile: ${user.percentile_ai}`, midX, midY);
+  doc.text(`AI Percentile: ${formatUserNum(user.percentile_ai)}`, midX, midY);
   
   if (user.calculated_bounds) {
     midY += 12;
-    doc.text(`CET Range: ${user.calculated_bounds.min_percentile_cet} - ${user.calculated_bounds.max_percentile_cet}`, midX, midY);
+    const minP = formatUserNum(user.calculated_bounds.min_percentile_cet);
+    const maxP = formatUserNum(user.calculated_bounds.max_percentile_cet);
+    doc.text(`CET Range: ${minP} - ${maxP}`, midX, midY);
   }
 
   // --- COLUMN 3: Location Filters ---
