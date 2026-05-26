@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import { AppLogo } from "./AppLogo";
 import { useAuth } from "@/contexts/AuthContext"; // Imported Auth Context
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/lib/supabase";
 
 type NavLink = {
   label: string;

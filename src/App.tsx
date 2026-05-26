@@ -8,15 +8,17 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 // Import Auth components
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AdminPasswordGate } from "./components/AdminPasswordGate.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
 import Index from "./pages/Index.tsx";
 import ListGenerator from "./pages/ListGenerator.tsx";
 import MyLists from "./pages/MyLists.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import AdminAllLists from "./pages/AdminAllLists.tsx";
+import AdminCoupons from "./pages/AdminCoupons.tsx";
+import AdminSupport from "./pages/AdminSupport.tsx";
 import NotFound from "./pages/NotFound.tsx";
-// Create this page to handle Supabase Login/Signup
-// import Login from "./pages/Login.tsx"; 
+import { SupportTicketModal } from "@/components/dashboard/SupportTicketModal";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,7 @@ const App = () => (
         <AuthProvider>
           <Toaster />
           <Sonner />
+          <SupportTicketModal />
           <BrowserRouter
             future={{
               v7_startTransition: true,
@@ -42,8 +45,14 @@ const App = () => (
               <Route element={<ProtectedRoute />}>
                 <Route path="/list-generator" element={<ListGenerator />} />
                 <Route path="/my-lists" element={<MyLists />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/all-lists" element={<AdminAllLists />} />
+                
+                {/* Admin Password Gated Routes */}
+                <Route element={<AdminPasswordGate />}>
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/all-lists" element={<AdminAllLists />} />
+                  <Route path="/admin/coupons" element={<AdminCoupons />} />
+                  <Route path="/admin/support" element={<AdminSupport />} />
+                </Route>
               </Route>
 
               {/* Auth Route */}
